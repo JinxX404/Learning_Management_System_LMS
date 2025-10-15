@@ -1,0 +1,43 @@
+:root {
+  --font-display: "Inter", sans-serif;
+}
+
+body {
+  font-family: var(--font-display);
+}
+
+.breadcrumb-item a {
+  text-decoration: none;
+}
+
+.breadcrumb-item.active {
+  font-weight: 500;
+  color: var(--bs-body-color);
+}
+
+.upload-area {
+  border-style: dashed !important;
+}
+
+.history-item .icon-box {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+[data-bs-theme="dark"] .history-item .icon-box {
+  background-color: rgb(var(--bs-primary-rgb));
+}
+
+[data-bs-theme="dark"] .submit-btn {
+  --bs-btn-bg: #4A90E2;
+  --bs-btn-border-color: #4A90E2;
+  --bs-btn-hover-bg: #639de6;
+  --bs-btn-hover-border-color: #639de6;
+  --bs-btn-color: #FFFFFF;
+}
