@@ -1,0 +1,29 @@
+:root {
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Lexend", sans-serif;
+  --bs-primary-rgb: 59, 130, 246;
+  --bs-primary-light-rgb: 96, 165, 250;
+  --bs-primary-dark-rgb: 37, 99, 235;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.course-card {
+  transition: transform 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-0.25rem);
+}
+
+.progress-circle-svg {
+  transform: rotate(-90deg);
+}

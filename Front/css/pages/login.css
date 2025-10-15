@@ -1,0 +1,91 @@
+:root {
+  --custom-font: "Inter", sans-serif;
+  --custom-primary-light: #133b90;
+  --custom-accent-dark: #FFD700;
+  --custom-primary-dark: #0A2A66;
+  --custom-secondary-dark: #1A3F8B;
+}
+
+body {
+  font-family: var(--custom-font);
+}
+
+.form-control, .form-check-input {
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+}
+
+[data-bs-theme="light"] .form-control,
+[data-bs-theme="light"] .form-check-input {
+  background-color: rgba(229, 231, 235, 0.5);
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-check-input {
+  background-color: #2C2C2C;
+}
+
+.form-control:focus {
+  border-color: var(--custom-primary-light);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+[data-bs-theme="dark"] .form-control:focus {
+  border-color: var(--custom-accent-dark);
+  box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--custom-primary-light);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+[data-bs-theme="dark"] .form-check-input:focus {
+  border-color: var(--custom-accent-dark);
+  box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+}
+
+/* Legacy compatibility classes */
+.brand-name {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.welcome-title {
+  font-weight: 700;
+  font-size: 1.875rem;
+  letter-spacing: -0.025em;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+}
+
+.login-btn {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.brand-icon-wrapper {
+  color: var(--bs-light);
+  background-color: var(--bs-primary);
+}
+
+[data-bs-theme="dark"] .brand-icon-wrapper {
+  color: var(--bs-light);
+  background-color: var(--custom-secondary-dark);
+}
+
+[data-bs-theme="dark"] .brand-icon {
+        color: var(--custom-accent-dark);
+}
+
+.login-card {
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+}

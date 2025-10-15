@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduPlatform - Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/pages/quiz-page.css">
+</head>
+<body>
+
+ <header class="sticky-top border-bottom header-sticky">
+      <div class="d-flex align-items-center px-4" style="height: 4rem;">
+        <div class="d-flex align-items-center gap-2">
+          <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3" style="width: 2rem; height: 2rem;">
+            <svg class="brand-icon" style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+              <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+            </svg>
+          </div>
+          <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">ESU Portal</h1>
+        </div>
+        <nav class="navbar navbar-expand flex-grow-1 px-4">
+          <div class="navbar-nav gap-2">
+            <a class="nav-link active d-flex align-items-center gap-2" href="dashboard.html">
+              <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              Dashboard
+            </a>
+            <a class="nav-link d-flex align-items-center gap-2" href="my-courses.html">
+              <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
+              Courses
+            </a>
+            <a class="nav-link d-flex align-items-center gap-2" href="announcements.html">
+              <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path></svg>
+              Announcements
+            </a>
+            <a class="nav-link d-flex align-items-center gap-2" href="grades.html">
+              <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M18 13v-3.5A1.5 1.5 0 0 0 16.5 8H3"></path><path d="m10 16 4-4"></path><path d="m14 16-4-4"></path><path d="M10 12v10"></path><path d="M4 12v10"></path><path d="M18 22V10.5"></path></svg>
+              Grades
+            </a>
+          </div>
+        </nav>
+        <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <a href="announcements.html">            <button class="btn btn-icon rounded-circle p-2 text-secondary"><svg class="h-6 w-6" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></button>
+</a>
+  <a href="account-settings.html">            <button class="btn btn-icon rounded-circle p-2 text-secondary"><svg class="h-6 w-6" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.1l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.1l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+</a>
+</div>
+          <div class="d-flex align-items-center gap-2">
+            <a href="profile.html">            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0yqIeWjZhANVkvYizR4zvPjouwwzOg0ElzE5M2ymYIxc0EoHaO0iOxNJet-ODA3T-7ygdDvKu9PbGME49JtpxTy2txcN5GmnDNI8PX5rQaXKmRMlN5D8O7IVQjgcQ3cqy6bXyfpkejnFarNj-Cm3Iv1_HAebU5bQjF5pBqiZuGmSe5x-T-p2weAf0x5QhhNneblcnQHwzdYHg40f3XbJFFyvS5GUJfwz-GMPjxbtpW4alIvido-4ujc8iZhNBKGreBC9WI4gSpMY" alt="Sarah Chen" class="rounded-circle" style="width: 2.5rem; height: 2.5rem;">
+</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+  <main class="container-lg my-4 my-md-5">
+    <div class="mx-auto" style="max-width: 48rem;">
+      <div class="card shadow-lg rounded-4">
+        <div class="card-body p-4 p-md-5">
+
+          <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="fs-6 fw-semibold text-body-secondary">Quiz Progress</h2>
+              <p class="fs-6 text-muted mb-0">6/10 Questions</p>
+            </div>
+            <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="height: 8px;">
+              <div class="progress-bar" style="width: 60%"></div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center align-items-center gap-3 gap-sm-4 text-center mb-5">
+            <div>
+                <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <span class="display-5 fw-bold">00</span>
+                </div>
+                <p class="text-muted small mt-2">Hours</p>
+            </div>
+            <span class="display-5 fw-bold text-primary">:</span>
+            <div>
+                <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <span class="display-5 fw-bold">15</span>
+                </div>
+                <p class="text-muted small mt-2">Minutes</p>
+            </div>
+            <span class="display-5 fw-bold text-primary">:</span>
+            <div>
+                <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <span class="display-5 fw-bold">30</span>
+                </div>
+                <p class="text-muted small mt-2">Seconds</p>
+            </div>
+          </div>
+          
+          <hr class="my-5"/>
+
+          <div>
+            <h3 class="fs-5 fw-semibold">
+              <span class="text-primary fw-bold">Question 7:</span>
+            </h3>
+            <p class="mt-2 fs-5">Which of the following is NOT a primary color?</p>
+            <div class="d-grid gap-3 mt-4">
+              
+              <div class="answer-option form-check p-0">
+                <input class="form-check-input visually-hidden" type="radio" name="color-question" id="option1">
+                <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer" for="option1">Red</label>
+              </div>
+
+              <div class="answer-option form-check p-0">
+                <input class="form-check-input visually-hidden" type="radio" name="color-question" id="option2">
+                <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer" for="option2">Blue</label>
+              </div>
+
+              <div class="answer-option form-check p-0">
+                <input class="form-check-input visually-hidden" type="radio" name="color-question" id="option3" checked>
+                <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer" for="option3">Green</label>
+              </div>
+              
+              <div class="answer-option form-check p-0">
+                <input class="form-check-input visually-hidden" type="radio" name="color-question" id="option4">
+                <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer" for="option4">Yellow</label>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="text-end pt-5 mt-3">
+            <button class="btn btn-primary w-100 w-sm-auto px-5 py-2 fw-semibold">Submit Quiz</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    <button id="themeToggle" class="btn btn-secondary rounded-circle">
+      <i class="fas fa-moon"></i>
+  </button>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="js/themeToggle.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.brand-icon {
+  color: #133b90;
+}
+
+.nav-tabs .nav-link.active {
+  border-color: #133b90;
+  color: #133b90;
+}
+
+.profile-avatar {
+  width: 128px;
+  height: 128px;
+  background-size: cover;
+  background-position: center;
+  border: 4px solid var(--bs-body-bg);
+}
+
+.online-indicator {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--bs-body-bg);
+}
+
+.course-card-img,
+.achievement-card-img {
+  background-size: cover;
+  background-position: center;
+}
+
+.course-card-img {
+  aspect-ratio: 16 / 9;
+}
+
+.achievement-card-img {
+  width: 96px;
+  height: 96px;
+}
+
+/* Dark Theme Overrides */
+[data-bs-theme="dark"] .brand-icon {
+  color: #f5b50a;
+}
+
+[data-bs-theme="dark"] .nav-tabs .nav-link.active {
+  border-color: #f5b50a;
+  color: #f5b50a;
+}
