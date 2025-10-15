@@ -1,25 +1,24 @@
 .navbar .nav-link {
-      color: var(--bs-secondary-color);
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.2s ease-in-out;
-    }
+  color: var(--bs-secondary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
 
-    .navbar .nav-link:hover {
-      background-color: rgba(var(--bs-secondary-rgb), 0.1);
-    }
+.navbar .nav-link:hover {
+  background-color: rgba(var(--bs-secondary-rgb), 0.1);
+}
 
-    .navbar .nav-link.active {
-      background-color: rgba(var(--bs-primary-rgb), 0.1);
-      color: rgb(var(--bs-primary-dark-rgb));
-    }
+.navbar .nav-link.active {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+  color: rgb(var(--bs-primary-dark-rgb));
+}
 
-    [data-bs-theme="dark"] .navbar .nav-link.active {
-      color: rgb(var(--bs-primary-light-rgb));
-    }
-    
+[data-bs-theme="dark"] .navbar .nav-link.active {
+  color: rgb(var(--bs-primary-light-rgb));
+}
 
-    .header-sticky {
-      backdrop-filter: blur(8px);
-      background-color: rgba(var(--bs-tertiary-bg-rgb), 0.8) !important;
-    }
+.header-sticky {
+  backdrop-filter: blur(8px);
+  background-color: rgba(var(--bs-tertiary-bg-rgb), 0.8) !important;
+}

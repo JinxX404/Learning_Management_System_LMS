@@ -1,77 +1,76 @@
-   /* Light Theme */
-    [data-bs-theme="light"] {
-      /* Primary Colors */
-      --bs-primary-rgb: 17, 115, 212;
-      --bs-primary: rgb(var(--bs-primary-rgb));
-      --bs-primary-light: rgba(var(--bs-primary-rgb), 0.1);
-      --bs-primary-hover: rgb(15, 103, 190);
+/* Light Theme */
+[data-bs-theme="light"] {
+  /* Primary Colors */
+  --bs-primary-rgb: 17, 115, 212;
+  --bs-primary: rgb(var(--bs-primary-rgb));
+  --bs-primary-light: rgba(var(--bs-primary-rgb), 0.1);
+  --bs-primary-hover: rgb(15, 103, 190);
 
-      /* Background Colors */
-      --bs-body-bg: #f6f7f8;
-      --bs-surface-bg: #ffffff;
-      --bs-tertiary-bg: #ffffff;
+  /* Background Colors */
+  --bs-body-bg: #f6f7f8;
+  --bs-surface-bg: #ffffff;
+  --bs-tertiary-bg: #ffffff;
 
-      /* Text Colors */
-      --bs-body-color: #18232E;
-      --bs-secondary-color: #6B7280;
-      --bs-tertiary-color: #9CA3AF;
-      --bs-emphasis-color: #111827;
+  /* Text Colors */
+  --bs-body-color: #18232e;
+  --bs-secondary-color: #6b7280;
+  --bs-tertiary-color: #9ca3af;
+  --bs-emphasis-color: #111827;
 
-      /* Border Colors */
-      --bs-border-color: #E5E7EB;
-      --bs-border-color-subtle: #F3F4F6;
-      
-      /* Component Colors */
-      --card-bg: var(--bs-surface-bg);
-      --card-border: var(--bs-border-color);
-      --card-hover-border: rgba(var(--bs-primary-rgb), 0.5);
-      
-      /* State Colors */
-      --bs-success-rgb: 34, 197, 94;
-      --bs-warning-rgb: 245, 158, 11;
-      --bs-danger-rgb: 239, 68, 68;
-      --bs-info-rgb: 6, 182, 212;
-    }
+  /* Border Colors */
+  --bs-border-color: #e5e7eb;
+  --bs-border-color-subtle: #f3f4f6;
 
-    /* Dark Theme */
-    [data-bs-theme="dark"] {
-      /* Primary Colors */
-      --bs-primary-rgb: 17, 115, 212;
-      --bs-primary: rgb(var(--bs-primary-rgb));
-      --bs-primary-light: rgba(var(--bs-primary-rgb), 0.15);
-      --bs-primary-hover: rgb(41, 132, 222);
+  /* Component Colors */
+  --card-bg: var(--bs-surface-bg);
+  --card-border: var(--bs-border-color);
+  --card-hover-border: rgba(var(--bs-primary-rgb), 0.5);
 
-      /* Background Colors */
-      --bs-body-bg: #101922;
-      --bs-surface-bg: #18232E;
-      --bs-tertiary-bg: #18232E;
+  /* State Colors */
+  --bs-success-rgb: 34, 197, 94;
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-info-rgb: 6, 182, 212;
+}
 
-      /* Text Colors */
-      --bs-body-color: #F9FAFB;
-      --bs-secondary-color: #9CA3AF;
-      --bs-tertiary-color: #6B7280;
-      --bs-emphasis-color: #FFFFFF;
+/* Dark Theme */
+[data-bs-theme="dark"] {
+  /* Primary Colors */
+  --bs-primary-rgb: 17, 115, 212;
+  --bs-primary: rgb(var(--bs-primary-rgb));
+  --bs-primary-light: rgba(var(--bs-primary-rgb), 0.15);
+  --bs-primary-hover: rgb(41, 132, 222);
 
-      /* Border Colors */
-      --bs-border-color: #2A3B4D;
-      --bs-border-color-subtle: #1F2937;
-      
-      /* Component Colors */
-      --card-bg: var(--bs-surface-bg);
-      --card-border: var(--bs-border-color);
-      --card-hover-border: rgba(var(--bs-primary-rgb), 0.7);
-      
-      /* State Colors */
-      --bs-success-rgb: 34, 197, 94;
-      --bs-warning-rgb: 245, 158, 11;
-      --bs-danger-rgb: 239, 68, 68;
-      --bs-info-rgb: 6, 182, 212;
-    }
+  /* Background Colors */
+  --bs-body-bg: #101922;
+  --bs-surface-bg: #18232e;
+  --bs-tertiary-bg: #18232e;
 
+  /* Text Colors */
+  --bs-body-color: #f9fafb;
+  --bs-secondary-color: #9ca3af;
+  --bs-tertiary-color: #6b7280;
+  --bs-emphasis-color: #ffffff;
 
-     #themeToggle {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        z-index: 1050;
-    }
+  /* Border Colors */
+  --bs-border-color: #2a3b4d;
+  --bs-border-color-subtle: #1f2937;
+
+  /* Component Colors */
+  --card-bg: var(--bs-surface-bg);
+  --card-border: var(--bs-border-color);
+  --card-hover-border: rgba(var(--bs-primary-rgb), 0.7);
+
+  /* State Colors */
+  --bs-success-rgb: 34, 197, 94;
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-info-rgb: 6, 182, 212;
+}
+
+#themeToggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1050;
+}
