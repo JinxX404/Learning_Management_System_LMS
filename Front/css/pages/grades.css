@@ -1,5 +1,5 @@
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .brand-icon {
   color: #3b82f6;
@@ -13,16 +13,13 @@ body {
   background-position: center;
 }
 
-  
-    .table > :not(caption) > * > * {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    .grade-cell {
-        color: #f59e0b;
-    }
-    [data-bs-theme="light"] .grade-cell {
-        color: #133b90;
-    }
-
- 
+.table > :not(caption) > * > * {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.grade-cell {
+  color: #f59e0b;
+}
+[data-bs-theme="light"] .grade-cell {
+  color: #133b90;
+}

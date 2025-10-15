@@ -35,9 +35,9 @@ body {
 }
 
 [data-bs-theme="dark"] .submit-btn {
-  --bs-btn-bg: #4A90E2;
-  --bs-btn-border-color: #4A90E2;
+  --bs-btn-bg: #4a90e2;
+  --bs-btn-border-color: #4a90e2;
   --bs-btn-hover-bg: #639de6;
   --bs-btn-hover-border-color: #639de6;
-  --bs-btn-color: #FFFFFF;
+  --bs-btn-color: #ffffff;
 }
