@@ -9,8 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/themes.css">
-  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/pages/account-settings.css">
 </head>
 <body class="text-body">
@@ -129,6 +128,24 @@
 
       <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3">
         <div class="card-body p-2">
+          <h2 class="section-title fs-4 fw-semibold p-3">Appearance</h2>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item bg-transparent setting-item d-flex justify-content-between align-items-center py-3">
+              <div>
+                <h5 class="mb-1 fw-medium">Dark Mode</h5>
+                <p class="text-secondary small mb-0">Toggle between light and dark theme.</p>
+              </div>
+              <button id="themeToggleBtn" class="btn btn-outline-secondary rounded-pill px-4 py-2 d-flex align-items-center gap-2">
+                <i id="themeIcon" class="fas fa-sun"></i>
+                <span id="themeText" class="fw-medium">Light</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3">
+        <div class="card-body p-2">
           <h2 class="section-title fs-4 fw-semibold p-3">Linked Accounts</h2>
           <div class="list-group list-group-flush">
             <div class="list-group-item bg-transparent setting-item d-flex justify-content-between align-items-center py-3">
@@ -151,12 +168,39 @@
     </div>
   </main>
 
-  <button id="themeToggle" class="btn btn-secondary rounded-circle">
-      <i class="fas fa-moon"></i>
-  </button>
-  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="js/themeToggle.js"></script>
+  <script src="js/theme_toggle.js"></script>
+  <script>
+    // Update toggle button UI to match current theme
+    function updateToggleButton() {
+      const currentTheme = getCurrentTheme();
+      const icon = document.getElementById('themeIcon');
+      const text = document.getElementById('themeText');
+      
+      if (currentTheme === 'dark') {
+        icon.className = 'fas fa-moon';
+        text.textContent = 'Dark';
+      } else {
+        icon.className = 'fas fa-sun';
+        text.textContent = 'Light';
+      }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial button state
+      updateToggleButton();
+      
+      // Add click event listener to toggle button
+      const toggleBtn = document.getElementById('themeToggleBtn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          toggleTheme();
+          updateToggleButton();
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Academix - Create New Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="font-display">
+    <div class="d-flex w-100 min-vh-100">
+        <aside class="flex-shrink-0 border-end border-custom bg-sidebar d-none d-md-block sidebar-main-content">
+            <div class="d-flex flex-column h-100 p-4">
+                <div class="d-flex flex-column gap-4">
+                    <div class="d-flex align-items-center gap-3 p-2">
+                        <div class="bg-center bg-no-repeat bg-cover rounded-circle ratio ratio-1x1" style='width: 2.5rem; background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAm8Enhdto0neC65VFIQD4PHWuNlerNad-DqEw014fM5DC9AkJE6hIr6aKrFleChJ-cELuDiEa4_8BbVLSchBCavDDCh7igs9d8ZJmTS1SJh7k91cOD8PP32rqc47AjHvzE_94wf4ctfX94I3am68e4BUpIlzD0_cKCjU7jb-2NQSdSFC5heY04TEZRGS3mxy-_vj-7AiPOuanSuBO2dQ0iMpxPf2R6B6Lj10xrCi3KTMynwbkXN--tnUdmc6b0QWY8VFzo_RsHMZZO");'></div>
+                        <div class="d-flex flex-column">
+                            <h1 class="small fw-semibold text-primary-custom mb-0">Dr. Eleanor Vance</h1>
+                            <p class="small text-secondary-custom mb-0" style="font-size: 0.75rem;">Instructor</p>
+                        </div>
+                    </div>
+                    <nav class="nav flex-column gap-2 mt-4">
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary-custom hover-bg-subtle" href="#">
+                            <span class="material-symbols-outlined">dashboard</span>
+                            <p class="small fw-medium mb-0">Dashboard</p>
+                        </a>
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary nav-link-active" href="#">
+                            <span class="material-symbols-outlined">book</span>
+                            <p class="small fw-medium mb-0">Courses</p>
+                        </a>
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary-custom hover-bg-subtle" href="#">
+                            <span class="material-symbols-outlined">school</span>
+                            <p class="small fw-medium mb-0">Grades</p>
+                        </a>
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary-custom hover-bg-subtle" href="#">
+                            <span class="material-symbols-outlined">group</span>
+                            <p class="small fw-medium mb-0">Students</p>
+                        </a>
+                        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary-custom hover-bg-subtle" href="#">
+                            <span class="material-symbols-outlined">settings</span>
+                            <p class="small fw-medium mb-0">Settings</p>
+                        </a>
+                    </nav>
+                </div>
+                <div class="mt-auto">
+                    <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-lg text-primary-custom hover-bg-subtle" href="#">
+                        <span class="material-symbols-outlined">help_center</span>
+                        <p class="small fw-medium mb-0">Help Center</p>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-grow-1 overflow-auto" style="padding-bottom: 7rem;"> <div class="container-fluid px-4 px-md-5 py-5">
+                <div class="d-flex flex-column gap-2 mb-5">
+                    <div class="d-flex flex-wrap align-items-center gap-2 small">
+                        <a class="fw-medium text-secondary-custom text-decoration-none" href="#">Dashboard</a>
+                        <span class="fw-medium text-secondary-custom">/</span>
+                        <a class="fw-medium text-secondary-custom text-decoration-none" href="#">Courses</a>
+                        <span class="fw-medium text-secondary-custom">/</span>
+                        <a class="fw-medium text-secondary-custom text-decoration-none" href="#">Introduction to Biology</a>
+                        <span class="fw-medium text-secondary-custom">/</span>
+                        <span class="fw-medium text-primary-custom">Create Quiz</span>
+                    </div>
+                    <h1 class="fs-2 fw-bold text-primary-custom mb-0">Create New Quiz</h1>
+                </div>
+                
+                <div class="row g-4 g-lg-5">
+                    <div class="col-lg-4">
+                        <div class="p-4 rounded-xl border border-custom bg-card-subtle">
+                            <h3 class="mb-4 fs-5 fw-bold text-primary-custom">Quiz Details</h3>
+                            <div class="d-flex flex-column gap-4">
+                                <div>
+                                    <label class="form-label small fw-medium text-primary-custom" for="quiz-title">Quiz Title</label>
+                                    <input class="form-control form-control-custom rounded-lg" id="quiz-title" placeholder="e.g., Chapter 1: Cell Biology" type="text" value=""/>
+                                </div>
+                                <div>
+                                    <label class="form-label small fw-medium text-primary-custom" for="quiz-desc">Description (Optional)</label>
+                                    <textarea class="form-control form-control-custom rounded-lg" id="quiz-desc" placeholder="Enter a brief description of the quiz..." rows="4"></textarea>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label small fw-medium text-primary-custom" for="due-date">Due Date</label>
+                                        <input class="form-control form-control-custom rounded-lg" id="due-date" type="date"/>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small fw-medium text-primary-custom" for="time-limit">Time Limit</label>
+                                        <input class="form-control form-control-custom rounded-lg" id="time-limit" placeholder="min" type="number"/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="pb-2 small fw-medium text-primary-custom">Options</p>
+                                    <div class="d-flex flex-column gap-3">
+                                        <div class="form-check d-flex align-items-center gap-3">
+                                            <input class="form-check-input form-check-input-custom flex-shrink-0" id="check-shuffle" type="checkbox"/>
+                                            <label class="form-check-label small" for="check-shuffle">Shuffle Questions</label>
+                                        </div>
+                                        <div class="form-check d-flex align-items-center gap-3">
+                                            <input class="form-check-input form-check-input-custom flex-shrink-0" id="check-results" type="checkbox"/>
+                                            <label class="form-check-label small" for="check-results">Show Results Immediately</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="d-flex flex-column gap-4">
+                            <h3 class="fs-5 fw-bold text-primary-custom">Questions</h3>
+                            <div class="p-4 rounded-xl border border-custom bg-card-subtle">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="flex-grow-1 pe-3">
+                                        <p class="mb-1 small fw-semibold text-primary">Question 1</p>
+                                        <textarea class="form-control form-control-plaintext fs-6 fw-medium p-0" rows="2">What is the powerhouse of the cell?</textarea>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <select class="form-select form-select-sm form-control-custom rounded-lg" style="width: auto;">
+                                            <option selected="">Multiple Choice</option>
+                                            <option>True/False</option>
+                                            <option>Short Answer</option>
+                                        </select>
+                                        <button class="btn btn-icon d-flex align-items-center justify-content-center text-secondary-custom btn-hover-danger rounded-lg" style="width: 2.5rem; height: 2.5rem;">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-4 d-flex flex-column gap-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text bg-transparent border-custom">
+                                            <input class="form-check-input form-radio-custom form-check-input-custom mt-0" name="q1_correct" type="radio"/>
+                                        </div>
+                                        <input class="form-control form-control-custom bg-transparent border-custom" type="text" value="Mitochondria"/>
+                                        <button class="btn btn-icon btn-sm text-secondary-custom btn-hover-danger rounded-circle" type="button"><span class="material-symbols-outlined fs-6">close</span></button>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-text bg-transparent border-custom">
+                                            <input class="form-check-input form-radio-custom form-check-input-custom mt-0" name="q1_correct" type="radio"/>
+                                        </div>
+                                        <input class="form-control form-control-custom bg-transparent border-custom" type="text" value="Nucleus"/>
+                                        <button class="btn btn-icon btn-sm text-secondary-custom btn-hover-danger rounded-circle" type="button"><span class="material-symbols-outlined fs-6">close</span></button>
+                                    </div>
+                                    <div class="input-group">
+                                        <div class="input-group-text bg-transparent border-custom">
+                                            <input class="form-check-input form-radio-custom form-check-input-custom mt-0" name="q1_correct" type="radio"/>
+                                        </div>
+                                        <input class="form-control form-control-custom bg-transparent border-custom" type="text" value="Ribosome"/>
+                                        <button class="btn btn-icon btn-sm text-secondary-custom btn-hover-danger rounded-circle" type="button"><span class="material-symbols-outlined fs-6">close</span></button>
+                                    </div>
+                                    <button class="btn btn-link btn-sm text-primary text-decoration-none p-0 fw-medium align-self-start" type="button">+ Add Option</button>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-custom bg-card-subtle">
+                                <div class="d-flex align-items-start justify-content-between">
+                                    <div class="flex-grow-1 pe-3">
+                                        <p class="mb-1 small fw-semibold text-primary">Question 2</p>
+                                        <textarea class="form-control form-control-plaintext fs-6 fw-medium p-0" rows="2">The Earth is flat.</textarea>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <select class="form-select form-select-sm form-control-custom rounded-lg" style="width: auto;">
+                                            <option>Multiple Choice</option>
+                                            <option selected="">True/False</option>
+                                            <option>Short Answer</option>
+                                        </select>
+                                        <button class="btn btn-icon d-flex align-items-center justify-content-center text-secondary-custom btn-hover-danger rounded-lg" style="width: 2.5rem; height: 2.5rem;">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-4 d-flex flex-column gap-3">
+                                    <div class="form-check d-flex align-items-center gap-3">
+                                        <input class="form-check-input form-radio-custom form-check-input-custom" id="q2-true" name="q2_correct" type="radio"/>
+                                        <label class="form-check-label" for="q2-true">True</label>
+                                    </div>
+                                    <div class="form-check d-flex align-items-center gap-3">
+                                        <input class="form-check-input form-radio-custom form-check-input-custom" id="q2-false" name="q2_correct" type="radio"/>
+                                        <label class="form-check-label" for="q2-false">False</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 py-3 border-2 border-dashed rounded-lg fw-semibold" type="button">
+                                <span class="material-symbols-outlined">add_circle</span>
+                                Add Question
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="fixed-bottom z-10 bg-body border-top border-custom footer-main-content">
+                <div class="d-flex align-items-center justify-content-end gap-3 px-4 py-3">
+                    <button class="btn btn-link text-secondary-custom text-decoration-none fw-semibold small hover-bg-subtle" type="button">Cancel</button>
+                    <button class="btn btn-outline-primary fw-semibold small" type="button">Save as Draft</button>
+                    <button class="btn btn-primary fw-semibold small" type="button">Save Quiz</button>
+                </div>
+            </footer>
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="js/theme_toggle.js"></script>
+</body>
+</html>
