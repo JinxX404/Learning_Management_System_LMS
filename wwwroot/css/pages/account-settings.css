@@ -1,0 +1,28 @@
+:root {
+  --font-display: "Inter", sans-serif;
+  --bs-primary-rgb: 19, 59, 144; /* #133b90 */
+  --custom-accent-rgb: 245, 158, 11; /* #f59e0b */
+}
+
+body {
+  font-family: var(--font-display);
+}
+
+.form-switch .form-check-input {
+  background-color: rgba(var(--bs-primary-rgb), 0.2);
+  border-color: transparent;
+}
+
+.form-switch .form-check-input:checked {
+  background-color: rgb(var(--bs-primary-rgb));
+  border-color: rgb(var(--bs-primary-rgb));
+}
+
+[data-bs-theme="dark"] .form-switch .form-check-input {
+  background-color: rgba(var(--bs-primary-rgb), 0.4);
+}
+
+[data-bs-theme="dark"] .form-switch .form-check-input:checked {
+  background-color: rgb(var(--custom-accent-rgb));
+  border-color: rgb(var(--custom-accent-rgb));
+}

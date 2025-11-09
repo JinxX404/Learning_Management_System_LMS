@@ -1,0 +1,47 @@
+:root {
+  --font-display: "Inter", sans-serif;
+}
+
+body {
+  font-family: var(--font-display);
+}
+
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  top: 65px;
+  height: calc(100vh - 65px);
+}
+
+.sidebar-nav-link {
+  display: block;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid transparent;
+  text-decoration: none;
+  color: var(--bs-body-color);
+}
+
+.sidebar-nav-link:hover {
+  background-color: var(--sidebar-link-hover-bg);
+}
+
+.sidebar-nav-link.active {
+  border-left-color: rgb(var(--bs-secondary-rgb));
+  background-color: rgba(var(--bs-secondary-rgb), 0.15);
+}
+
+.sidebar-nav-link.active p:first-child {
+  color: rgb(var(--bs-secondary-rgb));
+  font-weight: 600;
+}
+
+.video-overlay-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.video-overlay-btn:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 0.2);
+}

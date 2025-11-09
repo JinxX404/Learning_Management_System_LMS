@@ -1,0 +1,27 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.brand-icon {
+  color: #133b90;
+}
+
+.timer-box {
+  width: 80px;
+  height: 80px;
+}
+
+/* Custom styling for radio button labels to match the design */
+.answer-option .form-check-input:checked + .form-check-label {
+  border-color: var(--bs-primary);
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+.answer-option .form-check-label {
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+/* Dark Theme Overrides */
+[data-bs-theme="dark"] .brand-icon {
+  color: #3a5a8a;
+}

@@ -1,0 +1,66 @@
+@* Skip to main content link for accessibility *@
+<a href="#main-content" class="skip-link visually-hidden-focusable">
+    Skip to main content
+</a>
+
+<header class="sticky-top border-bottom header-sticky">
+    <div class="d-flex align-items-center px-4 h-64">
+        <div class="d-flex align-items-center gap-2">
+            <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3 size-32">
+                <svg class="brand-icon size-20" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                </svg>
+            </div>
+            <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">ESU Portal</h1>
+        </div>
+        
+        @await Html.PartialAsync("_StudentNav")
+        
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <a asp-controller="Student" asp-action="Announcements" aria-label="View notifications">
+                    <button class="btn btn-icon rounded-circle p-2 text-secondary" aria-label="Notifications">
+                        <svg class="icon-lg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        </svg>
+                    </button>
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-icon rounded-circle p-2 text-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                        <svg class="icon-lg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" asp-controller="Student" asp-action="Profile">
+                            <svg class="me-2 icon-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Profile
+                        </a></li>
+                        <li><a class="dropdown-item" asp-controller="Student" asp-action="AccountSettings">
+                            <svg class="me-2 icon-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.1l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.1l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Account Settings
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" asp-controller="Auth" asp-action="Logout">
+                            <svg class="me-2 icon-sm" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Logout
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -10,3 +10,6 @@ obj/
 # Ignore publish profiles
 *.pubxml
 *.publishproj
+
+*.md
+*.txt
