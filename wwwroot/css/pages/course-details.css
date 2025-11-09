@@ -1,0 +1,26 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.hero-bg-image {
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBh0kY0x578RknbuYpU1H_2Edr8FBBJLsrT8UsdqDAOqGOIc0MNwK8k9OP5mLtanHVExfSrSfU0wybR7LpnkGHiVbJd0j0TKcs65RVuQNgr1jS1qaHDlfeKWmVCEC_rNgOIx29FITy5uS5mkbNDZUl1dp24v-qbuv-dAEX1tGuB09xPgm7uVxVRBA9HVse0an7drnLUH-5HRcwGkFsKnGiiJkkI_8yi0Na4H7i31gcvTbzqiXikgPHyYVdqmC1t49Gr8Y7EMzh4o5j0");
+  background-size: cover;
+  background-position: center;
+  min-height: 280px;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAPRGve5DgoqZgRRE0XKQE6EFIbLLFHHDmWDlEV2sRfKd62YaxsQ2BIPytuSrfM9HStNp-A6h1KiK3_UqwoeEgxhC3xyPMSC_4QHVfgVHcetO4Ogcetdd2Zfu-bGG3ALhES5gdLHqUusb5xPza7c4bpnrFBnygnf486VnGM2qKlAp1EcEX_uBi-C-YYRKCbIuNl6SEJbLNU8KZ2LNiZ0o1cLfDZoRMbRvkxfW4BQM_Vsc0HtIlrFN0q_Q8tsTAcqbdsIjnDXBOJoYiD");
+  background-size: cover;
+  background-position: center;
+}
+
+.instructor-avatar-img {
+  width: 64px;
+  height: 64px;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2pbONVwogtiwwPanRN-u9WMDxdzI-YZ4-_ZPV1x3L1w3pO1XrgpQJU5HJ2KfBYtgL2E87mwBVpdOM7JpLcZ6FVNNpgTspwBBzmy7shRM-OVBqGY5nUCOzvVgfc2-CMSKMdHKeiexn0QVT_qPZZqb3yWIYkcnmozrvZlkeDbkxSWRuWSRbFXN3bBHoFAPNrCVb9dJYuwQRogVXiBeAH3tzZLU7phn0uwRUDAKrtEmzjWqCAs4HRGLyDynDSSj7az7FFOpMOtifjfep");
+  background-size: cover;
+  background-position: center;
+}

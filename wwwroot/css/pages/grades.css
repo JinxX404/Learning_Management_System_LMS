@@ -1,0 +1,28 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+.brand-icon {
+  color: #3b82f6;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOm1XmFHpjPiy4RnjttvyaTdh0egBnnovPtT3wX_7Wb6lhRb_LfezSdg2n7qM2Cfxy_40HoEG9ZclU4iqfFLAj82V4ydTG0FS1z7a_byZXKds4qZJRBimuqbQssys77Ceq9ABGTKn1OgNrDygdMhbAit9oixqun9HUTxcuQSsd0VriRFkYlZsYtWSdG2x--I-lQno7ks6HhIVKEK-izdUXXRbFBa4I95HxMCvLsI6itLSmqRp7lrBiLBdcGah4Vsie9d2xXHDBm_00");
+  background-size: cover;
+  background-position: center;
+}
+
+  
+    .table > :not(caption) > * > * {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    .grade-cell {
+        color: #f59e0b;
+    }
+    [data-bs-theme="light"] .grade-cell {
+        color: #133b90;
+    }
+
+ 

@@ -1,0 +1,41 @@
+@{
+    Layout = "_LoginLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/login.css">
+}
+
+<main class="d-flex flex-grow-1 align-items-center justify-content-center px-4 py-5">
+  <div class="w-100" style="max-width: 28rem;">
+    <div class="login-card bg-tertiary border rounded-4 p-5">
+      
+      <div class="text-center mb-5">
+        <h2 class="welcome-title text-body-emphasis">Welcome to ESU Portal</h2>
+        <p class="subtitle text-secondary mt-2">Sign in to access your student dashboard.</p>
+      </div>
+
+      <form id="loginForm" asp-action="Dashboard" asp-controller="Student">
+        <div class="mb-3">
+          <label for="email" class="visually-hidden">Email address</label>
+          <input type="email" class="form-control input-field p-3" id="email" placeholder="student@esu.edu" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="visually-hidden">Password</label>
+          <input type="password" class="form-control input-field p-3" id="password" placeholder="Password" required>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center my-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label small" for="rememberMe">Remember me</label>
+          </div>
+          <a asp-action="ResetPassword" asp-controller="Auth" class="text-primary small fw-medium text-decoration-none">Forgot your password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 login-btn">Sign in to ESU Portal</button>
+      </form>
+
+    </div>
+  </div>
+</main>

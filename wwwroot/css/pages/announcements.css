@@ -1,0 +1,35 @@
+:root {
+  --font-display: "Inter", sans-serif;
+}
+
+body {
+  font-family: var(--font-display);
+}
+
+.main-content {
+  overflow-y: auto;
+}
+
+.announcement-card {
+  transition: border-color 0.2s ease-in-out;
+  border: 1px solid var(--card-border-color);
+}
+
+.announcement-card:hover {
+  border-color: var(--card-hover-border-color);
+}
+
+.badge-urgent {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.badge-academics {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.badge-events {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important;
+}
