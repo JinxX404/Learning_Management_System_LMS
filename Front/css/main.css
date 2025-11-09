@@ -1,0 +1,780 @@
+/*
+ * LMS Main Stylesheet
+ * Centralized theme system supporting light and dark modes
+ * Built on Bootstrap 5.3+ with custom CSS variables
+ */
+
+/* ============================================
+   ROOT VARIABLES - LIGHT & DARK THEME COLORS
+   ============================================ */
+
+:root {
+    /* Primary Brand Color - Blue Theme */
+    --bs-primary: #1173d4;
+    --bs-primary-rgb: 17, 115, 212;
+    --bs-primary-hover: #0e5fb3;
+    --bs-primary-light: rgba(17, 115, 212, 0.1);
+
+    /* Background Colors */
+    --bg-light: #f6f7f8;
+    --bg-dark: #101922;
+    --surface-light: #ffffff;
+    --surface-dark: #18232E;
+    --surface-subtle-light: #f0f2f4;
+    --surface-subtle-dark: #2c333a;
+
+    /* Text Colors */
+    --text-primary-light: #111418;
+    --text-primary-dark: #F9FAFB;
+    --text-secondary-light: #6B7280;
+    --text-secondary-dark: #9CA3AF;
+    --text-tertiary-light: #9CA3AF;
+    --text-tertiary-dark: #6B7280;
+    --text-emphasis-light: #111827;
+    --text-emphasis-dark: #FFFFFF;
+
+    /* Border Colors */
+    --border-light: #E5E7EB;
+    --border-dark: #2A3B4D;
+    --border-subtle-light: #F3F4F6;
+    --border-subtle-dark: #1F2937;
+
+    /* State Colors - Success, Warning, Danger, Info */
+    --bs-success-rgb: 34, 197, 94;
+    --bs-warning-rgb: 245, 158, 11;
+    --bs-danger-rgb: 239, 68, 68;
+    --bs-info-rgb: 6, 182, 212;
+
+    /* Status Badge Colors */
+    --green-100: #dcfce7;
+    --green-300: #86efac;
+    --green-400: #34d399;
+    --green-600: #16a34a;
+    --green-800: #16a34a;
+    --green-900-50: rgba(22, 101, 52, 0.5);
+    
+    --yellow-100: #fef9c3;
+    --yellow-300: #fde047;
+    --yellow-800: #a16207;
+    --yellow-900-50: rgba(113, 63, 18, 0.5);
+    
+    --amber-50: #fffbeb;
+    --amber-300: #fcd34d;
+    --amber-400: #fbbf24;
+    --amber-800: #92400e;
+    --amber-900-20: rgba(120, 53, 15, 0.2);
+    
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+}
+
+/* ============================================
+   LIGHT THEME CONFIGURATION
+   ============================================ */
+
+[data-bs-theme="light"] {
+    /* Core Theme Colors */
+    --bs-body-bg: var(--bg-light);
+    --bs-body-color: var(--text-primary-light);
+    --bs-emphasis-color: var(--text-emphasis-light);
+
+    /* Surface & Card Backgrounds */
+    --bs-surface-bg: var(--surface-light);
+    --bs-tertiary-bg: var(--surface-light);
+    --bs-card-bg: var(--surface-light);
+    --bs-sidebar-bg: var(--surface-light);
+
+    /* Text Colors */
+    --bs-text-primary-custom: var(--text-primary-light);
+    --bs-secondary-color: var(--text-secondary-light);
+    --bs-text-secondary-custom: var(--text-secondary-light);
+    --bs-tertiary-color: var(--text-tertiary-light);
+
+    /* Border Colors */
+    --bs-border-color: var(--border-light);
+    --bs-border-color-subtle: var(--border-subtle-light);
+    --card-border: var(--border-light);
+
+    /* Interactive States */
+    --bs-hover-bg: var(--gray-50);
+    --bs-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+    --card-hover-border: rgba(var(--bs-primary-rgb), 0.5);
+
+    /* Header */
+    --bs-header-bg: rgba(255, 255, 255, 0.8);
+    --bs-tertiary-bg-rgb: 255, 255, 255;
+
+    /* Tables */
+    --bs-table-header-bg: var(--gray-50);
+
+    /* Forms */
+    --bs-input-group-bg: var(--surface-light);
+    --bs-form-control-bg: var(--surface-light);
+
+    /* Utility Colors */
+    --bs-green: var(--green-600);
+}
+
+/* ============================================
+   DARK THEME CONFIGURATION
+   ============================================ */
+
+[data-bs-theme="dark"] {
+    /* Core Theme Colors */
+    --bs-body-bg: var(--bg-dark);
+    --bs-body-color: var(--text-primary-dark);
+    --bs-emphasis-color: var(--text-emphasis-dark);
+
+    /* Surface & Card Backgrounds */
+    --bs-surface-bg: var(--surface-dark);
+    --bs-tertiary-bg: var(--surface-dark);
+    --bs-card-bg: var(--surface-dark);
+    --bs-sidebar-bg: var(--bg-dark);
+
+    /* Text Colors */
+    --bs-text-primary-custom: var(--text-primary-dark);
+    --bs-secondary-color: var(--text-secondary-dark);
+    --bs-text-secondary-custom: var(--text-secondary-dark);
+    --bs-tertiary-color: var(--text-tertiary-dark);
+
+    /* Border Colors */
+    --bs-border-color: var(--border-dark);
+    --bs-border-color-subtle: var(--border-subtle-dark);
+    --card-border: var(--border-dark);
+
+    /* Interactive States */
+    --bs-hover-bg: rgba(31, 41, 55, 0.5);
+    --bs-active-bg: rgba(var(--bs-primary-rgb), 0.15);
+    --card-hover-border: rgba(var(--bs-primary-rgb), 0.7);
+
+    /* Header */
+    --bs-header-bg: rgba(16, 25, 34, 0.8);
+    --bs-tertiary-bg-rgb: 24, 35, 46;
+
+    /* Tables */
+    --bs-table-header-bg: rgba(17, 24, 39, 0.5);
+
+    /* Forms */
+    --bs-input-group-bg: var(--surface-subtle-dark);
+    --bs-form-control-bg: var(--surface-subtle-dark);
+
+    /* Utility Colors */
+    --bs-green: var(--green-400);
+}
+
+/* ============================================
+   TYPOGRAPHY & FONTS
+   ============================================ */
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+    font-family: 'Inter', sans-serif;
+}
+
+.brand-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Text Color Utilities */
+.text-primary-custom {
+    color: var(--bs-text-primary-custom) !important;
+}
+
+.text-secondary-custom {
+    color: var(--bs-text-secondary-custom) !important;
+}
+
+.text-body-emphasis {
+    color: var(--bs-emphasis-color) !important;
+}
+
+.text-custom-green {
+    color: var(--bs-green) !important;
+}
+
+.text-border-subtle {
+    color: var(--bs-border-color-subtle) !important;
+}
+
+/* Background Utilities */
+.bg-card {
+    background-color: var(--bs-card-bg) !important;
+}
+
+.bg-sidebar {
+    background-color: var(--bs-sidebar-bg) !important;
+}
+
+.bg-tertiary {
+    background-color: var(--bs-tertiary-bg) !important;
+}
+
+.bg-surface-subtle {
+    background-color: var(--bs-hover-bg) !important;
+}
+
+/* Border Utilities */
+.border-custom {
+    border-color: var(--bs-border-color) !important;
+}
+
+.border-secondary-subtle {
+    border-color: var(--bs-border-color-subtle) !important;
+}
+
+/* Hover Effects */
+.hover-bg-subtle:hover {
+    background-color: var(--bs-hover-bg) !important;
+}
+
+.card-hover:hover {
+    border-color: var(--card-hover-border) !important;
+}
+
+/* ============================================
+   HEADER & NAVIGATION
+   ============================================ */
+
+.header-sticky {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(var(--bs-tertiary-bg-rgb), 0.8) !important;
+}
+
+.header-custom {
+    background-color: var(--bs-header-bg);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.brand-icon-wrapper {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.brand-icon {
+    color: var(--bs-primary);
+}
+
+/* Navigation Links */
+.navbar .nav-link {
+    color: var(--bs-secondary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    background-color: var(--bs-hover-bg);
+    color: var(--bs-text-primary-custom);
+}
+
+.navbar .nav-link.active {
+    background-color: var(--bs-active-bg);
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] .navbar .nav-link.active {
+    color: var(--bs-primary);
+}
+
+.nav-link-active {
+    background-color: var(--bs-active-bg) !important;
+}
+
+/* ============================================
+   CARDS & CONTAINERS
+   ============================================ */
+
+.card {
+    background-color: var(--bs-card-bg);
+    border-color: var(--card-border);
+    transition: all 0.3s ease;
+}
+
+.course-card {
+    background-color: var(--bs-tertiary-bg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] .course-card:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card {
+    background-color: var(--bs-tertiary-bg);
+}
+
+/* Warning/Amber Card - Special State */
+.card-stat-warning {
+    background-color: var(--amber-50);
+    border-color: rgba(251, 191, 36, 0.5);
+    color: var(--amber-800);
+}
+
+.card-stat-warning .text-secondary-custom,
+.card-stat-warning .display-5 {
+    color: var(--amber-800);
+}
+
+[data-bs-theme="dark"] .card-stat-warning {
+    background-color: var(--amber-900-20);
+    border-color: rgba(251, 191, 36, 0.4);
+    color: var(--amber-300);
+}
+
+[data-bs-theme="dark"] .card-stat-warning .text-secondary-custom,
+[data-bs-theme="dark"] .card-stat-warning .display-5 {
+    color: var(--amber-300);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #ffffff;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--bs-primary-hover);
+    border-color: var(--bs-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+.btn-custom-secondary {
+    background-color: var(--gray-100);
+    color: var(--text-primary-light);
+    font-weight: 700;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-custom-secondary:hover {
+    background-color: var(--gray-200);
+}
+
+[data-bs-theme="dark"] .btn-custom-secondary {
+    background-color: var(--gray-800);
+    color: var(--text-primary-dark);
+}
+
+[data-bs-theme="dark"] .btn-custom-secondary:hover {
+    background-color: var(--gray-700);
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+    background-color: var(--bs-hover-bg);
+}
+
+/* ============================================
+   FORMS & INPUTS
+   ============================================ */
+
+.form-control,
+.form-select {
+    background-color: var(--bs-form-control-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-text-primary-custom);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bs-form-control-bg);
+    border-color: var(--bs-primary);
+    color: var(--bs-text-primary-custom);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.form-control-custom {
+    background-color: var(--bs-form-control-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-text-primary-custom);
+}
+
+.form-control-custom:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    background-color: var(--bs-form-control-bg);
+    color: var(--bs-text-primary-custom);
+}
+
+.input-group-text-custom {
+    background-color: var(--bs-input-group-bg);
+    border-color: var(--bs-border-color);
+    color: var(--bs-text-secondary-custom);
+}
+
+.input-field {
+    background-color: var(--bs-form-control-bg);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-text-primary-custom);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.input-field:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    outline: 0;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+.table {
+    color: var(--bs-text-primary-custom);
+}
+
+.table-header-custom {
+    background-color: var(--bs-table-header-bg);
+    color: var(--bs-text-secondary-custom);
+    font-weight: 600;
+}
+
+.table tbody tr {
+    border-color: var(--bs-border-color);
+}
+
+.table tbody tr:hover {
+    background-color: var(--bs-hover-bg);
+}
+
+/* ============================================
+   BADGES & STATUS INDICATORS
+   ============================================ */
+
+.badge-status-completed,
+.badge-status-active {
+    background-color: var(--green-100);
+    color: var(--green-800);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+[data-bs-theme="dark"] .badge-status-completed,
+[data-bs-theme="dark"] .badge-status-active {
+    background-color: var(--green-900-50);
+    color: var(--green-300);
+}
+
+.badge-status-draft,
+.badge-status-pending {
+    background-color: var(--yellow-100);
+    color: var(--yellow-800);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+[data-bs-theme="dark"] .badge-status-draft,
+[data-bs-theme="dark"] .badge-status-pending {
+    background-color: var(--yellow-900-50);
+    color: var(--yellow-300);
+}
+
+.badge-status-archived,
+.badge-status-inactive {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+[data-bs-theme="dark"] .badge-status-archived,
+[data-bs-theme="dark"] .badge-status-inactive {
+    background-color: var(--gray-800);
+    color: var(--gray-300);
+}
+
+.online-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--bs-card-bg);
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+
+.progress {
+    background-color: var(--bs-border-color-subtle);
+}
+
+.progress-bar {
+    background-color: var(--bs-primary);
+    transition: width 0.6s ease;
+}
+
+.progress-circle-svg .text-border-subtle {
+    stroke: var(--bs-border-color);
+}
+
+.progress-circle-svg .text-primary {
+    stroke: var(--bs-primary);
+}
+
+/* ============================================
+   ICONS & MATERIAL SYMBOLS
+   ============================================ */
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+/* SVG Icon Sizing */
+.h-5,
+.w-5 {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.h-6,
+.w-6 {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+
+#themeToggle {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+#themeToggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] #themeToggle {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   PROFILE & USER COMPONENTS
+   ============================================ */
+
+.profile-avatar {
+    width: 6rem;
+    height: 6rem;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid var(--bs-border-color);
+}
+
+.course-card-img,
+.achievement-card-img {
+    background-size: cover;
+    background-position: center;
+}
+
+.course-card-img {
+    height: 10rem;
+}
+
+.achievement-card-img {
+    width: 5rem;
+    height: 5rem;
+}
+
+.profile-img {
+    transition: all 0.3s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
+}
+
+/* ============================================
+   SIDEBAR & LAYOUT
+   ============================================ */
+
+.sidebar {
+    background-color: var(--bs-sidebar-bg);
+    border-right: 1px solid var(--bs-border-color);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-nav-link {
+    color: var(--bs-text-secondary-custom);
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-nav-link:hover {
+    background-color: var(--bs-hover-bg);
+    color: var(--bs-text-primary-custom);
+}
+
+.sidebar-nav-link.active {
+    background-color: var(--bs-active-bg);
+    color: var(--bs-primary);
+    font-weight: 600;
+}
+
+/* ============================================
+   SPARKLINE & CHARTS
+   ============================================ */
+
+.sparkline-base {
+    stroke: var(--gray-200);
+}
+
+[data-bs-theme="dark"] .sparkline-base {
+    stroke: var(--gray-700);
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    #themeToggle {
+        bottom: 1rem;
+        right: 1rem;
+    }
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-body-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-secondary-color);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    #themeToggle,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+}
