@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Academix LMS - Student Management</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  
+  <style>
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz 24';
+      line-height: 1; /* Align icons better */
+    }
+    .material-symbols-outlined.icon-fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-primary-hover: #0F67BE;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #0F172A; /* text-gray-900 */
+      --bs-secondary-color: #64748B; /* text-gray-500 */
+      --bs-tertiary-color: #475569; /* text-gray-600 */
+      --bs-border-color: #E5E7EB; /* border-gray-200 */
+      --bs-tertiary-bg: #ffffff; /* bg-white */
+      --bs-tertiary-bg-inset: #F3F4F6; /* bg-gray-100 */
+      
+      /* Table Colors */
+      --bs-table-color: var(--bs-tertiary-color);
+      --bs-table-bg: var(--bs-tertiary-bg);
+      --bs-table-border-color: var(--bs-border-color);
+      --bs-table-hover-bg: #F9FAFB; /* hover:bg-gray-50 */
+      --bs-table-striped-bg: #F9FAFB;
+      --bs-table-header-color: #374151; /* text-gray-700 */
+      --bs-table-header-bg: #F9FAFB; /* bg-gray-50 */
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* T-wind rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* T-wind rounded-xl */
+      
+      /* Focus Ring */
+      --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #F9FAFB; /* dark:text-[#F9FAFB] */
+      --bs-secondary-color: #9CA3AF; /* dark:text-gray-400 */
+      --bs-tertiary-color: #D1D5DB; /* dark:text-gray-300 */
+      --bs-border-color: #2A3B4D; /* dark:border-[#2A3B4D] */
+      --bs-tertiary-bg: #18232E; /* dark:bg-[#18232E] */
+      --bs-tertiary-bg-inset: #101922; /* dark:bg-[#101922] */
+
+      /* Table Colors (Dark) */
+      --bs-table-hover-bg: rgba(119, 119, 119, 0.1); /* dark:hover:bg-gray-700/30 */
+      --bs-table-striped-bg: rgba(119, 119, 119, 0.05);
+      --bs-table-header-color: #D1D5DB; /* dark:text-gray-300 */
+      --bs-table-header-bg: rgba(119, 119, 119, 0.07); /* dark:bg-gray-700/20 */
+    }
+    
+    /* Re-apply primary hover color */
+    .btn-primary {
+        --bs-btn-hover-bg: var(--bs-primary-hover);
+        --bs-btn-hover-border-color: var(--bs-primary-hover);
+    }
+
+    /* Custom Component Styles */
+    
+    /* Helper classes */
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-tertiary-color);
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: var(--bs-tertiary-bg-inset);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.2);
+      color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.3);
+    }
+
+    /* Header Icon Buttons */
+    .btn-icon-header {
+      color: var(--bs-tertiary-color);
+    }
+    .btn-icon-header:hover {
+      background-color: var(--bs-tertiary-bg-inset);
+      color: var(--bs-body-color);
+    }
+    
+    /* Table Action Icon Buttons */
+    .btn-icon-table {
+      color: var(--bs-tertiary-color);
+    }
+    .btn-icon-table:hover {
+      background-color: var(--bs-tertiary-bg-inset);
+      color: var(--bs-body-color);
+    }
+    .btn-icon-table.hover-danger:hover {
+      color: var(--bs-danger);
+      background-color: rgba(var(--bs-danger-rgb), 0.1);
+    }
+    
+    /* Custom Search Input Group */
+    .form-control-search, .input-group-text-search {
+      background-color: var(--bs-tertiary-bg-inset);
+      border: 0;
+      height: 3rem; /* T-wind h-12 */
+    }
+    .form-control-search:focus {
+      background-color: var(--bs-tertiary-bg-inset);
+      border: 0;
+      box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+    }
+    
+    /* Pagination */
+    .page-link {
+      color: var(--bs-secondary-color);
+    }
+    .page-item.active .page-link {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      border-color: var(--bs-primary);
+      color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .page-item.active .page-link {
+      background-color: rgba(var(--bs-primary-rgb), 0.5);
+      color: var(--bs-body-color);
+    }
+
+    /* Theme Toggler FAB */
+    .theme-toggler .icon-dark {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-light {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-dark {
+      display: inline;
+    }
+  </style>
+</head>
+<body class="bg-body text-body">
+  <div class="d-flex min-vh-100">
+    <aside class="flex-shrink-0 d-flex flex-column bg-body-tertiary border-end p-4" style="width: 16rem;">
+      <div class="d-flex align-items-center gap-3 mb-5">
+        <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Academix LMS logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDvEZtamfYWHc21X8N3wVdtbd3TGX6cGgNxjyroO8GywFR739jArWy0yeZmnuru3OT93UqvuIn2LeWoddClUClJQZfVDEuDptWAu66z6efDo5Ily_YsuYOQ2CbWHf2veWZl3sYL5CrINCvOlnnznESwL4OYUprD0l3HHKqrwddWmE6nhtfxU8jXEcUcTSqhiGVcSVs7TGQSYaFa9KdWpuTX_uS-5SF24qLNW3iUjWpAyx9Q0GvpFao1wWXgFP2LePwIdovkR8-8DMo"); width: 2.5rem; height: 2.5rem;'></div>
+        <div class="d-flex flex-column">
+          <h1 class="text-body-emphasis h6 fw-medium mb-0">Academix LMS</h1>
+          <p class="text-secondary fs-sm mb-0">Admin Portal</p>
+        </div>
+      </div>
+      <nav class="nav flex-column gap-2 sidebar-nav">
+        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+          <span class="material-symbols-outlined fs-5">dashboard</span>
+          <p class="fs-sm fw-medium mb-0">Dashboard</p>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+          <span class="material-symbols-outlined fs-5">book</span>
+          <p class="fs-sm fw-medium mb-0">Courses</p>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+          <span class="material-symbols-outlined fs-5">group</span>
+          <p class="fs-sm fw-medium mb-0">Instructors</p>
+        </a>
+        <a class="nav-link active d-flex align-items-center gap-3 px-3 py-2" href="#">
+          <span class="material-symbols-outlined icon-fill fs-5">school</span>
+          <p class="fs-sm fw-medium mb-0">Students</p>
+        </a>
+      </nav>
+    </aside>
+    
+    <div class="flex-grow-1 d-flex flex-column">
+      <header class="d-flex align-items-center justify-content-between border-bottom bg-body-tertiary px-4 py-3">
+        <div class="d-flex align-items-center gap-4">
+          <h2 class="text-body-emphasis h5 fw-bold mb-0">Student Management</h2>
+        </div>
+        <div class="d-flex flex-grow-1 align-items-center justify-content-end gap-4">
+          <button class="btn btn-primary fw-bold fs-sm py-2 px-3" style="min-width: 84px;">
+            <span>Add New Student</span>
+          </button>
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-icon-header rounded-circle p-2">
+              <span class="material-symbols-outlined fs-5">notifications</span>
+            </button>
+            <button class="btn btn-icon-header rounded-circle p-2">
+              <span class="material-symbols-outlined fs-5">chat</span>
+            </button>
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFkpYwFJxJU9bnptpIu_zw1TDI4LW_bnnw-VQ6wWa1nJO3UHgtZedu_gwhiaSjVV7FpJy5tkNGMX2fi-4b_fI6Xhq62OpBWdGI4Pt5DBh9BvH2227wQ0Rk7L19tcekVch8fe9Vxd7AGC_NtOl18UjKK0GOChazaJoiFZKEFrpCrudq9xnwgRo62RRMlVYvYvlQ9BoU2irsFF63RmegsflWNA9Ku_rJja3T-cdswDqask5XFdI_fLCrHfEBGkrGYJMbc87wMLP57WM"); width: 2.5rem; height: 2.5rem;'></div>
+              <div class="d-none d-sm-flex flex-column text-start">
+                <span class="fs-sm fw-medium text-body-emphasis">Admin User</span>
+                <span class="fs-xs text-secondary">admin@academix.edu</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <main class="flex-grow-1 p-4">
+        <div class="card bg-body-tertiary border rounded-4 overflow-hidden">
+          <div class="p-4 border-bottom">
+            <div class="mb-4">
+              <label class="w-100">
+                <div class="input-group rounded-lg overflow-hidden">
+                  <span class="input-group-text input-group-text-search text-secondary">
+                    <span class="material-symbols-outlined">search</span>
+                  </span>
+                  <input class="form-control form-control-search text-body-emphasis" placeholder="Search by name, email, or ID..." value="" />
+                </div>
+              </label>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+              <button class="btn btn-light d-inline-flex align-items-center justify-content-center gap-2 rounded-lg py-2 ps-3 pe-2">
+                <span class="material-symbols-outlined fs-6">filter_list</span>
+                <p class="fs-sm fw-medium mb-0">Status: All</p>
+                <span class="material-symbols-outlined fs-6">expand_more</span>
+              </button>
+              <button class="btn btn-light d-inline-flex align-items-center justify-content-center gap-2 rounded-lg py-2 ps-3 pe-2">
+                <span class="material-symbols-outlined fs-6">calendar_today</span>
+                <p class="fs-sm fw-medium mb-0">Enrollment Date: All Time</p>
+                <span class="material-symbols-outlined fs-6">expand_more</span>
+              </button>
+              <div class="flex-grow-1"></div>
+              <button class="btn btn-link text-secondary fs-sm fw-medium rounded-lg px-3 py-2">
+                Reset
+              </button>
+              <button class="btn btn-primary fs-sm fw-medium rounded-lg px-3 py-2">
+                Apply Filters
+              </button>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table w-100 fs-sm text-start align-middle mb-0 table-hover">
+              <thead class="fs-xs text-uppercase">
+                <tr>
+                  <th class="p-4" scope="col">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkbox-all" />
+                      <label class="form-check-label visually-hidden" for="checkbox-all">Select all</label>
+                    </div>
+                  </th>
+                  <th class="px-4 py-3" scope="col">Student Name</th>
+                  <th class="px-4 py-3" scope="col">Student ID</th>
+                  <th class="px-4 py-3" scope="col">Email</th>
+                  <th class="px-4 py-3" scope="col">Enrollment Date</th>
+                  <th class="px-4 py-3" scope="col">Status</th>
+                  <th class="px-4 py-3 text-end" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkbox-table-1" />
+                      <label class="form-check-label visually-hidden" for="checkbox-table-1">Select row 1</label>
+                    </div>
+                  </td>
+                  <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKEeUOMsnmYqAcAJz98-17rtRV5izNGMop_FdkEnooCuYa0R2ivLf9IV9pfwFLaFUDx-HNEGyOiiN_dVqO1g9--Ay0_UUNxBHGt3sxgvdn4YpsTWWEuOQLWMsOCReAC06hcHzm4U_kMW83KnMqIJqvXDTfs6Hn2PdW3u9Nz7SgzJpKonN5bzFioU55kEFG_RJPumTSXZjEyLadWZhw_ToRl3H4DjqQNPqa-aGUk-_uyFYWS2kOsk9KGt-F18H7tAHT9HbVDcaIIEw"); width: 2.5rem; height: 2.5rem;'></div>
+                    <div class="ps-3">
+                      <div class="fw-semibold">John Doe</div>
+                    </div>
+                  </th>
+                  <td class="px-4 py-3">STU-10234</td>
+                  <td class="px-4 py-3">john.doe@example.edu</td>
+                  <td class="px-4 py-3">Oct 26, 2023</td>
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs fw-medium px-2 py-1">Active</span>
+                  </td>
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">edit</span>
+                      </button>
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">visibility</span>
+                      </button>
+                      <button class="btn btn-icon-table hover-danger rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkbox-table-2" />
+                      <label class="form-check-label visually-hidden" for="checkbox-table-2">Select row 2</label>
+                    </div>
+                  </td>
+                  <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvqYydAfv1J1Mqdic2NyfCdOB0CumSQk2xtlLDlzfFbxvORQIQLd6X-a7RT4XctAyXnUXLPShk1i2AOCAKRDF6fhRf69pVEL1XrfwmkH0kgHZN5fPj6fB88K1ErZFM0_kfkygq0DhPTKMeXbEJAZ1EdqgslWqTpUhrb_TBom0oWpdYq4tbPQR_td2fmGHO3JSmChuXeHu82pS6jtFBiw0oAr2hBuQSbKHV0cpB1BFNZXL8it3b7JAina8sJRfZ6M04r8IIKYGzh44"); width: 2.5rem; height: 2.5rem;'></div>
+                    <div class="ps-3">
+                      <div class="fw-semibold">Liam Garcia</div>
+                    </div>
+                  </th>
+                  <td class="px-4 py-3">STU-10235</td>
+                  <td class="px-4 py-3">liam.garcia@example.edu</td>
+                  <td class="px-4 py-3">Oct 25, 2023</td>
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs fw-medium px-2 py-1">Active</span>
+                  </td>
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">edit</span>
+                      </button>
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">visibility</span>
+                      </button>
+                      <button class="btn btn-icon-table hover-danger rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkbox-table-3" />
+                      <label class="form-check-label visually-hidden" for="checkbox-table-3">Select row 3</label>
+                    </div>
+                  </td>
+                  <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAINbznssMHq0EN1bsC9qy-0YZ3BmPwMldUSSMsuRH3YKHhjUwAdq-y36BCBmCQet191ShpD_qCRTNqUtKgbxim8LB0Xn4RZPpKhS-t3XwevYyCD27-qqKnxfUw5-ZqeE92iy5UgOqMwaFR_IE6o57CXJqOVQDanWUKyiriFOy2I4VV38OsTv4aVHWds20-_Hmi34HqsGPTRnbHs0LtaJYUVr9j7NNBq-cjAQUekG2YhlqPCeyT_QwxeBkqU-kR1tSEz-TbiiD5FpI"); width: 2.5rem; height: 2.5rem;'></div>
+                    <div class="ps-3">
+                      <div class="fw-semibold">Ava Martinez</div>
+                    </div>
+                  </th>
+                  <td class="px-4 py-3">STU-10236</td>
+                  <td class="px-4 py-3">ava.martinez@example.edu</td>
+                  <td class="px-4 py-3">Sep 15, 2023</td>
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis fs-xs fw-medium px-2 py-1">Inactive</span>
+                  </td>
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">edit</span>
+                      </button>
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">visibility</span>
+                      </button>
+                      <button class="btn btn-icon-table hover-danger rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="checkbox-table-4" />
+                      <label class="form-check-label visually-hidden" for="checkbox-table-4">Select row 4</label>
+                    </div>
+                  </td>
+                  <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqLgFRrzF5COGNaSk6XCLsHlKPvNp_WupDRYyx-QNKSYtQvbLdWVknKmdiOIO580X7Y9rhgvxMVTjxLD9vJvUflbPRRS47MOiizr2ApbzN-lKvg_ndc1yCmZdfl7irWDdzILNnJ2r-F-5CSbi7qr4Iioa-qWTf8LNwrD_OzmPgWrHzS7PLR3HYShH8Pr2K9LgLNTrUkyfnxrNL37UVCg_zaeW_TYHiPelUOf0CplnXbGOq9FEPL1HQKHf2rZWngsO_zDJ9SvU2WCA"); width: 2.5rem; height: 2.5rem;'></div>
+                    <div class="ps-3">
+                      <div class="fw-semibold">Noah Rodriguez</div>
+                    </div>
+                  </th>
+                  <td class="px-4 py-3">STU-10237</td>
+                  <td class="px-4 py-3">noah.rodriguez@example.edu</td>
+                  <td class="px-4 py-3">Aug 01, 2023</td>
+                  <td class="px-4 py-3">
+                    <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis fs-xs fw-medium px-2 py-1">Suspended</span>
+                  </td>
+                  <td class="px-4 py-3 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-2">
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">edit</span>
+                      </button>
+                      <button class="btn btn-icon-table rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">visibility</span>
+                      </button>
+                      <button class="btn btn-icon-table hover-danger rounded-circle p-2">
+                        <span class="material-symbols-outlined fs-6">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <nav aria-label="Table navigation" class="d-flex align-items-center justify-content-between p-4 border-top">
+            <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body-emphasis">1-4</span> of <span class="fw-semibold text-body-emphasis">1000</span></span>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item">
+                <a class="page-link rounded-start-lg" href="#">Previous</a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link rounded-end-lg" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <button class="btn btn-primary btn-lg rounded-circle shadow-lg d-flex align-items-center justify-content-center position-fixed theme-toggler" id="theme-toggle" style="width: 3.5rem; height: 3.5rem; bottom: 1.5rem; right: 1.5rem;">
+    <span class="material-symbols-outlined icon-light">dark_mode</span>
+    <span class="material-symbols-outlined icon-dark">light_mode</span>
+  </button>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+  <script>
+    // Theme toggle script
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggleBtn.addEventListener('click', function() {
+      const currentTheme = htmlElement.getAttribute('data-bs-theme');
+      if (currentTheme === 'dark') {
+        htmlElement.setAttribute('data-bs-theme', 'light');
+      } else {
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>

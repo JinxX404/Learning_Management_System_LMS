@@ -1,0 +1,123 @@
+@{
+    ViewData["Title"] = "Edit Course";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "courses";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/edit-course_admin.css">
+}
+
+<div class="d-flex vh-100">
+    
+    <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
+      <div class="container-xl mx-auto">
+        
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium">
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard" class="text-body-secondary text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" class="text-body-secondary text-decoration-none">Courses</a></li>
+            <li class="breadcrumb-item active text-body" aria-current="page">Edit Course</li>
+          </ol>
+        </nav>
+        
+        <div class="mb-5">
+          <h1 class="display-5 fw-bolder text-body-emphasis">Edit Course: Introduction to Web Design</h1>
+        </div>
+        
+        <div class="card border shadow-sm rounded-4">
+          <form>
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Core Information</h3>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Title</label>
+                  <input class="form-control rounded-3" value="Introduction to Web Design" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Code</label>
+                  <input class="form-control rounded-3" value="WD101" />
+                </div>
+              </div>
+              <div class="mt-4">
+                <label class="form-label fw-medium fs-sm mb-2">Course Description</label>
+                <textarea class="form-control rounded-3" rows="5">Learn the fundamentals of web design, including HTML, CSS, and responsive design principles. This course covers everything from basic syntax to creating modern, mobile-first websites.</textarea>
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Organization & Details</h3>
+              <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Category</label>
+                  <select class="form-select rounded-3">
+                    <option>Technology</option>
+                    <option selected>Web Development</option>
+                    <option>Design</option>
+                  </select>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Assigned Instructor</label>
+                  <select class="form-select rounded-3">
+                    <option selected>Dr. Evelyn Reed</option>
+                    <option>Prof. Samuel Chen</option>
+                    <option>Dr. Aisha Khan</option>
+                  </select>
+                </div>
+                <div class="col-md-12 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Price ($)</label>
+                  <input class="form-control rounded-3" type="number" value="199.99" />
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Media</h3>
+              <label class="form-label fw-medium fs-sm mb-2">Course Thumbnail</label>
+              <div class="d-flex align-items-center gap-4">
+                <img class="rounded-3 border" data-alt="Abstract image of HTML code on a screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh2tqHoZvGXJCPuPPCUKCXaxZVD8RIei2qj7baGA39pT4K6DkhYob4GlDtV2mbHOat52IzuLA1VR43LPKIG3Mhbu7IEHcvevHam-xh5WSI-RvxQf8qVu5VOfUtUgzarR2CRSskaP9EdT-Ef8o7wrNUBA0m9Icfrh58wZAuHPhPszhtWoy30vF7AMYYCGjZjpkeMemSuCRarrwhl3WbWpsTqfOqHlubZHAh1H4HnXCHbT4TjoqJZNEl21QYpS-CwIVT0JiNc4wlO34" style="width: 10rem; height: 6rem; object-fit: cover;" />
+                <label class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 rounded-3 fw-bold fs-sm py-2" for="file-upload">
+                  <span class="material-symbols-outlined fs-6">upload</span>
+                  <span>Upload New Image</span>
+                </label>
+                <input class="visually-hidden" id="file-upload" name="file-upload" type="file" />
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-3">Course Status</h3>
+              <div class="d-flex flex-wrap gap-4">
+                <div class="form-check">
+                  <input checked class="form-check-input" id="status-published" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-published">Published</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" id="status-draft" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-draft">Draft</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" id="status-archived" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-archived">Archived</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer bg-transparent p-4 p-md-5 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-4">
+              <button class="btn btn-danger-soft d-inline-flex align-items-center gap-2 py-2 px-4" type="button">
+                <span class="material-symbols-outlined fs-6">delete</span>
+                <span>Delete Course</span>
+              </button>
+              <div class="d-flex gap-3">
+                <a class="btn btn-cancel py-2 px-4" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" role="button">
+                  <span>Cancel</span>
+                </a>
+                <button class="btn btn-primary rounded-3 fw-bold fs-sm py-2 px-4" type="submit">
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+</div>

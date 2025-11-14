@@ -1,0 +1,209 @@
+@{
+    ViewData["Title"] = "Instructor Management";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "instructors";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/instructor-manegment_admin.css">
+}
+
+<div class="d-flex min-vh-100">
+  @await Html.PartialAsync("_AdminSidebar")
+  
+  <main class="flex-grow-1 p-4 p-sm-4 p-lg-5">
+    <div class="container-xxl mx-auto">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+        <h1 class="h2 fw-bolder text-body">Instructor Management</h1>
+        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold fs-sm px-4" style="min-width: 84px; height: 2.5rem;" asp-controller="Preview" asp-action="ViewPage" asp-route-name="AddInstructor" role="button">
+          <span class="material-symbols-outlined">add</span>
+          <span>Add New Instructor</span>
+        </a>
+      </div>
+      
+      <div class="card bg-body-tertiary border rounded-4 p-4 mb-5">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <label class="w-100">
+              <div class="input-group rounded-3" style="height: 2.5rem;">
+                <span class="input-group-text bg-body-secondary border-0" id="search-addon">
+                  <span class="material-symbols-outlined text-secondary">search</span>
+                </span>
+                <input class="form-control bg-body-secondary border-0 fs-sm" placeholder="Search by name or email..." type="text" aria-label="Search" aria-describedby="search-addon" />
+              </div>
+            </label>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
+              <span>Status: All</span>
+              <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
+            </button>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
+              <span>Department: All</span>
+              <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card bg-body-tertiary border rounded-4 overflow-hidden">
+        <div class="table-responsive">
+          <table class="table w-100 fs-sm text-start align-middle mb-0">
+            <thead>
+              <tr>
+                <th class="p-4" scope="col">
+                  <input class="form-check-input bg-body-secondary" type="checkbox" />
+                </th>
+                <th class="px-4 py-3" scope="col">Instructor Name</th>
+                <th class="px-4 py-3" scope="col">Email</th>
+                <th class="px-4 py-3" scope="col">Department</th>
+                <th class="px-4 py-3" scope="col">Courses</th>
+                <th class="px-4 py-3" scope="col">Status</th>
+                <th class="px-4 py-3 text-center" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-top">
+                <td class="w-4 p-4">
+                  <input class="form-check-input" type="checkbox" />
+                </td>
+                <td class="px-4 py-3 text-nowrap">
+                  <div class="d-flex align-items-center gap-3">
+                    <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgBczXQ3awaP33Muuv3Xzy0qnBBonBCbllwgBbWia4sxUlu4JuuUdOjbGQCBM0Uhzx9dIilrZ6rd41JmSWFASXobRabl9WyZVAhMsV4MXjQtO-B2hThFWtmLpQsPWA1o5q0QWaqmCI-FjTgs5rjIc9CA64g1FnAVYBr6WVqK4KCASG3RqW9pYZQmn5uD9_nMFHbjWdgLM495bT4tOycIE8LybGzQ1RLMzs5sYlarWyg2vWZvRvG-P2OjnMbXFAk5JEtp70dvjRrxw" style="width: 2.5rem; height: 2.5rem;" />
+                    <div>
+                      <div class="fw-medium text-body">Eleanor Vance</div>
+                      <div class="fs-xs text-secondary">ID: 98765</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-body">e.vance@academix.edu</td>
+                <td class="px-4 py-3 text-body">Computer Science</td>
+                <td class="px-4 py-3 text-body">8</td>
+                <td class="px-4 py-3">
+                  <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-success-subtle text-success-emphasis px-3 py-1">Active</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="d-flex align-items-center justify-content-center gap-2">
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="border-top">
+                <td class="w-4 p-4">
+                  <input class="form-check-input" type="checkbox" />
+                </td>
+                <td class="px-4 py-3 text-nowrap">
+                  <div class="d-flex align-items-center gap-3">
+                    <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFGt1-ec3HtZa4nVaGtluTmU1-Lp73n3GoRsQMvQlFlyMPmm1OI_Hq8eJSm-Lfd8tQj2NTGoutnOX8iprO003QO7B0NJejqEGCdkTXUFpeGJjJl0AUlrR_XXF8exW8i2PkO6dCcH72-M3VZ_OUfxqgChz1BAqSGDEoLkTzBAf9-L44ebr1t-l66fbKZNDiyW8aRoAUY2SNK6uZtgPtQMSDCj7jtrh3ZTtq7pVlI1S_C2mVktBNRjTf_GjzKdfeY4mRUihnmvMXlus" style="width: 2.5rem; height: 2.5rem;" />
+                    <div>
+                      <div class="fw-medium text-body">Marcus Thorne</div>
+                      <div class="fs-xs text-secondary">ID: 87654</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-body">m.thorne@academix.edu</td>
+                <td class="px-4 py-3 text-body">Literature</td>
+                <td class="px-4 py-3 text-body">5</td>
+                <td class="px-4 py-3">
+                  <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-danger-subtle text-danger-emphasis px-3 py-1">Inactive</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="d-flex align-items-center justify-content-center gap-2">
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="border-top">
+                <td class="w-4 p-4">
+                  <input class="form-check-input" type="checkbox" />
+                </td>
+                <td class="px-4 py-3 text-nowrap">
+                  <div class="d-flex align-items-center gap-3">
+                    <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPwGFKKf8ksNsu7DkDFVMm3JHr0kY7NgcC-MFk2fE9urNCAlAPvlj46jHI7TTNVJAMuro4vWfJAywMl1u-BU00_QDxEF6jey8enEPsz74RUW7TLm-Wapsllre9FJ4vYqJX-iSj1gRoCnyyT0dBtga4bMjTNdQkLL4ISfXPY2J3jD8zmAEwfm5wQj7Wya68UMHHNRrM-tcvRNT9CvuGV7ugumzK4s00varRf_Qhv6KSAk96pR3ZK7f9LVWperkP9SJI66lvjijjbfE" style="width: 2.5rem; height: 2.5rem;" />
+                    <div>
+                      <div class="fw-medium text-body">Clara Oswald</div>
+                      <div class="fs-xs text-secondary">ID: 76543</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-body">c.oswald@academix.edu</td>
+                <td class="px-4 py-3 text-body">Physics</td>
+                <td class="px-4 py-3 text-body">6</td>
+                <td class="px-4 py-3">
+                  <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-success-subtle text-success-emphasis px-3 py-1">Active</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="d-flex align-items-center justify-content-center gap-2">
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                  </div>
+                </td>
+              </tr>
+              <tr class="border-top">
+                <td class="w-4 p-4">
+                  <input class="form-check-input" type="checkbox" />
+                </td>
+                <td class="px-4 py-3 text-nowrap">
+                  <div class="d-flex align-items-center gap-3">
+                    <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_G_zSiIMM11NNlJKtW7IOt_wvetdz3I9Fc58ctzh1snJFg3ORqDO-w-0sss_eWACebM8ZLHmxsKkdPlSQM1aP35wSAQxbiEbtV8MpcbggHZLGWoFm0BkWFThHXie_Q05L0bjBB1Q8Cv_aHBSHU9y8_896Cv_pkoNX_ZTLnqaG9WybMq6_wM4mPDXXrjrEQMIV0YFaiJG02r4P5z75MK8z3q0y4adea4ovNM3MIeG5lB83DCsJKN5DZ-MXHWB7egjxbEGHf6-Mn3Y" style="width: 2.5rem; height: 2.5rem;" />
+                    <div>
+                      <div class="fw-medium text-body">Rian Chen</div>
+                      <div class="fs-xs text-secondary">ID: 65432</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-body">r.chen@academix.edu</td>
+                <td class="px-4 py-3 text-body">Mathematics</td>
+                <td class="px-4 py-3 text-body">12</td>
+                <td class="px-4 py-3">
+                  <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-warning-subtle text-warning-emphasis px-3 py-1">Pending</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <div class="d-flex align-items-center justify-content-center gap-2">
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                    <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <nav aria-label="Table navigation" class="d-flex align-items-center justify-content-between p-4 border-top">
+          <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">1-4</span> of <span class="fw-semibold text-body">100</span></span>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item"><a class="page-link rounded-start-2" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active" aria-current="page"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link rounded-end-2" href="#">Next</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+@section Scripts {
+    <script>
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggleBtn.addEventListener('click', function() {
+      const currentTheme = htmlElement.getAttribute('data-bs-theme');
+      if (currentTheme === 'dark') {
+        htmlElement.setAttribute('data-bs-theme', 'light');
+      } else {
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+      }
+    });
+    </script>
+}

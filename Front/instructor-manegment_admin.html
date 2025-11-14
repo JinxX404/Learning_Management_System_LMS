@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Instructor Management - Academix LMS</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  
+  <style>
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .material-symbols-outlined.fill {
+      font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors from Tailwind config */
+      --bs-primary: rgb(17, 115, 212);
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-primary-hover: rgb(15, 103, 190);
+      --bs-success: #22C55E;
+      --bs-success-rgb: 34, 197, 94;
+      --bs-warning: #F59E0B;
+      --bs-warning-rgb: 245, 158, 11;
+      --bs-danger: #EF4444;
+      --bs-danger-rgb: 239, 68, 68;
+      --bs-info: #06B6D4;
+      --bs-info-rgb: 6, 182, 212;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #18232E; /* text-light */
+      --bs-secondary-color: #6b7280; /* approx. text-gray-500 */
+      --bs-tertiary-color: #6b7280;
+      --bs-border-color: #E5E7EB; /* border-light */
+      --bs-tertiary-bg: #ffffff; /* card-light */
+      --bs-body-secondary-bg: #f6f7f8; /* background-light */
+      
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* T-wind rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* T-wind rounded-xl */
+      
+      /* Form Variables */
+      --bs-form-check-input-border: 1px solid #ced4da; /* approx. border-gray-300 */
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #F9FAFB; /* text-dark */
+      --bs-secondary-color: #9ca3af; /* approx. text-gray-400 */
+      --bs-tertiary-color: #9ca3af;
+      --bs-border-color: #2A3B4D; /* border-dark */
+      --bs-tertiary-bg: #18232E; /* card-dark */
+      --bs-body-secondary-bg: #101922; /* background-dark */
+
+      /* Form Variables (Dark) */
+      --bs-form-check-input-border: 1px solid #4b5563; /* approx. border-gray-600 */
+      --bs-form-check-input-bg: var(--bs-tertiary-bg);
+    }
+    
+    /* Custom primary button hover */
+    .btn-primary {
+        --bs-btn-hover-bg: var(--bs-primary-hover);
+        --bs-btn-hover-border-color: var(--bs-primary-hover);
+    }
+    
+    /* Custom helper class */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+
+    /* Custom Component Styles */
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-body-color);
+      padding: 0.5rem 0.75rem; /* py-2 px-3 */
+      border-radius: var(--bs-border-radius-lg); /* rounded-lg */
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+    
+    /* Filter Dropdown Buttons */
+    .btn-filter {
+      --bs-btn-bg: var(--bs-body-secondary-bg);
+      --bs-btn-color: var(--bs-body-color);
+      --bs-btn-border-color: var(--bs-border-color);
+      --bs-btn-hover-bg: var(--bs-body-secondary-bg);
+      --bs-btn-hover-color: var(--bs-body-color);
+      --bs-btn-hover-border-color: var(--bs-border-color);
+    }
+    
+    /* Table Header */
+    .table thead {
+      font-size: 0.75rem; /* text-xs */
+      text-transform: uppercase;
+      letter-spacing: 0.05em; /* tracking-wider */
+      --bs-table-bg: var(--bs-body-secondary-bg);
+      --bs-table-color: var(--bs-secondary-color);
+    }
+    
+    .table tbody tr:hover {
+      --bs-table-hover-bg: rgba(var(--bs-primary-rgb), 0.05); /* hover:bg-primary/5 */
+    }
+    
+    /* Table Action Buttons */
+    .btn-icon-table {
+      padding: 0.5rem; /* p-2 */
+      border-radius: 9999px; /* rounded-full */
+    }
+    .btn-icon-table:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1); /* hover:bg-primary/10 */
+    }
+    .btn-icon-table .material-symbols-outlined {
+      font-size: 1.25rem; /* !text-xl */
+    }
+    
+    /* Pagination */
+    .pagination {
+      --bs-pagination-border-color: var(--bs-border-color);
+      --bs-pagination-color: var(--bs-secondary-color);
+      --bs-pagination-bg: var(--bs-tertiary-bg);
+      --bs-pagination-hover-bg: #e9ecef;
+      --bs-pagination-hover-color: #495057;
+      --bs-pagination-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+      --bs-pagination-active-color: var(--bs-primary);
+      --bs-pagination-active-border-color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .pagination {
+      --bs-pagination-hover-bg: #343a40;
+      --bs-pagination-hover-color: #dee2e6;
+      --bs-pagination-active-bg: rgba(var(--bs-primary-rgb), 0.2);
+    }
+    
+    /* Theme Toggler FAB */
+    .theme-toggler {
+      background-color: #18232E; /* card-dark */
+      color: #F9FAFB; /* text-dark */
+    }
+    .theme-toggler .icon-dark {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler {
+      background-color: #ffffff; /* card-light */
+      color: #18232E; /* text-light */
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-light {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-dark {
+      display: inline;
+    }
+  </style>
+</head>
+<body class="bg-body text-body">
+  <div class="d-flex min-vh-100">
+    <aside class="bg-body-tertiary border-end d-none d-md-flex flex-column" style="width: 16rem; min-width: 16rem;">
+      <div class="d-flex h-100 flex-column justify-content-between p-4">
+        <div class="d-flex flex-column gap-4">
+          <div class="d-flex gap-3 align-items-center px-2 pt-2">
+            <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Academix LMS company logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCub5T7PkiL9uhd90cRaN8d26_LZP1Tm6132Anaac7-atDoN_PyZhmFrRYTKb57w6-0lfwji_Uo-l_mp6phSh4DAJF_rPQ9p_pPmxSQR2ZqmzeF8bzuyqzYy4PVisjTo980vGhgEmd6OD12kCYGvooivo8XoKS1gKGNFpfikaGIi1paddzXxqu98qFZaMOQ5Ne1qyKRkMMQq1C9W8gNf4TcySgymzMeIMieeZ5g8LvMqKbDFwuyY9Pf52qm83i60Dj7mGhrfueb_M8"); width: 2.5rem; height: 2.5rem;'></div>
+            <div class="d-flex flex-column">
+              <h1 class="fs-6 fw-medium text-body">Admin Portal</h1>
+              <p class="fs-sm text-secondary mb-0">Academix LMS</p>
+            </div>
+          </div>
+          <nav class="d-flex flex-column gap-2 mt-4 sidebar-nav">
+            <a class="nav-link d-flex align-items-center gap-3" href="#">
+              <span class="material-symbols-outlined">dashboard</span>
+              <p class="fs-sm fw-medium mb-0">Dashboard</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3" href="#">
+              <span class="material-symbols-outlined">school</span>
+              <p class="fs-sm fw-medium mb-0">Courses</p>
+            </a>
+            <a class="nav-link active d-flex align-items-center gap-3" href="#">
+              <span class="material-symbols-outlined fill">co_present</span>
+              <p class="fs-sm fw-medium mb-0">Instructors</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3" href="#">
+              <span class="material-symbols-outlined">groups</span>
+              <p class="fs-sm fw-medium mb-0">Students</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3" href="#">
+              <span class="material-symbols-outlined">settings</span>
+              <p class="fs-sm fw-medium mb-0">Settings</p>
+            </a>
+          </nav>
+        </div>
+        <nav class="d-flex flex-column gap-1 sidebar-nav">
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined">help</span>
+            <p class="fs-sm fw-medium mb-0">Help</p>
+          </a>
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined">logout</span>
+            <p class="fs-sm fw-medium mb-0">Logout</p>
+          </a>
+        </nav>
+      </div>
+    </aside>
+    
+    <main class="flex-grow-1 p-4 p-sm-4 p-lg-5">
+      <div class="container-xxl mx-auto">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
+          <h1 class="h2 fw-bolder text-body">Instructor Management</h1>
+          <button class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold fs-sm px-4" style="min-width: 84px; height: 2.5rem;">
+            <span class="material-symbols-outlined">add</span>
+            <span>Add New Instructor</span>
+          </button>
+        </div>
+        
+        <div class="card bg-body-tertiary border rounded-4 p-4 mb-5">
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <label class="w-100">
+                <div class="input-group rounded-3" style="height: 2.5rem;">
+                  <span class="input-group-text bg-body-secondary border-0" id="search-addon">
+                    <span class="material-symbols-outlined text-secondary">search</span>
+                  </span>
+                  <input class="form-control bg-body-secondary border-0 fs-sm" placeholder="Search by name or email..." type="text" aria-label="Search" aria-describedby="search-addon" />
+                </div>
+              </label>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
+                <span>Status: All</span>
+                <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
+              </button>
+            </div>
+            <div class="col-md-6 col-lg-3">
+              <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
+                <span>Department: All</span>
+                <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card bg-body-tertiary border rounded-4 overflow-hidden">
+          <div class="table-responsive">
+            <table class="table w-100 fs-sm text-start align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="p-4" scope="col">
+                    <input class="form-check-input bg-body-secondary" type="checkbox" />
+                  </th>
+                  <th class="px-4 py-3" scope="col">Instructor Name</th>
+                  <th class="px-4 py-3" scope="col">Email</th>
+                  <th class="px-4 py-3" scope="col">Department</th>
+                  <th class="px-4 py-3" scope="col">Courses</th>
+                  <th class="px-4 py-3" scope="col">Status</th>
+                  <th class="px-4 py-3 text-center" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <input class="form-check-input" type="checkbox" />
+                  </td>
+                  <td class="px-4 py-3 text-nowrap">
+                    <div class="d-flex align-items-center gap-3">
+                      <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgBczXQ3awaP33Muuv3Xzy0qnBBonBCbllwgBbWia4sxUlu4JuuUdOjbGQCBM0Uhzx9dIilrZ6rd41JmSWFASXobRabl9WyZVAhMsV4MXjQtO-B2hThFWtmLpQsPWA1o5q0QWaqmCI-FjTgs5rjIc9CA64g1FnAVYBr6WVqK4KCASG3RqW9pYZQmn5uD9_nMFHbjWdgLM495bT4tOycIE8LybGzQ1RLMzs5sYlarWyg2vWZvRvG-P2OjnMbXFAk5JEtp70dvjRrxw" style="width: 2.5rem; height: 2.5rem;" />
+                      <div>
+                        <div class="fw-medium text-body">Eleanor Vance</div>
+                        <div class="fs-xs text-secondary">ID: 98765</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-body">e.vance@academix.edu</td>
+                  <td class="px-4 py-3 text-body">Computer Science</td>
+                  <td class="px-4 py-3 text-body">8</td>
+                  <td class="px-4 py-3">
+                    <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-success-subtle text-success-emphasis px-3 py-1">Active</span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <input class="form-check-input" type="checkbox" />
+                  </td>
+                  <td class="px-4 py-3 text-nowrap">
+                    <div class="d-flex align-items-center gap-3">
+                      <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFGt1-ec3HtZa4nVaGtluTmU1-Lp73n3GoRsQMvQlFlyMPmm1OI_Hq8eJSm-Lfd8tQj2NTGoutnOX8iprO003QO7B0NJejqEGCdkTXUFpeGJjJl0AUlrR_XXF8exW8i2PkO6dCcH72-M3VZ_OUfxqgChz1BAqSGDEoLkTzBAf9-L44ebr1t-l66fbKZNDiyW8aRoAUY2SNK6uZtgPtQMSDCj7jtrh3ZTtq7pVlI1S_C2mVktBNRjTf_GjzKdfeY4mRUihnmvMXlus" style="width: 2.5rem; height: 2.5rem;" />
+                      <div>
+                        <div class="fw-medium text-body">Marcus Thorne</div>
+                        <div class="fs-xs text-secondary">ID: 87654</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-body">m.thorne@academix.edu</td>
+                  <td class="px-4 py-3 text-body">Literature</td>
+                  <td class="px-4 py-3 text-body">5</td>
+                  <td class="px-4 py-3">
+                    <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-danger-subtle text-danger-emphasis px-3 py-1">Inactive</span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <input class="form-check-input" type="checkbox" />
+                  </td>
+                  <td class="px-4 py-3 text-nowrap">
+                    <div class="d-flex align-items-center gap-3">
+                      <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPwGFKKf8ksNsu7DkDFVMm3JHr0kY7NgcC-MFk2fE9urNCAlAPvlj46jHI7TTNVJAMuro4vWfJAywMl1u-BU00_QDxEF6jey8enEPsz74RUW7TLm-Wapsllre9FJ4vYqJX-iSj1gRoCnyyT0dBtga4bMjTNdQkLL4ISfXPY2J3jD8zmAEwfm5wQj7Wya68UMHHNRrM-tcvRNT9CvuGV7ugumzK4s00varRf_Qhv6KSAk96pR3ZK7f9LVWperkP9SJI66lvjijjbfE" style="width: 2.5rem; height: 2.5rem;" />
+                      <div>
+                        <div class="fw-medium text-body">Clara Oswald</div>
+                        <div class="fs-xs text-secondary">ID: 76543</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-body">c.oswald@academix.edu</td>
+                  <td class="px-4 py-3 text-body">Physics</td>
+                  <td class="px-4 py-3 text-body">6</td>
+                  <td class="px-4 py-3">
+                    <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-success-subtle text-success-emphasis px-3 py-1">Active</span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="border-top">
+                  <td class="w-4 p-4">
+                    <input class="form-check-input" type="checkbox" />
+                  </td>
+                  <td class="px-4 py-3 text-nowrap">
+                    <div class="d-flex align-items-center gap-3">
+                      <img class="rounded-circle object-fit-cover" data-alt="Instructor's profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_G_zSiIMM11NNlJKtW7IOt_wvetdz3I9Fc58ctzh1snJFg3ORqDO-w-0sss_eWACebM8ZLHmxsKkdPlSQM1aP35wSAQxbiEbtV8MpcbggHZLGWoFm0BkWFThHXie_Q05L0bjBB1Q8Cv_aHBSHU9y8_896Cv_pkoNX_ZTLnqaG9WybMq6_wM4mPDXXrjrEQMIV0YFaiJG02r4P5z75MK8z3q0y4adea4ovNM3MIeG5lB83DCsJKN5DZ-MXHWB7egjxbEGHf6-Mn3Y" style="width: 2.5rem; height: 2.5rem;" />
+                      <div>
+                        <div class="fw-medium text-body">Rian Chen</div>
+                        <div class="fs-xs text-secondary">ID: 65432</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-body">r.chen@academix.edu</td>
+                  <td class="px-4 py-3 text-body">Mathematics</td>
+                  <td class="px-4 py-3 text-body">12</td>
+                  <td class="px-4 py-3">
+                    <span class="badge d-inline-flex align-items-center rounded-pill fs-xs fw-medium bg-warning-subtle text-warning-emphasis px-3 py-1">Pending</span>
+                  </td>
+                  <td class="px-4 py-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center gap-2">
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">visibility</span></button>
+                      <button class="btn btn-icon-table text-body"><span class="material-symbols-outlined">more_vert</span></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <nav aria-label="Table navigation" class="d-flex align-items-center justify-content-between p-4 border-top">
+            <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">1-4</span> of <span class="fw-semibold text-body">100</span></span>
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item"><a class="page-link rounded-start-2" href="#">Previous</a></li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item active" aria-current="page"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link rounded-end-2" href="#">Next</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </main>
+    <button class="btn btn-lg rounded-circle d-flex align-items-center justify-content-center shadow-lg position-fixed theme-toggler" id="theme-toggle" style="width: 3.5rem; height: 3.5rem; bottom: 1.5rem; right: 1.5rem;">
+      <span class="material-symbols-outlined icon-light">dark_mode</span>
+      <span class="material-symbols-outlined icon-dark">light_mode</span>
+    </button>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+  <script>
+    // Theme toggle script
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggleBtn.addEventListener('click', function() {
+      const currentTheme = htmlElement.getAttribute('data-bs-theme');
+      if (currentTheme === 'dark') {
+        htmlElement.setAttribute('data-bs-theme', 'light');
+      } else {
+        htmlElement.setAttribute('data-bs-theme', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>

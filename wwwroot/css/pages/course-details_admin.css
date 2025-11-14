@@ -1,0 +1,61 @@
+/* Google Material Symbols Base Style */
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Custom Component Styles */
+
+/* Sidebar Navigation */
+.sidebar-nav .nav-link {
+  border-radius: var(--bs-border-radius-lg); /* T-wind rounded-lg */
+  padding: 0.5rem 0.75rem; /* T-wind py-2 px-3 */
+  font-weight: 500; /* T-wind font-medium */
+  font-size: 0.875rem; /* T-wind text-sm */
+}
+.sidebar-nav .nav-link:not(.active) {
+  color: var(--bs-secondary-color);
+}
+.sidebar-nav .nav-link:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.1); /* T-wind hover:bg-primary/10 */
+  color: var(--bs-primary);
+}
+.sidebar-nav .nav-link.active {
+  background-color: rgba(var(--bs-primary-rgb), 0.2); /* T-wind bg-primary/20 */
+  color: var(--bs-primary);
+}
+.sidebar-nav .nav-link .material-symbols-outlined {
+  font-size: 1.5rem; /* T-wind text-2xl */
+  line-height: 1;
+}
+
+/* Custom Tab Link */
+.tab-link {
+  color: var(--bs-secondary-color);
+}
+.tab-link:hover {
+  color: var(--bs-primary);
+}
+
+/* Custom Delete Icon Button */
+.btn-icon-danger {
+  color: var(--bs-danger);
+}
+.btn-icon-danger:hover {
+  background-color: rgba(var(--bs-danger-rgb), 0.1); /* T-wind hover:bg-danger/10 */
+}
+
+/* Custom Font Sizes from Tailwind */
+.fs-sm {
+  font-size: 0.875rem; /* T-wind text-sm */
+}
+.fs-xs {
+  font-size: 0.75rem; /* T-wind text-xs */
+}

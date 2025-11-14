@@ -1,0 +1,98 @@
+
+/* Apply component background */
+.bg-body-component {
+    background-color: var(--bs-component-bg) !important;
+}
+
+/* Apply custom font */
+body {
+    font-family: "Lexend", sans-serif;
+}
+
+/* Material Symbols style */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    line-height: 1; /* Aligns icons better */
+}
+
+.material-symbols-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    line-height: 1;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 256px; /* w-64 */
+    min-width: 256px;
+}
+
+/* Custom nav link styles to match Tailwind */
+.nav-link {
+    color: var(--bs-body-color);
+}
+
+/* Replicate hover:bg-primary/10 */
+[data-bs-theme="light"] .sidebar .nav-link:not(.active):hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+[data-bs-theme="dark"] .sidebar .nav-link:not(.active):hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+/* Replicate bg-primary/20 text-primary */
+.sidebar .nav-link.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.2) !important;
+    color: var(--bs-primary) !important;
+}
+
+/* Custom button hover */
+.btn-primary {
+     background-color: var(--bs-primary);
+     border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+    background-color: var(--bs-primary-hover);
+    border-color: var(--bs-primary-hover);
+}
+
+/* Table header background */
+.table > thead {
+    background-color: rgba(var(--bs-body-color-rgb), 0.03);
+}
+
+/* Custom badge colors to match opacity */
+.badge.bg-success-subtle {
+     background-color: rgba(var(--bs-success-rgb), 0.2) !important;
+     color: var(--bs-success) !important;
+}
+.badge.bg-warning-subtle {
+     background-color: rgba(var(--bs-warning-rgb), 0.2) !important;
+     color: var(--bs-warning) !important;
+}
+.badge.bg-secondary-subtle {
+     background-color: rgba(var(--bs-secondary-rgb), 0.2) !important;
+     color: var(--bs-secondary-emphasis) !important;
+}
+[data-bs-theme="dark"] .badge.bg-secondary-subtle {
+     color: #adb5bd !important; /* text-gray-400 */
+}
+
+/* Pagination active state */
+.pagination .page-item.active .page-link {
+    background-color: rgba(var(--bs-primary-rgb), 0.2);
+    border-color: transparent;
+    color: var(--bs-primary);
+}
+
+/* Form input background */
+.form-control, .input-group-text {
+    background-color: var(--bs-body-bg);
+}
+
+/* Theme toggle icon display */
+.dark-icon { display: none; }
+.light-icon { display: inline; }
+
+[data-bs-theme="dark"] .dark-icon { display: inline; }
+[data-bs-theme="dark"] .light-icon { display: none; }

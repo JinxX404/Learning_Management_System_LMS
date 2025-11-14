@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Academix LMS - Manage Academic Terms</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha341-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  
+  <style>
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-success: #22C55E;
+      --bs-success-rgb: 34, 197, 94;
+      --bs-warning: #F59E0B;
+      --bs-warning-rgb: 245, 158, 11;
+      --bs-danger: #EF4444;
+      --bs-danger-rgb: 239, 68, 68;
+      --bs-info: #06B6D4;
+      --bs-info-rgb: 6, 182, 212;
+      
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #18232E; /* text-light */
+      --bs-secondary-color: rgba(24, 35, 46, 0.7); /* text-light/70 */
+      --bs-tertiary-bg: #ffffff; /* card-light */
+      --bs-border-color: #E5E7EB; /* border-light */
+      --bs-tertiary-color: rgba(24, 35, 46, 0.5); /* text-light/50 */
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius: 0.25rem;
+      --bs-border-radius-lg: 0.5rem; /* T-wind rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* T-wind rounded-xl */
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #F9FAFB; /* text-dark */
+      --bs-secondary-color: rgba(249, 250, 251, 0.7); /* text-dark/70 */
+      --bs-tertiary-bg: #18232E; /* card-dark */
+      --bs-border-color: #2A3B4D; /* border-dark */
+      --bs-tertiary-color: rgba(249, 250, 251, 0.5); /* text-dark/50 */
+    }
+
+    /* Custom Component Styles */
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-body-color);
+      padding: 0.5rem 0.75rem; /* T-wind py-2 px-3 */
+      border-radius: var(--bs-border-radius-lg); /* T-wind rounded-lg */
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.2);
+      color: var(--bs-primary);
+      font-weight: 700;
+    }
+    .sidebar-nav .nav-link.active .material-symbols-outlined {
+      color: var(--bs-primary);
+    }
+
+    /* Form Input (for search) */
+    .form-control-icon {
+      padding-left: 2.5rem; /* T-wind pl-10 */
+      height: 2.5rem; /* T-wind h-10 */
+    }
+    
+    /* Table */
+    .table {
+      --bs-table-bg: var(--bs-tertiary-bg);
+      --bs-table-color: var(--bs-body-color);
+      --bs-table-border-color: var(--bs-border-color);
+    }
+    .table thead {
+      /* T-wind bg-background-light dark:bg-background-dark */
+      --bs-table-bg: var(--bs-body-bg); 
+      color: var(--bs-secondary-color);
+      font-size: 0.75rem; /* T-wind text-xs */
+      font-weight: 600;
+    }
+    
+    /* Custom helper text size */
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+
+    /* Action Icon Buttons */
+    .btn-icon {
+      color: var(--bs-secondary-color);
+      padding: 0.5rem; /* T-wind p-2 */
+      border-radius: 0.375rem; /* T-wind rounded-md */
+    }
+    .btn-icon:hover {
+      color: var(--bs-primary);
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+    .btn-icon.hover-danger:hover {
+      color: var(--bs-danger);
+      background-color: rgba(var(--bs-danger-rgb), 0.1);
+    }
+
+    /* Theme Toggler FAB */
+    .theme-toggler .icon-dark {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-light {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-dark {
+      display: inline;
+    }
+
+  </style>
+</head>
+<body class="bg-body text-body">
+  <div class="d-flex min-vh-100 w-100">
+    <aside class="d-flex flex-column border-end bg-body-tertiary p-4 position-sticky top-0 vh-100" style="width: 16rem; min-width: 16rem;">
+      <div class="d-flex align-items-center gap-3 px-3 py-2">
+        <div class="text-primary" style="width: 2rem; height: 2rem;">
+          <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+          </svg>
+        </div>
+        <h2 class="h4 fw-bold mb-0">Academix</h2>
+      </div>
+      
+      <div class="d-flex flex-column gap-4 mt-4">
+        <nav class="nav flex-column gap-2 sidebar-nav">
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined fs-5">dashboard</span>
+            <p class="fs-sm fw-medium mb-0">Dashboard</p>
+          </a>
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined fs-5">book</span>
+            <p class="fs-sm fw-medium mb-0">Courses</p>
+          </a>
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined fs-5">group</span>
+            <p class="fs-sm fw-medium mb-0">Users</p>
+          </a>
+          <a class="nav-link active d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined fill fs-5">calendar_today</span>
+            <p class="fs-sm mb-0">Academic Terms</p>
+          </a>
+        </nav>
+      </div>
+      
+      <div class="mt-auto d-flex flex-column gap-3">
+        <div class="d-flex gap-3 align-items-center">
+          <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Admin profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8-TLpS7_ZJIbNzQT_4DTCjVmqrzwbdAVcp0r15s_-1RjXQkvDc6TGSoSnlrupScV5y6LNnEuDH5iIipGBY9NpJzkgh_PFa0a45GPrjYDUN8xoUhnbne6bRDZ9SjrDle3yO-f1-lpYT4NuLRClCAa9gc0ZILzB9Y3mfyX__FH_XzFhxJtaV0bYV4ynsVH3A79l6rWC876b1ZMrKpoBexsOn0uXC9yT5H0AwUbcBH-UyOLDaW2g1IkDxetlzlonJUpF8zh02890_4E"); width: 2.5rem; height: 2.5rem;'></div>
+          <div class="d-flex flex-column">
+            <h1 class="fs-sm fw-medium mb-0">Admin Name</h1>
+            <p class="fs-xs text-secondary mb-0">admin@academix.edu</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="flex-grow-1">
+      <header class="d-flex align-items-center justify-content-between border-bottom bg-body-tertiary px-4 py-3 position-sticky top-0 z-1" style="padding-left: 2.5rem !important; padding-right: 2.5rem !important;">
+        <div class="d-flex flex-grow-1 align-items-center gap-4">
+          <div class="position-relative flex-grow-1" style="max-width: 28rem;">
+            <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ps-3 fs-5 text-tertiary">search</span>
+            <input class="form-control form-control-icon rounded-3 bg-body border-secondary-subtle fs-sm" placeholder="Search courses, users, etc..." type="text" value="" />
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-icon rounded-circle d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+            <span class="material-symbols-outlined fs-4">notifications</span>
+          </button>
+          <button class="btn btn-icon rounded-circle d-flex align-items-center justify-content-center" style="width: 2.5rem; height: 2.5rem;">
+            <span class="material-symbols-outlined fs-4">settings</span>
+          </button>
+          <div class="bg-center bg-no-repeat bg-cover rounded-circle ms-2" data-alt="Admin profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApDdW4-U-4k2-wqb53AlR5ALImZRIaNkwwSPF3NJ97arCIHpIyYc7zbOY-NGLqXGdwEj1r6IeHbW-9qddhcpjIOdryShBKB36Z7VAcDbsP_AVav6rZIIW5z8_FFv57xj5vqFhOETGWjnoVa-0i1XE875o2KlO8C6U2cxu8VH7RycsUaWVNNnppr5k0RfaZdrsd_7JmvyJX6eXdnXQo0L0usskZWaYIBmOSOO5bQYBc-evSIX5LdMLglYQdLtHjFAyAEQw3ymBVmEM"); width: 2.5rem; height: 2.5rem;'></div>
+        </div>
+      </header>
+      
+      <div class="p-4" style="padding: 2.5rem !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-4 mb-5">
+          <div class="d-flex flex-column gap-1">
+            <h1 class="h3 fw-bold mb-0">Manage Academic Terms</h1>
+            <p class="fs-sm text-secondary mb-0">Create, view, and manage all academic terms for the institution.</p>
+          </div>
+          <button class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 rounded-3 fs-sm fw-bold py-2 px-4" style="min-width: 84px;">
+            <span class="material-symbols-outlined fs-6">add</span>
+            <span>Add New Term</span>
+          </button>
+        </div>
+        
+        <div class="card border rounded-4 overflow-hidden shadow-none">
+          <div class="table-responsive">
+            <table class="table w-100 text-start align-middle mb-0">
+              <thead class="text-uppercase">
+                <tr>
+                  <th class="px-4 py-3" scope="col">Term Name</th>
+                  <th class="px-4 py-3" scope="col">Start Date</th>
+                  <th class="px-4 py-3" scope="col">End Date</th>
+                  <th class="px-4 py-3" scope="col">Status</th>
+                  <th class="px-4 py-3 text-end" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="px-4 py-3 text-nowrap fs-sm fw-medium">Fall 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">Aug 26, 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">Dec 13, 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm">
+                    <span class="badge d-inline-flex align-items-center rounded-pill bg-success-subtle text-success fs-xs fw-semibold px-3 py-1">
+                      <span class="rounded-circle me-2" style="width: 6px; height: 6px; background-color: currentColor;"></span>Active
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-nowrap text-end fs-sm fw-medium">
+                    <div class="d-flex justify-content-end gap-1">
+                      <button class="btn btn-icon">
+                        <span class="material-symbols-outlined fs-5">edit</span>
+                      </button>
+                      <button class="btn btn-icon hover-danger">
+                        <span class="material-symbols-outlined fs-5">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-nowrap fs-sm fw-medium">Spring 2025</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">Jan 21, 2025</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">May 9, 2025</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm">
+                    <span class="badge d-inline-flex align-items-center rounded-pill bg-warning-subtle text-warning fs-xs fw-semibold px-3 py-1">
+                      <span class="rounded-circle me-2" style="width: 6px; height: 6px; background-color: currentColor;"></span>Upcoming
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-nowrap text-end fs-sm fw-medium">
+                    <div class="d-flex justify-content-end gap-1">
+                      <button class="btn btn-icon">
+                        <span class="material-symbols-outlined fs-5">edit</span>
+                      </button>
+                      <button class="btn btn-icon hover-danger">
+                        <span class="material-symbols-outlined fs-5">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-nowrap fs-sm fw-medium">Summer 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">May 20, 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm text-secondary">Aug 9, 2024</td>
+                  <td class="px-4 py-3 text-nowrap fs-sm">
+                    <span class="badge d-inline-flex align-items-center rounded-pill bg-info-subtle text-info fs-xs fw-semibold px-3 py-1">
+                      <span class="rounded-circle me-2" style="width: 6px; height: 6px; background-color: currentColor;"></span>Archived
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-nowrap text-end fs-sm fw-medium">
+                    <div class="d-flex justify-content-end gap-1">
+                      <button class="btn btn-icon">
+                        <span class="material-symbols-outlined fs-5">edit</span>
+                      </button>
+                      <button class="btn btn-icon hover-danger">
+                        <span class="material-symbols-outlined fs-5">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <div class="position-fixed bottom-0 end-0 m-4 z-2" style="margin-bottom: 2rem !important; margin-right: 2rem !important;">
+      <button class="btn btn-primary btn-lg rounded-circle d-flex align-items-center justify-content-center shadow-lg theme-toggler" style="width: 3.5rem; height: 3.5rem;">
+        <span class="material-symbols-outlined fs-4 icon-light">light_mode</span>
+        <span class="material-symbols-outlined fs-4 icon-dark">dark_mode</span>
+      </button>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

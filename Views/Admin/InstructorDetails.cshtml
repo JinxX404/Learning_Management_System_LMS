@@ -1,0 +1,142 @@
+@{
+    ViewData["Title"] = "Instructor Profile";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "instructors";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/instructor-details_admin.css">
+}
+
+<div class="d-flex position-relative min-vh-100 w-100">
+    @await Html.PartialAsync("_AdminSidebar")
+    
+    <main class="flex-grow-1 d-flex flex-column p-4 p-sm-6 p-lg-8">
+      <div class="w-100 mx-auto" style="max-width: 80rem;">
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium">
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Admin Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">Instructors</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dr. Eleanor Vance</li>
+          </ol>
+        </nav>
+        
+        <div class="card bg-body-tertiary border rounded-xl shadow-sm mb-6">
+          <div class="p-4">
+            <div class="d-flex w-100 flex-column flex-md-row justify-content-md-between align-items-md-center gap-4">
+              <div class="d-flex gap-4 align-items-center">
+                <div class="bg-center bg-no-repeat bg-cover rounded-circle flex-shrink-0" data-alt="Profile picture of Dr. Eleanor Vance" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuARfj5dJqmAIu0SIfJj4WYrnsQplsdu1Q4g-_lBs6PXKzv3zFHNl0LyH1japSTn8RvCJ26mC1jDn4KtLn2J-dN9Ej8bpqvz0tO1nqmL6X3-ei2W5exQyFTkxZb2fdxwIpcyvI-AXU-B4rqHZQYDnxJiHY7-wCRnW76G5NVh5nfiVZDIKD9fnHealR0ANEuZ7_3Zf0NFUfpyeC0ntmfrgW7-tURXtrgSndD7cnQxyVNUEytY1diu9E5tZIUN_4Nh4S8zLRNm_S2jMKE"); width: 6rem; height: 6rem;'></div>
+                <div class="d-flex flex-column justify-content-center">
+                  <p class="text-body-emphasis h3 fw-bold mb-1">Dr. Eleanor Vance</p>
+                  <p class="text-secondary fs-6 mb-0">Professor, Computer Science</p>
+                  <p class="text-secondary fs-sm mt-1 mb-0">eleanor.vance@academix.edu</p>
+                  <div class="mt-2 d-inline-flex align-items-center gap-2">
+                    <span class="rounded-circle bg-success" style="width: 0.5rem; height: 0.5rem;"></span>
+                    <p class="text-success fs-sm fw-medium mb-0">Active</p>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex w-100 w-md-auto flex-shrink-0 gap-3">
+                <a class="btn btn-profile rounded-lg h-10 px-4 flex-fill flex-md-auto" asp-controller="Preview" asp-action="ViewPage" asp-route-name="EditInstructor" role="button">
+                  <span class="truncate">Edit Profile</span>
+                </a>
+                <button class="btn btn-primary rounded-lg h-10 px-4 flex-fill flex-md-auto text-sm fw-bold">
+                  <span class="truncate">Send Message</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row g-4 mb-6">
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border rounded-xl shadow-sm h-100">
+              <div class="p-4 p-lg-5 d-flex flex-column gap-2">
+                <p class="stat-card-title fs-6 fw-medium">Total Courses Assigned</p>
+                <p class="text-body-emphasis h3 fw-bold mb-0">12</p>
+                <p class="text-success fs-sm fw-medium mb-0">+2 this semester</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-lg-4">
+            <div class="card bg-body-tertiary border rounded-xl shadow-sm h-100">
+              <div class="p-4 p-lg-5 d-flex flex-column gap-2">
+                <p class="stat-card-title fs-6 fw-medium">Average Student Rating</p>
+                <p class="text-body-emphasis h3 fw-bold mb-0">4.8/5</p>
+                <p class="text-success fs-sm fw-medium mb-0">+0.1 from last semester</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-12 col-lg-4">
+            <div class="card bg-body-tertiary border rounded-xl shadow-sm h-100">
+              <div class="p-4 p-lg-5 d-flex flex-column gap-2">
+                <p class="stat-card-title fs-6 fw-medium">Completion Rate</p>
+                <p class="text-body-emphasis h3 fw-bold mb-0">92%</p>
+                <p class="text-danger fs-sm fw-medium mb-0">-1% from last semester</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card bg-body-tertiary border rounded-xl shadow-sm">
+          <div class="px-4">
+            <nav class="nav nav-tabs-profile">
+              <a class="nav-link active" href="#">Assigned Courses</a>
+              <a class="nav-link" href="#">Performance Analytics</a>
+            </nav>
+          </div>
+          
+          <div class="p-4 p-lg-5">
+            <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center gap-4 mb-4">
+              <h3 class="h5 fw-bold text-body-emphasis mb-0">Current and Past Courses</h3>
+              <div class="d-flex gap-2">
+                <input class="form-control form-control-filter fs-sm rounded-lg" placeholder="Filter courses..." type="search" style="height: 2.5rem;" />
+                <button class="btn btn-filter d-flex align-items-center justify-content-center text-sm fw-medium rounded-lg" style="height: 2.5rem; padding-left: 1rem; padding-right: 1rem;">
+                  <span class="material-symbols-outlined fs-6 me-2">filter_list</span>
+                  Sort
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table w-100 align-middle">
+                <thead class="fs-xs text-uppercase">
+                  <tr>
+                    <th class="px-4 py-3" scope="col">Course Name</th>
+                    <th class="px-4 py-3" scope="col">Course ID</th>
+                    <th class="px-4 py-3" scope="col">Enrolled Students</th>
+                    <th class="px-4 py-3" scope="col">Semester</th>
+                  </tr>
+                </thead>
+                <tbody class="fs-sm">
+                  <tr>
+                    <td class="px-4 py-4 text-nowrap fw-medium text-body-emphasis">Advanced Algorithms</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">CS601</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">45</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">Fall 2024</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-4 text-nowrap fw-medium text-body-emphasis">Machine Learning Foundations</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">CS550</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">62</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">Fall 2024</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-4 text-nowrap fw-medium text-body-emphasis">Introduction to Data Structures</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">CS201</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">112</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">Spring 2024</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-4 text-nowrap fw-medium text-body-emphasis">Computer Architecture</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">CS420</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">38</td>
+                    <td class="px-4 py-4 text-nowrap text-secondary">Spring 2024</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>

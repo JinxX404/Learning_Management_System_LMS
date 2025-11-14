@@ -1,0 +1,234 @@
+@{
+    ViewData["Title"] = "Student Profile";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "students";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/student-details_admin.css">
+}
+
+<div class="d-flex min-vh-100">
+  @await Html.PartialAsync("_AdminSidebar")
+  
+  <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
+    <div class="container-xxl">
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb fs-sm fw-medium">
+          <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement">Students</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Eleanor Pena</li>
+        </ol>
+      </nav>
+      
+      <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-4 mb-5">
+        <div class="d-flex align-items-center gap-4">
+          <div class="bg-center bg-no-repeat bg-cover rounded-circle flex-shrink-0" data-alt="Profile picture of Eleanor Pena" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArf9jGBSAIs8NRu21l8jTeXpaA0n2Jq6J-aW0n2YmKhLEak64pdp1sReTiF47CycESZcS8XDu8aiouZa22nZqxq0dmVBI0SWr_OVnIhNM-IFyqbzl_CiT1dRB-WFz3c9BId4p0Ua4zmzTLkGo3KibABq1hFwZtLMbatuBDol8Xv2uwls7Ktbh0GxzCKKjH7UmLNaawfCvcERIEtJreSr4SfzolwmVyZfBbNNTYtQjAZZ9hWmj7kWsz_3zsrVSusyg6aVO0vb_Sh_w"); width: 6rem; height: 6rem;'></div>
+          <div class="d-flex flex-column justify-content-center">
+            <h1 class="text-body-emphasis h2 fw-bold mb-1">Eleanor Pena</h1>
+            <p class="text-secondary fs-6 mb-2">Student ID: 84321</p>
+            <div class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs px-2 py-1" style="width: fit-content;">Active</div>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-3">
+          <a class="btn btn-profile d-inline-flex align-items-center justify-content-center gap-2 rounded-3 py-2 px-4" asp-controller="Preview" asp-action="ViewPage" asp-route-name="EditStudent" role="button">
+            <span class="material-symbols-outlined fs-6">edit</span>
+            <span>Edit Profile</span>
+          </a>
+          <button class="btn btn-profile d-inline-flex align-items-center justify-content-center gap-2 rounded-3 py-2 px-4">
+            <span class="material-symbols-outlined fs-6">mail</span>
+            <span>Send Message</span>
+          </button>
+          <button class="btn btn-deactivate d-inline-flex align-items-center justify-content-center gap-2 rounded-3 py-2 px-4">
+            <span class="material-symbols-outlined fs-6">person_off</span>
+            <span>Deactivate</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="row g-4 g-lg-5">
+        <div class="col-xl-4">
+          <div class="d-flex flex-column gap-4">
+            <div class="card bg-body-tertiary border rounded-4 shadow-sm">
+              <div class="card-body p-4 p-lg-5">
+                <h2 class="text-body-emphasis h5 fw-bold mb-4">Profile Information</h2>
+                <div class="row g-4">
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Full Name</p>
+                    <p class="text-body-emphasis fs-sm mb-0">Eleanor Pena</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Email Address</p>
+                    <p class="text-body-emphasis fs-sm mb-0">eleanor.p@university.edu</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Phone Number</p>
+                    <p class="text-body-emphasis fs-sm mb-0">+1 (555) 123-4567</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Enrollment Date</p>
+                    <p class="text-body-emphasis fs-sm mb-0">August 24, 2022</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Major</p>
+                    <p class="text-body-emphasis fs-sm mb-0">Computer Science</p>
+                  </div>
+                  <div class="col-12 col-sm-6 col-xl-12">
+                    <p class="text-secondary fs-sm mb-1">Expected Graduation</p>
+                    <p class="text-body-emphasis fs-sm mb-0">May 15, 2026</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card bg-body-tertiary border rounded-4 shadow-sm">
+              <div class="card-body p-4 p-lg-5">
+                <h2 class="text-body-emphasis h5 fw-bold mb-4">Grades Summary</h2>
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div class="d-flex flex-column p-3 grade-box rounded-3">
+                      <p class="text-secondary fs-sm mb-1">Overall GPA</p>
+                      <p class="text-body-emphasis h3 fw-bold mb-0">3.85</p>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="d-flex flex-column p-3 grade-box rounded-3">
+                      <p class="text-secondary fs-sm mb-1">Credits Earned</p>
+                      <p class="text-body-emphasis h3 fw-bold mb-0">64</p>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="d-flex flex-column p-3 grade-box rounded-3">
+                      <p class="text-secondary fs-sm mb-1">Attendance Rate</p>
+                      <p class="text-body-emphasis h3 fw-bold mb-0">96%</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <p class="text-secondary fs-sm mb-2">Grade Distribution</p>
+                  <div class="d-flex gap-2 align-items-end" style="height: 8rem;">
+                    <div class="d-flex flex-column align-items-center flex-grow-1 gap-1 h-100">
+                      <div class="w-100 bar-chart-bar" style="height: 90%;"></div>
+                      <span class="fs-xs text-secondary">A</span>
+                    </div>
+                    <div class="d-flex flex-column align-items-center flex-grow-1 gap-1 h-100">
+                      <div class="w-100 bar-chart-bar bar-chart-bar-b" style="height: 60%;"></div>
+                      <span class="fs-xs text-secondary">B</span>
+                    </div>
+                    <div class="d-flex flex-column align-items-center flex-grow-1 gap-1 h-100">
+                      <div class="w-100 bar-chart-bar bar-chart-bar-c" style="height: 25%;"></div>
+                      <span class="fs-xs text-secondary">C</span>
+                    </div>
+                    <div class="d-flex flex-column align-items-center flex-grow-1 gap-1 h-100">
+                      <div class="w-100 bar-chart-bar bar-chart-bar-d" style="height: 5%;"></div>
+                      <span class="fs-xs text-secondary">D</span>
+                    </div>
+                    <div class="d-flex flex-column align-items-center flex-grow-1 gap-1 h-100">
+                      <div class="w-100 bar-chart-bar bar-chart-bar-f" style="height: 0%;"></div>
+                      <span class="fs-xs text-secondary">F</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-8">
+          <div class="card bg-body-tertiary border rounded-4 shadow-sm overflow-hidden">
+            <div class="p-4 border-bottom">
+              <h2 class="text-body-emphasis h5 fw-bold mb-4">Enrolled Courses</h2>
+              <div class="position-relative">
+                <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ps-3 text-secondary">search</span>
+                <input class="form-control form-control-search rounded-3" placeholder="Search courses..." type="text" style="padding-left: 2.5rem;" />
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table w-100 fs-sm text-start align-middle mb-0 table-hover">
+                <thead>
+                  <tr>
+                    <th class="px-4 py-3" scope="col">Course Name</th>
+                    <th class="px-4 py-3" scope="col">Instructor</th>
+                    <th class="px-4 py-3" scope="col">Progress</th>
+                    <th class="px-4 py-3" scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th class="px-4 py-3 fw-medium text-body-emphasis text-nowrap" scope="row">
+                      <div>Introduction to Python</div>
+                      <div class="fs-xs text-secondary fw-normal">CS101</div>
+                    </th>
+                    <td class="px-4 py-3 text-secondary">Dr. Alan Grant</td>
+                    <td class="px-4 py-3">
+                      <div class="progress rounded-pill" style="height: 0.5rem;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="badge fs-xs rounded-pill bg-success-subtle text-success-emphasis">Completed</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="px-4 py-3 fw-medium text-body-emphasis text-nowrap" scope="row">
+                      <div>Data Structures & Algorithms</div>
+                      <div class="fs-xs text-secondary fw-normal">CS203</div>
+                    </th>
+                    <td class="px-4 py-3 text-secondary">Prof. Ellie Sattler</td>
+                    <td class="px-4 py-3">
+                      <div class="progress rounded-pill" style="height: 0.5rem;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="badge fs-xs rounded-pill bg-warning-subtle text-warning-emphasis">In Progress</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="px-4 py-3 fw-medium text-body-emphasis text-nowrap" scope="row">
+                      <div>Software Engineering</div>
+                      <div class="fs-xs text-secondary fw-normal">CS350</div>
+                    </th>
+                    <td class="px-4 py-3 text-secondary">Dr. Ian Malcolm</td>
+                    <td class="px-4 py-3">
+                      <div class="progress rounded-pill" style="height: 0.5rem;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="badge fs-xs rounded-pill bg-warning-subtle text-warning-emphasis">In Progress</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th class="px-4 py-3 fw-medium text-body-emphasis text-nowrap" scope="row">
+                      <div>Organic Chemistry I</div>
+                      <div class="fs-xs text-secondary fw-normal">CHEM201</div>
+                    </th>
+                    <td class="px-4 py-3 text-secondary">Dr. Henry Wu</td>
+                    <td class="px-4 py-3">
+                      <div class="progress rounded-pill" style="height: 0.5rem;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="badge fs-xs rounded-pill bg-danger-subtle text-danger-emphasis">Failed</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="p-3 d-flex align-items-center justify-content-between border-top">
+              <span class="fs-sm text-secondary">
+                Showing <span class="fw-semibold text-body-emphasis">1</span> to <span class="fw-semibold text-body-emphasis">4</span> of <span class="fw-semibold text-body-emphasis">12</span> Courses
+              </span>
+              <div class="btn-group">
+                <button class="btn btn-outline-secondary btn-sm rounded-3">Previous</button>
+                <button class="btn btn-outline-secondary btn-sm rounded-3 ms-2">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

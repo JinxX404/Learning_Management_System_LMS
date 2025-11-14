@@ -1,0 +1,142 @@
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg-light: #f6f7f8;
+      --bs-body-color-light: #18181b;
+      --bs-secondary-color-light: #71717a;
+      --bs-border-color-light: #e4e4e7;
+      --bs-tertiary-bg-light: #ffffff;
+      
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg-dark: #101922;
+      --bs-body-color-dark: #ffffff;
+      --bs-secondary-color-dark: #a1a1aa;
+      --bs-border-color-dark: #324d67;
+      --bs-tertiary-bg-dark: #192633;
+      
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+
+      /* Border Radius (from Tailwind config) */
+      --bs-border-radius: 0.5rem; /* DEFAULT */
+      --bs-border-radius-lg: 0.75rem; /* lg */
+      --bs-border-radius-xl: 1rem; /* xl */
+      --bs-border-radius-pill: 9999px; /* full */
+      
+      /* Focus Ring */
+      --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25); /* focus:ring-primary/50 */
+    }
+    
+    [data-bs-theme="light"] {
+      --bs-body-bg: var(--bs-body-bg-light);
+      --bs-body-color: var(--bs-body-color-light);
+      --bs-secondary-color: var(--bs-secondary-color-light);
+      --bs-border-color: var(--bs-border-color-light);
+      --bs-tertiary-bg: var(--bs-tertiary-bg-light);
+      --bs-body-color-emphasis: var(--bs-body-color-light);
+      
+      /* Form Variables (Light) */
+      --bs-form-control-bg: var(--bs-body-bg-light);
+      --bs-form-control-border-color: var(--bs-border-color-light);
+      --bs-form-control-color: var(--bs-body-color-light);
+      --bs-form-control-placeholder-color: var(--bs-secondary-color-light);
+      --bs-form-select-color: var(--bs-body-color-light);
+      
+      /* Progress Bar (Light) */
+      --bs-progress-bg: var(--bs-border-color-light);
+    }
+    
+    [data-bs-theme="dark"] {
+      --bs-body-bg: var(--bs-body-bg-dark);
+      --bs-body-color: var(--bs-body-color-dark);
+      --bs-secondary-color: var(--bs-secondary-color-dark);
+      --bs-border-color: var(--bs-border-color-dark);
+      --bs-tertiary-bg: var(--bs-tertiary-bg-dark);
+      --bs-body-color-emphasis: var(--bs-body-color-dark);
+      
+      /* Form Variables (Dark) */
+      --bs-form-control-bg: var(--bs-body-bg-dark);
+      --bs-form-control-border-color: var(--bs-border-color-dark);
+      --bs-form-control-color: var(--bs-body-color-dark);
+      --bs-form-control-placeholder-color: var(--bs-secondary-color-dark);
+      --bs-form-select-color: var(--bs-body-color-dark);
+      
+      /* Progress Bar (Dark) */
+      --bs-progress-bg: var(--bs-border-color-dark);
+    }
+    
+    /* Custom Component Styles */
+    
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-secondary-color);
+      transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: var(--bs-primary);
+      color: #ffffff;
+    }
+    
+    /* Custom Logout Button (from bg-primary/20 dark:bg-primary/30) */
+    .btn-logout {
+      background-color: rgba(var(--bs-primary-rgb), 0.2);
+      color: var(--bs-primary);
+      height: 2.5rem; /* h-10 */
+    }
+    [data-bs-theme="dark"] .btn-logout {
+      background-color: rgba(var(--bs-primary-rgb), 0.3);
+      color: var(--bs-body-color); /* dark:text-white */
+    }
+    .btn-logout:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.25);
+      color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .btn-logout:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.35);
+      color: var(--bs-body-color);
+    }
+    
+    /* Custom Drag-n-Drop Border (uses dark border in both themes) */
+    .border-upload {
+      border-color: var(--bs-border-color-dark) !important;
+    }
+    
+    /* Custom Form Control Height (from h-12) */
+    .form-control-h-12 {
+      height: 3rem; /* 48px */
+    }
+    
+    /* Custom Textarea Height (from min-h-28) */
+    .form-control-min-h-28 {
+      min-height: 7rem; /* 112px */
+    }
+    
+    /* Custom Cancel Button */
+    .btn-cancel {
+      --bs-btn-color: var(--bs-secondary-color);
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: transparent;
+      --bs-btn-hover-bg: rgba(0, 0, 0, 0.05);
+    }
+    [data-bs-theme="dark"] .btn-cancel {
+      --bs-btn-hover-bg: rgba(255, 255, 255, 0.05);
+    }

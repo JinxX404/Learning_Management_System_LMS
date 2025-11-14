@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Add New Course";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "courses";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/add-course_admin.css">
+}
+
+<div class="d-flex min-vh-100 w-100">
+    
+
+    <main class="flex-grow-1 p-4 p-md-5">
+        <div class="container-lg mx-auto"> <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="breadcrumb">
+                <a class="breadcrumb-link small fw-medium" asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a>
+                <span class="breadcrumb-divider small fw-medium">/</span>
+                <a class="breadcrumb-link small fw-medium" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement">Courses</a>
+                <span class="breadcrumb-divider small fw-medium">/</span>
+                <span class="text-body-emphasis small fw-medium">Add New</span>
+            </nav>
+            
+            <div class="d-flex flex-wrap justify-content-between gap-3 mb-5">
+                <p class="text-body-emphasis display-6 fw-bolder mb-0" style="letter-spacing: -0.033em;">Add New Course</p>
+            </div>
+
+            <div class="bg-body-card rounded-4 border shadow-sm">
+                <form class="p-4 p-md-5">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="d-flex flex-column">
+                                <p class="text-body-emphasis fw-medium mb-2">Course Title</p>
+                                <input class="form-control" placeholder="e.g. Introduction to Programming" required="" type="text" value=""/>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="d-flex flex-column">
+                                <p class="text-body-emphasis fw-medium mb-2">Course Code</p>
+                                <input class="form-control" placeholder="e.g. CS101" required="" type="text" value=""/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="d-flex flex-column">
+                            <p class="text-body-emphasis fw-medium mb-2">Course Description</p>
+                            <textarea class="form-control" placeholder="Enter a detailed description of the course" style="min-height: 9rem; height: auto;"></textarea>
+                        </label>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <label class="d-flex flex-column">
+                                <p class="text-body-emphasis fw-medium mb-2">Credits</p>
+                                <input class="form-control" min="0" placeholder="e.g. 3" required="" step="1" type="number"/>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="d-flex flex-column">
+                                <p class="text-body-emphasis fw-medium mb-2">Term</p>
+                                <select class="form-select">
+                                    <option>Fall 2024</option>
+                                    <option>Spring 2025</option>
+                                    <option>Summer 2025</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="d-flex flex-column">
+                                <p class="text-body-emphasis fw-medium mb-2">Department</p>
+                                <select class="form-select">
+                                    <option>Computer Science</option>
+                                    <option>Mathematics</option>
+                                    <option>Physics</option>
+                                    <option>History</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="d-flex flex-column">
+                            <p class="text-body-emphasis fw-medium mb-2">Assign Instructor</p>
+                            <select class="form-select">
+                                <option>Dr. Ada Lovelace</option>
+                                <option>Prof. Charles Babbage</option>
+                                <option>Dr. Grace Hopper</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-body-emphasis fw-medium mb-2">Upload Syllabus</p>
+                        <div class="w-100">
+                            <label class="file-dropzone d-flex flex-column align-items-center justify-content-center w-100 rounded-4" for="dropzone-file" style="height: 10rem;">
+                                <div class="d-flex flex-column align-items-center justify-content-center pt-5 pb-6">
+                                    <span class="material-symbols-outlined text-secondary-emphasis fs-2 mb-3">cloud_upload</span>
+                                    <p class="mb-2 small text-secondary-emphasis"><span class="fw-semibold">Click to upload</span> or drag and drop</p>
+                                    <p class="text-xs text-secondary-emphasis">PDF, DOCX, or PPT (MAX. 5MB)</p>
+                                </div>
+                                <input class="d-none" id="dropzone-file" type="file"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-end gap-3 pt-4 border-top">
+                        <a class="btn btn-cancel rounded-3 px-4 py-2" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" role="button">Cancel</a>
+                        <button class="btn btn-primary rounded-3 px-4 py-2 fw-semibold d-flex align-items-center gap-2" type="submit">
+                            Create Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

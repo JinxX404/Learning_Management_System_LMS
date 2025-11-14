@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Add New Academic Term";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "terms";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/add-term_admin.css">
+}
+
+<div class="d-flex min-vh-100">
+    
+    <main class="flex-grow-1 d-flex flex-column">
+   
+      
+      <div class="p-4 p-lg-5 flex-grow-1">
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium">
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="TermManagement">Terms</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add New Term</li>
+          </ol>
+        </nav>
+        
+        <div class="d-flex flex-wrap justify-content-between gap-3 mb-5">
+          <div class="d-flex flex-column gap-2" style="min-width: 18rem;">
+            <h1 class="h3 fw-bold text-body-emphasis mb-0">Add New Academic Term</h1>
+            <p class="text-secondary fs-6 mb-0">Create and configure a new term for the academic year.</p>
+          </div>
+        </div>
+        
+        <div class="card bg-body-tertiary border shadow-sm rounded-4 mx-auto" style="max-width: 56rem;">
+          <div class="card-header bg-transparent px-4 py-3">
+            <h2 class="h5 fw-bold text-body-emphasis mb-0">Term Details</h2>
+          </div>
+          <form class="card-body p-4 vstack gap-4">
+            <div>
+              <label class="form-label fs-sm fw-medium" for="term-name">Term Name</label>
+              <input class="form-control rounded-3" id="term-name" name="term-name" placeholder="e.g., Fall Semester 2024" type="text" />
+            </div>
+            
+            <div class="row g-4">
+              <div class="col-md-6">
+                <label class="form-label fs-sm fw-medium" for="start-date">Start Date</label>
+                <input class="form-control rounded-3" id="start-date" name="start-date" type="date" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fs-sm fw-medium" for="end-date">End Date</label>
+                <input class="form-control rounded-3" id="end-date" name="end-date" type="date" />
+              </div>
+            </div>
+            
+            <div>
+              <label class="form-label fs-sm fw-medium" for="status">Status</label>
+              <select class="form-select rounded-3" id="status" name="status">
+                <option>Upcoming</option>
+                <option>Active</option>
+                <option>Inactive</option>
+              </select>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-3 pt-3">
+              <a class="btn btn-light rounded-3 fs-sm fw-medium" asp-controller="Preview" asp-action="ViewPage" asp-route-name="TermManagement" role="button">Cancel</a>
+              <button class="btn btn-primary rounded-3 fs-sm fw-medium" type="submit">Save Term</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+</div>
