@@ -1,0 +1,114 @@
+@{
+    ViewData["Title"] = "Add New Student";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "students";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/add-student_admin.css">
+}
+
+<div class="d-flex position-relative w-100" style="min-height: 100vh;">
+    
+    <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
+      <div class="mx-auto" style="max-width: 42rem;"> <div class="mb-5">
+          <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb fs-sm fw-medium mb-0">
+              <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
+              <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement">Students</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Add New Student</li>
+            </ol>
+          </nav>
+          <h1 class="h3 fw-bold">Create a New Student Profile</h1>
+        </div>
+        
+        <div class="card bg-body-tertiary border shadow-sm rounded-4">
+          <div class="card-body p-4 p-sm-5">
+            <form action="#" method="POST">
+              <div class="row g-4 gx-md-5">
+                <div class="col-12">
+                  <h3 class="h5 fw-bold pb-3 border-bottom mb-4">Personal Information</h3>
+                </div>
+                
+                <div class="col-12">
+                  <label class="form-label fs-sm fw-medium" for="full-name">Full Name</label>
+                  <input class="form-control form-control-sm rounded-3" id="full-name" name="full-name" placeholder="Enter student's full name" type="text"/>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
+                  <input class="form-control form-control-sm rounded-3" id="email" name="email" placeholder="student@example.com" type="email"/>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="password">Password</label>
+                  <div class="position-relative">
+                    <input class="form-control form-control-sm rounded-3" id="password" name="password" placeholder="Create a strong password" type="password"/>
+                    <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y" type="button" style="padding-top: 0.6rem; padding-bottom: 0.6rem;">
+                      <span class="material-symbols-outlined fs-6">visibility_off</span>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="dob">Date of Birth</label>
+                  <input class="form-control form-control-sm rounded-3 text-secondary" id="dob" name="dob" type="date"/>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="gender">Gender</label>
+                  <select class="form-select form-select-sm rounded-3" id="gender" name="gender">
+                    <option>Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Non-binary</option>
+                    <option>Prefer not to say</option>
+                  </select>
+                </div>
+                
+                <div class="col-12 pt-4">
+                  <h3 class="h5 fw-bold pb-3 border-bottom mb-4">Academic Information</h3>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="department">Department</label>
+                  <select class="form-select form-select-sm rounded-3" id="department" name="department">
+                    <option>Select Department</option>
+                    <option>Computer Science</option>
+                    <option>Business Administration</option>
+                    <option>Mechanical Engineering</option>
+                    <option>Fine Arts</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="status">Status</label>
+                  <select class="form-select form-select-sm rounded-3" id="status" name="status">
+                    <option>Select Status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="prospective">Prospective</option>
+                  </select>
+                </div>
+                
+                <div class="col-12">
+                  <label class="form-label fs-sm fw-medium" for="term">Academic Term</label>
+                  <select class="form-select form-select-sm rounded-3" id="term" name="term">
+                    <option>Select Starting Term</option>
+                    <option>Fall 2024</option>
+                    <option>Spring 2025</option>
+                    <option>Summer 2025</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                <a class="btn btn-cancel fs-sm fw-medium rounded-3 px-3 py-2" asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement" role="button">Cancel</a>
+                <button class="btn btn-primary fs-sm fw-medium rounded-3 px-4 py-2" type="submit">Add Student</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+</div>

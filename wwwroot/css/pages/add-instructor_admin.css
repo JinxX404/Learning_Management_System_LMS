@@ -1,0 +1,197 @@
+
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .material-symbols-outlined.icon-fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #1f2937; /* approx. text-gray-900 */
+      --bs-secondary-color: #6b7280; /* approx. text-gray-500 */
+      --bs-border-color: #e5e7eb; /* approx. border-gray-200 */
+      --bs-tertiary-bg: #f8fafc; /* sidebar bg */
+      --bs-card-bg: #ffffff; /* card bg */
+      
+      /* Form Variables (Light) */
+      --bs-form-control-bg: transparent;
+      --bs-form-control-border-color: #d1d5db; /* approx. border-gray-300 */
+      --bs-form-control-color: #1f2937;
+      --bs-form-control-placeholder-color: #9ca3af; /* approx. placeholder-gray-400 */
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* rounded-xl */
+      
+      /* Focus Ring */
+      --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.5);
+      --bs-form-control-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+      --bs-form-select-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #e5e7eb; /* approx. dark:text-white */
+      --bs-secondary-color: #92adc9; /* dark:text-[#92adc9] */
+      --bs-border-color: #324d67; /* dark:border-[#324d67] */
+      --bs-tertiary-bg: #111a22; /* sidebar dark:bg-[#111a22] */
+      --bs-card-bg: #192633; /* card dark:bg-[#192633] */
+
+      /* Form Variables (Dark) */
+      --bs-form-control-bg: rgba(16, 25, 34, 0.2); /* dark:bg-background-dark/20 */
+      --bs-form-control-border-color: var(--bs-border-color);
+      --bs-form-control-color: var(--bs-body-color);
+      --bs-form-control-placeholder-color: rgba(146, 173, 201, 0.6); /* dark:placeholder:text-[#92adc9]/60 */
+    }
+
+    /* Custom Component Styles */
+    
+    /* Helper classes from Tailwind */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-secondary-color); /* approx. text-gray-700 */
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: #e5e7eb; /* approx. hover:bg-gray-200 */
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+
+    /* Sidebar Dark Theme */
+    [data-bs-theme="dark"] .sidebar-nav .nav-link {
+      color: var(--bs-body-color);
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link:hover {
+      background-color: #233648; /* dark:hover:bg-[#233648] */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
+      background-color: #233648; /* dark:bg-[#233648] */
+      color: var(--bs-body-color);
+    }
+
+    /* Custom Breadcrumb Link */
+    .breadcrumb-item a {
+      text-decoration: none;
+      color: var(--bs-secondary-color);
+    }
+    .breadcrumb-item a:hover {
+      color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .breadcrumb-item a:hover {
+      color: var(--bs-body-color);
+    }
+    .breadcrumb-item.active {
+      color: var(--bs-body-emphasis);
+    }
+    
+    /* Custom Card */
+    .card {
+      --bs-card-bg: var(--bs-card-bg);
+    }
+    
+    /* Custom Form Control Height (from h-11) */
+    .form-control-h-11 {
+      height: 2.75rem; /* 44px */
+    }
+    
+    /* Custom Form Inputs */
+    .form-control, .form-select {
+      font-size: 1rem; /* T-wind text-base */
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .form-control-h-11 {
+      min-height: 2.75rem;
+    }
+    textarea.form-control {
+      min-height: 8rem; /* min-h-32 */
+      padding: 0.75rem; /* p-3 */
+    }
+    
+    /* Custom Cancel Button */
+    .btn-cancel {
+      --bs-btn-color: var(--bs-body-emphasis);
+      --bs-btn-bg: #f3f4f6; /* approx. bg-gray-100 */
+      --bs-btn-border-color: #f3f4f6;
+      --bs-btn-hover-bg: #e5e7eb; /* approx. hover:bg-gray-200 */
+      --bs-btn-hover-border-color: #e5e7eb;
+    }
+    [data-bs-theme="dark"] .btn-cancel {
+      --bs-btn-color: var(--bs-body-color);
+      --bs-btn-bg: #324d67; /* dark:bg-[#324d67] */
+      --bs-btn-border-color: #324d67;
+      --bs-btn-hover-bg: #435f7e; /* dark:hover:bg-[#435f7e] */
+      --bs-btn-hover-border-color: #435f7e;
+    }
+    
+    /* Custom Tags Input Box */
+    .form-control-tags {
+      display: flex;
+      flex-flow: row wrap;
+      gap: 0.5rem; /* gap-2 */
+      min-height: 2.75rem; /* h-11 */
+    }
+    .form-control-tags input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0;
+      flex-grow: 1;
+      min-width: 10rem;
+      color: var(--bs-form-control-color);
+    }
+    .form-control-tags input::placeholder {
+      color: var(--bs-form-control-placeholder-color);
+    }
+    .form-control-tags .badge {
+      font-size: 0.875rem; /* text-sm */
+      font-weight: 500;
+      padding-left: 0.75rem; /* pl-3 */
+      padding-right: 0.5rem; /* pr-2 */
+      padding-top: 0.25rem; /* py-1 */
+      padding-bottom: 0.25rem;
+      --bs-badge-bg: rgba(var(--bs-primary-rgb), 0.1);
+      --bs-badge-color: var(--bs-primary);
+    }
+    .form-control-tags .badge .btn-close {
+      font-size: 10px;
+      margin-left: 0.5rem; /* gap-2 */
+      color: var(--bs-primary);
+      opacity: 0.7;
+    }
+    .form-control-tags .badge .btn-close:hover {
+      opacity: 1;
+    }
+    [data-bs-theme="dark"] .form-control-tags .badge {
+      --bs-badge-bg: rgba(var(--bs-primary-rgb), 0.2);
+      --bs-badge-color: var(--bs-body-color);
+    }
+    [data-bs-theme="dark"] .form-control-tags .badge .btn-close {
+      color: var(--bs-body-color);
+    }
+

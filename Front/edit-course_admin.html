@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Edit Course - Academix LMS</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  
+  <style>
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors from Tailwind config */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-danger: #dc3545; /* Approx. red-600 */
+      --bs-danger-rgb: 220, 53, 69;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #1e293b; /* text-slate-800 */
+      --bs-body-color-emphasis: #0f172a; /* text-slate-900 */
+      --bs-secondary-color: #64748b; /* text-slate-500 */
+      --bs-border-color: #e2e8f0; /* border-slate-200 */
+      --bs-tertiary-bg: #ffffff; /* sidebar bg-white */
+      --bs-card-bg: #ffffff; /* card bg-white */
+      
+      /* Form Variables */
+      --bs-form-control-bg: #f8fafc; /* bg-slate-50 */
+      --bs-form-control-border-color: #cbd5e1; /* border-slate-300 */
+      --bs-form-control-color: #0f172a; /* text-slate-900 */
+      --bs-form-control-placeholder-color: #94a3b8; /* placeholder:text-slate-400 */
+      
+      /* Focus Ring */
+      --bs-focus-ring-color: rgba(17, 115, 212, 0.5); /* focus:ring-primary/50 */
+      --bs-form-check-input-focus-box-shadow: 0 0 0 2px var(--bs-focus-ring-color);
+      --bs-form-control-focus-box-shadow: 0 0 0 2px var(--bs-focus-ring-color);
+      --bs-form-select-focus-box-shadow: 0 0 0 2px var(--bs-focus-ring-color);
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius: 0.25rem; /* T-wind default */
+      --bs-border-radius-lg: 0.5rem; /* T-wind rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* T-wind rounded-xl */
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #e2e8f0; /* dark:text-slate-200 */
+      --bs-body-color-emphasis: #f8fafc; /* dark:text-slate-50 */
+      --bs-secondary-color: #94a3b8; /* dark:text-slate-400 */
+      --bs-border-color: #1e293b; /* dark:border-slate-800 */
+      --bs-tertiary-bg: #101922; /* sidebar dark:bg-background-dark */
+      --bs-card-bg: rgba(15, 23, 42, 0.7); /* card dark:bg-slate-900/70 */
+
+      /* Form Variables (Dark) */
+      --bs-form-control-bg: rgba(30, 41, 59, 0.5); /* dark:bg-slate-800/50 */
+      --bs-form-control-border-color: #334155; /* dark:border-slate-700 */
+      --bs-form-control-color: #f1f5f9; /* dark:text-slate-100 */
+      --bs-form-control-placeholder-color: #64748b; /* dark:placeholder:text-slate-500 */
+    }
+
+    /* Custom Component Styles */
+
+    /* Helper classes from Tailwind */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+    .fw-medium {
+      font-weight: 500;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      border-radius: var(--bs-border-radius-lg); /* T-wind rounded-lg */
+      padding: 0.5rem 0.75rem; /* T-wind py-2 px-3 */
+    }
+    .sidebar-nav .nav-link:not(.active) {
+      color: #334155; /* text-slate-700 */
+    }
+    .sidebar-nav .nav-link:not(.active) .material-symbols-outlined {
+      color: #334155; /* text-slate-700 */
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: #f1f5f9; /* hover:bg-slate-100 */
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.1); /* bg-primary/10 */
+      color: var(--bs-primary);
+    }
+    .sidebar-nav .nav-link.active .material-symbols-outlined {
+      color: var(--bs-primary);
+    }
+    .sidebar-nav .nav-link p {
+      color: var(--bs-body-color); /* text-slate-800 */
+    }
+    .sidebar-nav .nav-link.active p {
+      color: var(--bs-primary);
+    }
+
+    /* Sidebar Dark Theme */
+    [data-bs-theme="dark"] .sidebar-nav .nav-link:not(.active) {
+      color: #cbd5e1; /* dark:text-slate-300 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link:not(.active) .material-symbols-outlined {
+      color: #cbd5e1; /* dark:text-slate-300 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link:hover {
+      background-color: #1e293b; /* dark:hover:bg-slate-800 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.2); /* dark:bg-primary/20 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link p {
+      color: var(--bs-body-color); /* dark:text-slate-200 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active p {
+      color: var(--bs-primary); /* dark:text-primary-300 (using primary) */
+    }
+
+    /* Form Control Sizing (from h-11, text-sm) */
+    .form-control, .form-select {
+      height: 2.75rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+    textarea.form-control {
+      height: auto;
+      min-height: 8rem; /* min-h-32 */
+    }
+
+    /* Custom Button: Delete */
+    .btn-danger-soft {
+      background-color: rgba(var(--bs-danger-rgb), 0.1); /* bg-red-600/10 */
+      color: var(--bs-danger); /* text-red-600 */
+      font-weight: 700;
+      font-size: 0.875rem;
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .btn-danger-soft:hover {
+      background-color: rgba(var(--bs-danger-rgb), 0.2); /* hover:bg-red-600/20 */
+      color: var(--bs-danger);
+    }
+    [data-bs-theme="dark"] .btn-danger-soft {
+      background-color: rgba(248, 113, 113, 0.2); /* dark:bg-red-500/20 (approx) */
+      color: #f87171; /* dark:text-red-400 (approx) */
+    }
+    [data-bs-theme="dark"] .btn-danger-soft:hover {
+      background-color: rgba(248, 113, 113, 0.3); /* dark:hover:bg-red-500/30 (approx) */
+      color: #f87171;
+    }
+    
+    /* Custom Button: Cancel */
+    .btn-cancel {
+      background-color: transparent;
+      color: var(--bs-body-color);
+      font-weight: 700;
+      font-size: 0.875rem;
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .btn-cancel:hover {
+      background-color: #f1f5f9; /* hover:bg-slate-100 */
+      color: var(--bs-body-color);
+    }
+    [data-bs-theme="dark"] .btn-cancel:hover {
+      background-color: #1e293b; /* dark:hover:bg-slate-800 */
+    }
+  </style>
+</head>
+<body class="bg-body text-body">
+  <div class="d-flex vh-100">
+    <aside class="d-flex flex-column border-end bg-body-tertiary p-4" style="width: 16rem; min-width: 16rem;">
+      <div class="d-flex gap-3 align-items-center mb-4">
+        <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Academix LMS logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD5gL7JjhKIYSG3vfho0LCnnZWIUHrKfVc9iIb6X4O1vPS05tggBOvYqAAGXvadJYgr37lt-A2VHbHGZgXSkEWQmnAZ6nfZCKWIwpxV9PJlKKmAAFWFihuBdpOMeQh4tLBIzpxM-bruogNSHg1Ym6Zc8kND1e2bC-0lbOlOs-0NdIbPCanPmyAw-8PFpXpesi_AtbiVk807YXyOq2tMnRUHs0w4nL9ywEfhDUtX6BK9Kk8cXH2c8PMlSEvSEnGGy74iemoqwEo5oXI"); width: 2.5rem; height: 2.5rem;'></div>
+        <div class="d-flex flex-column">
+          <h1 class="text-body-emphasis h6 fw-medium mb-0">Admin Portal</h1>
+          <p class="text-body-secondary fs-sm mb-0">Academix LMS</p>
+        </div>
+      </div>
+      
+      <nav class="flex-column gap-2 flex-grow-1 sidebar-nav mt-4">
+        <a class="nav-link d-flex align-items-center gap-3" href="#">
+          <span class="material-symbols-outlined">dashboard</span>
+          <p class="fs-sm fw-medium mb-0">Dashboard</p>
+        </a>
+        <a class="nav-link active d-flex align-items-center gap-3" href="#">
+          <span class="material-symbols-outlined fill">menu_book</span>
+          <p class="fs-sm fw-medium mb-0">Courses</p>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-3" href="#">
+          <span class="material-symbols-outlined">groups</span>
+          <p class="fs-sm fw-medium mb-0">Students</p>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-3" href="#">
+          <span class="material-symbols-outlined">school</span>
+          <p class="fs-sm fw-medium mb-0">Instructors</p>
+        </a>
+        <a class="nav-link d-flex align-items-center gap-3" href="#">
+          <span class="material-symbols-outlined">settings</span>
+          <p class="fs-sm fw-medium mb-0">Settings</p>
+        </a>
+      </nav>
+      
+      <div class="d-flex flex-column gap-4 mt-auto">
+        <button class="btn btn-primary fw-bold fs-sm py-2 rounded-3">
+          <span>Add New Course</span>
+        </button>
+        <div class="d-flex flex-column gap-1 border-top pt-4 sidebar-nav">
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined">help</span>
+            <p class="fs-sm fw-medium mb-0">Help</p>
+          </a>
+          <a class="nav-link d-flex align-items-center gap-3" href="#">
+            <span class="material-symbols-outlined">logout</span>
+            <p class="fs-sm fw-medium mb-0">Logout</p>
+          </a>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
+      <div class="container-xl mx-auto">
+        
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium">
+            <li class="breadcrumb-item"><a href="#" class="text-body-secondary text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="#" class="text-body-secondary text-decoration-none">Courses</a></li>
+            <li class="breadcrumb-item active text-body" aria-current="page">Edit Course</li>
+          </ol>
+        </nav>
+        
+        <div class="mb-5">
+          <h1 class="display-5 fw-bolder text-body-emphasis">Edit Course: Introduction to Web Design</h1>
+        </div>
+        
+        <div class="card border shadow-sm rounded-4">
+          <form>
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Core Information</h3>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Title</label>
+                  <input class="form-control rounded-3" value="Introduction to Web Design" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Code</label>
+                  <input class="form-control rounded-3" value="WD101" />
+                </div>
+              </div>
+              <div class="mt-4">
+                <label class="form-label fw-medium fs-sm mb-2">Course Description</label>
+                <textarea class="form-control rounded-3" rows="5">Learn the fundamentals of web design, including HTML, CSS, and responsive design principles. This course covers everything from basic syntax to creating modern, mobile-first websites.</textarea>
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Organization & Details</h3>
+              <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Category</label>
+                  <select class="form-select rounded-3">
+                    <option>Technology</option>
+                    <option selected>Web Development</option>
+                    <option>Design</option>
+                  </select>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Assigned Instructor</label>
+                  <select class="form-select rounded-3">
+                    <option selected>Dr. Evelyn Reed</option>
+                    <option>Prof. Samuel Chen</option>
+                    <option>Dr. Aisha Khan</option>
+                  </select>
+                </div>
+                <div class="col-md-12 col-lg-4">
+                  <label class="form-label fw-medium fs-sm mb-2">Course Price ($)</label>
+                  <input class="form-control rounded-3" type="number" value="199.99" />
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-4">Media</h3>
+              <label class="form-label fw-medium fs-sm mb-2">Course Thumbnail</label>
+              <div class="d-flex align-items-center gap-4">
+                <img class="rounded-3 border" data-alt="Abstract image of HTML code on a screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh2tqHoZvGXJCPuPPCUKCXaxZVD8RIei2qj7baGA39pT4K6DkhYob4GlDtV2mbHOat52IzuLA1VR43LPKIG3Mhbu7IEHcvevHam-xh5WSI-RvxQf8qVu5VOfUtUgzarR2CRSskaP9EdT-Ef8o7wrNUBA0m9Icfrh58wZAuHPhPszhtWoy30vF7AMYYCGjZjpkeMemSuCRarrwhl3WbWpsTqfOqHlubZHAh1H4HnXCHbT4TjoqJZNEl21QYpS-CwIVT0JiNc4wlO34" style="width: 10rem; height: 6rem; object-fit: cover;" />
+                <label class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 rounded-3 fw-bold fs-sm py-2" for="file-upload">
+                  <span class="material-symbols-outlined fs-6">upload</span>
+                  <span>Upload New Image</span>
+                </label>
+                <input class="visually-hidden" id="file-upload" name="file-upload" type="file" />
+              </div>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 border-bottom">
+              <h3 class="h5 fw-bold text-body-emphasis mb-3">Course Status</h3>
+              <div class="d-flex flex-wrap gap-4">
+                <div class="form-check">
+                  <input checked class="form-check-input" id="status-published" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-published">Published</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" id="status-draft" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-draft">Draft</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" id="status-archived" name="status" type="radio" />
+                  <label class="form-check-label fs-sm" for="status-archived">Archived</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer bg-transparent p-4 p-md-5 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-4">
+              <button class="btn btn-danger-soft d-inline-flex align-items-center gap-2 py-2 px-4" type="button">
+                <span class="material-symbols-outlined fs-6">delete</span>
+                <span>Delete Course</span>
+              </button>
+              <div class="d-flex gap-3">
+                <button class="btn btn-cancel py-2 px-4" type="button">
+                  <span>Cancel</span>
+                </button>
+                <button class="btn btn-primary rounded-3 fw-bold fs-sm py-2 px-4" type="submit">
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

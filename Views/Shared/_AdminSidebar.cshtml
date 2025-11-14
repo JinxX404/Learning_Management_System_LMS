@@ -1,0 +1,63 @@
+@{
+    var active = (string?)ViewData["AdminActive"] ?? string.Empty;
+}
+
+<aside class="sidebar d-flex flex-column bg-body-tertiary border-end" style="width: 16rem; min-width: 16rem;">
+    <div class="d-flex flex-column justify-content-between h-100 p-4">
+        <div class="d-flex flex-column gap-4">
+            <div class="d-flex align-items-center gap-3 px-2">
+                <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Academix LMS logo" style="width: 40px; height: 40px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCOSLZ0pwoulFdwg2b1w1RMGLSdkU_Gv-ijMGkOB0pc-WrQ0m63MJcOCttwd-KWtQ5tghiFXcCCMPAVhCtKR-eQ7-NbLLa_-SQoW_Gl-Kur19pgtIqN4v0n_oKJ6lcVgNrZ_iXnZEUZjPp52q0jkR7rt233lsx2V6FIe4vINF5Asy5aqlzIT_Q2dq-0CMdnBunQ70id7QGdw57QE9N3IKpmVA6HFnCjcSEyZm5q5azgtfUtVpgjm_tshApKsjb-pn8QQYDluhT_eAo');"></div>
+                <div class="d-flex flex-column">
+                    <h1 class="text-body-emphasis fs-6 fw-medium mb-0">Academix LMS</h1>
+                    <p class="text-secondary fs-sm mb-0">Admin Portal</p>
+                </div>
+            </div>
+
+            <nav class="nav flex-column gap-2 mt-4 sidebar-nav">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "dashboard" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="fs-sm fw-medium">Dashboard</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "courses" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    <span class="fs-sm fw-medium">Courses</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "instructors" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">
+                    <span class="material-symbols-outlined">co_present</span>
+                    <span class="fs-sm fw-medium">Instructors</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "students" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement">
+                    <span class="material-symbols-outlined">school</span>
+                    <span class="fs-sm fw-medium">Students</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "terms" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="TermManagement">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    <span class="fs-sm fw-medium">Academic Terms</span>
+                </a>
+                <!-- <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "assets" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="UploadAssetInstructor">
+                    <span class="material-symbols-outlined">folder</span>
+                    <span class="fs-sm fw-medium">Learning Assets</span>
+                </a> -->
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "users" ? "active" : string.Empty)" href="#">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="fs-sm fw-medium">Users</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "reports" ? "active" : string.Empty)" href="#">
+                    <span class="material-symbols-outlined">assessment</span>
+                    <span class="fs-sm fw-medium">Reports</span>
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "settings" ? "active" : string.Empty)" href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="fs-sm fw-medium">Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="mt-4">
+            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="#">
+                <span class="material-symbols-outlined">help</span>
+                <span class="fs-sm fw-medium">Help Center</span>
+            </a>
+        </div>
+    </div>
+</aside>

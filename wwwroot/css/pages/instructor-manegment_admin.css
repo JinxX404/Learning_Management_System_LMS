@@ -1,0 +1,171 @@
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .material-symbols-outlined.fill {
+      font-variation-settings:
+        'FILL' 1,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors from Tailwind config */
+      --bs-primary: rgb(17, 115, 212);
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-primary-hover: rgb(15, 103, 190);
+      --bs-success: #22C55E;
+      --bs-success-rgb: 34, 197, 94;
+      --bs-warning: #F59E0B;
+      --bs-warning-rgb: 245, 158, 11;
+      --bs-danger: #EF4444;
+      --bs-danger-rgb: 239, 68, 68;
+      --bs-info: #06B6D4;
+      --bs-info-rgb: 6, 182, 212;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #18232E; /* text-light */
+      --bs-secondary-color: #6b7280; /* approx. text-gray-500 */
+      --bs-tertiary-color: #6b7280;
+      --bs-border-color: #E5E7EB; /* border-light */
+      --bs-tertiary-bg: #ffffff; /* card-light */
+      --bs-body-secondary-bg: #f6f7f8; /* background-light */
+      
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* T-wind rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* T-wind rounded-xl */
+      
+      /* Form Variables */
+      --bs-form-check-input-border: 1px solid #ced4da; /* approx. border-gray-300 */
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #F9FAFB; /* text-dark */
+      --bs-secondary-color: #9ca3af; /* approx. text-gray-400 */
+      --bs-tertiary-color: #9ca3af;
+      --bs-border-color: #2A3B4D; /* border-dark */
+      --bs-tertiary-bg: #18232E; /* card-dark */
+      --bs-body-secondary-bg: #101922; /* background-dark */
+
+      /* Form Variables (Dark) */
+      --bs-form-check-input-border: 1px solid #4b5563; /* approx. border-gray-600 */
+      --bs-form-check-input-bg: var(--bs-tertiary-bg);
+    }
+    
+    /* Custom primary button hover */
+    .btn-primary {
+        --bs-btn-hover-bg: var(--bs-primary-hover);
+        --bs-btn-hover-border-color: var(--bs-primary-hover);
+    }
+    
+    /* Custom helper class */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+
+    /* Custom Component Styles */
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-body-color);
+      padding: 0.5rem 0.75rem; /* py-2 px-3 */
+      border-radius: var(--bs-border-radius-lg); /* rounded-lg */
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+    
+    /* Filter Dropdown Buttons */
+    .btn-filter {
+      --bs-btn-bg: var(--bs-body-secondary-bg);
+      --bs-btn-color: var(--bs-body-color);
+      --bs-btn-border-color: var(--bs-border-color);
+      --bs-btn-hover-bg: var(--bs-body-secondary-bg);
+      --bs-btn-hover-color: var(--bs-body-color);
+      --bs-btn-hover-border-color: var(--bs-border-color);
+    }
+    
+    /* Table Header */
+    .table thead {
+      font-size: 0.75rem; /* text-xs */
+      text-transform: uppercase;
+      letter-spacing: 0.05em; /* tracking-wider */
+      --bs-table-bg: var(--bs-body-secondary-bg);
+      --bs-table-color: var(--bs-secondary-color);
+    }
+    
+    .table tbody tr:hover {
+      --bs-table-hover-bg: rgba(var(--bs-primary-rgb), 0.05); /* hover:bg-primary/5 */
+    }
+    
+    /* Table Action Buttons */
+    .btn-icon-table {
+      padding: 0.5rem; /* p-2 */
+      border-radius: 9999px; /* rounded-full */
+    }
+    .btn-icon-table:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1); /* hover:bg-primary/10 */
+    }
+    .btn-icon-table .material-symbols-outlined {
+      font-size: 1.25rem; /* !text-xl */
+    }
+    
+    /* Pagination */
+    .pagination {
+      --bs-pagination-border-color: var(--bs-border-color);
+      --bs-pagination-color: var(--bs-secondary-color);
+      --bs-pagination-bg: var(--bs-tertiary-bg);
+      --bs-pagination-hover-bg: #e9ecef;
+      --bs-pagination-hover-color: #495057;
+      --bs-pagination-active-bg: rgba(var(--bs-primary-rgb), 0.1);
+      --bs-pagination-active-color: var(--bs-primary);
+      --bs-pagination-active-border-color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .pagination {
+      --bs-pagination-hover-bg: #343a40;
+      --bs-pagination-hover-color: #dee2e6;
+      --bs-pagination-active-bg: rgba(var(--bs-primary-rgb), 0.2);
+    }
+    
+    /* Theme Toggler FAB */
+    .theme-toggler {
+      background-color: #18232E; /* card-dark */
+      color: #F9FAFB; /* text-dark */
+    }
+    .theme-toggler .icon-dark {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler {
+      background-color: #ffffff; /* card-light */
+      color: #18232E; /* text-light */
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-light {
+      display: none;
+    }
+    [data-bs-theme="dark"] .theme-toggler .icon-dark {
+      display: inline;
+    }

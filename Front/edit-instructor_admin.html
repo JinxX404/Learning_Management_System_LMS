@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Edit Instructor - Academix LMS</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  
+  <style>
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #1f2937; /* approx. text-gray-900 */
+      --bs-secondary-color: #6b7280; /* approx. text-gray-500 */
+      --bs-border-color: #e5e7eb; /* approx. border-gray-200 */
+      --bs-tertiary-bg: #ffffff; /* bg-white (sidebar, card) */
+      --bs-body-tertiary-color: #374151; /* approx. text-gray-700 */
+      
+      /* Form Variables (Light) */
+      --bs-form-control-bg: #ffffff; /* bg-white */
+      --bs-form-control-border-color: #d1d5db; /* approx. border-gray-300 */
+      --bs-form-control-color: #1f2937; /* approx. text-gray-900 */
+      --bs-form-control-placeholder-color: #9ca3af; /* approx. placeholder-gray-400 */
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* rounded-xl */
+      
+      /* Focus Ring */
+      --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.5);
+      --bs-form-control-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+      --bs-form-select-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+      --bs-form-check-focus-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #e5e7eb; /* approx. dark:text-white */
+      --bs-secondary-color: #92adc9; /* dark:text-[#92adc9] */
+      --bs-border-color: #324d67; /* dark:border-[#324d67] */
+      --bs-tertiary-bg: #192633; /* dark:bg-[#192633] (sidebar, card) */
+      --bs-body-tertiary-color: #d1d5db; /* approx. dark:text-gray-300 */
+
+      /* Form Variables (Dark) */
+      --bs-form-control-bg: #101922; /* dark:bg-[#101922] */
+      --bs-form-control-border-color: #324d67; /* dark:border-[#324d67] */
+      --bs-form-control-color: #e5e7eb; /* approx. dark:text-white */
+      --bs-form-control-placeholder-color: #92adc9; /* dark:placeholder:text-[#92adc9] */
+      
+      --bs-form-check-input-bg: #4b5563; /* approx. dark:bg-gray-700 */
+    }
+
+    /* Custom Component Styles */
+    
+    /* Helper classes from Tailwind */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+    .fs-xs {
+      font-size: 0.75rem; /* T-wind text-xs */
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-body-tertiary-color);
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: #f3f4f6; /* approx. hover:bg-gray-100 */
+    }
+    .sidebar-nav .nav-link .material-symbols-outlined {
+      color: #6b7280; /* approx. text-gray-500 */
+    }
+
+    /* Sidebar Dark Theme */
+    [data-bs-theme="dark"] .sidebar-nav .nav-link {
+      color: #d1d5db; /* approx. dark:text-gray-300 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.2); /* dark:hover:bg-primary/20 */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link .material-symbols-outlined {
+      color: #e5e7eb; /* approx. dark:text-white */
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active .material-symbols-outlined {
+      color: var(--bs-primary);
+    }
+    
+    /* Sidebar Active State (Matches Tailwind) */
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.2); /* bg-primary/20 */
+      color: var(--bs-primary);
+    }
+    [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
+      background-color: var(--bs-primary); /* dark:bg-primary */
+      color: #ffffff; /* dark:text-white */
+    }
+    
+    /* Custom Breadcrumb Link */
+    .breadcrumb-item a {
+      text-decoration: none;
+      color: var(--bs-secondary-color);
+    }
+    .breadcrumb-item a:hover {
+      color: var(--bs-primary);
+    }
+    .breadcrumb-item.active {
+      color: var(--bs-body-emphasis);
+    }
+    
+    /* Custom Form Control Height (from h-12) */
+    .form-control-h-12 {
+      height: 3rem; /* 48px */
+    }
+    
+    /* Custom Textarea Height (from h-32) */
+    textarea.form-control {
+      min-height: 8rem;
+    }
+    
+    /* Custom Tags Input Box */
+    .form-control-tags {
+      display: flex;
+      flex-flow: column;
+      gap: 0.75rem; /* mb-3 */
+    }
+    .form-control-tags .tags-wrapper {
+      display: flex;
+      flex-flow: row wrap;
+      gap: 0.5rem; /* gap-2 */
+    }
+    .form-control-tags .badge {
+      font-size: 0.75rem; /* text-xs */
+      font-weight: 500;
+      padding-left: 0.75rem; /* px-3 */
+      padding-right: 0.75rem;
+      padding-top: 0.25rem; /* py-1 */
+      padding-bottom: 0.25rem;
+      --bs-badge-bg: rgba(var(--bs-primary-rgb), 0.2);
+      --bs-badge-color: var(--bs-primary);
+    }
+    .form-control-tags .badge .btn-close {
+      font-size: 10px;
+      margin-left: 0.375rem; /* gap-1.5 */
+      color: var(--bs-primary);
+      opacity: 0.7;
+    }
+    .form-control-tags .badge .btn-close:hover {
+      opacity: 1;
+    }
+    .form-control-tags .form-control-tags-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 0.25rem 0.25rem; /* px-1 */
+      flex-grow: 1;
+      min-width: 10rem;
+      height: 2.5rem; /* h-10 */
+      color: var(--bs-form-control-color);
+    }
+    .form-control-tags .form-control-tags-input::placeholder {
+      color: var(--bs-form-control-placeholder-color);
+    }
+    [data-bs-theme="dark"] .form-control-tags .badge {
+      --bs-badge-bg: rgba(var(--bs-primary-rgb), 0.3);
+      --bs-badge-color: #ffffff;
+    }
+    [data-bs-theme="dark"] .form-control-tags .badge .btn-close {
+      color: #ffffff;
+      --bs-btn-close-white-filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    /* Custom Cancel Button (btn-light override) */
+    .btn-light {
+      --bs-btn-color: var(--bs-body-tertiary-color);
+      --bs-btn-bg: var(--bs-tertiary-bg);
+      --bs-btn-border-color: var(--bs-form-control-border-color);
+      --bs-btn-hover-bg: #f8f9fa;
+    }
+    [data-bs-theme="dark"] .btn-light {
+      --bs-btn-color: var(--bs-body-tertiary-color);
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: var(--bs-border-color);
+      --bs-btn-hover-bg: rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-body text-body">
+  <div class="d-flex vh-100 w-100">
+    <aside class="d-none d-lg-flex flex-column bg-tertiary border-end vh-100 position-sticky top-0" style="width: 16rem; min-width: 16rem;">
+      <div class="d-flex h-100 flex-column justify-content-between p-4">
+        <div class="d-flex flex-column gap-4">
+          <div class="d-flex align-items-center gap-3 px-3 py-2">
+            <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Academix LMS Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDtikzGJE4n2KQl5-ulEA_o0khuVL-YYw5ndtscddanqWvtqVujSqGWyVesP9c8FCk4VE3X8HOdKkJhJE_JhIsa_gjgV9dhUkAgk8r7424Lz3jkP5Z11VO_cBYJFVB2C-_Mr_R17tL04k6n7bj6iEDgvcyQCvKHwdcmY-Kn4gBuzdSbiddMVnxcYDU2LzeYdVnYlD44qII5hRhGw0_ZunO2mNsZnNqa2JWpgyT39ipt35-dXIAvpyiW8KfaWcZWIAO5NNkmH-1uDoE"); width: 2.5rem; height: 2.5rem;'></div>
+            <div class="d-flex flex-column">
+              <h1 class="text-body-emphasis fs-6 fw-medium mb-0">Admin Portal</h1>
+              <p class="text-secondary fs-sm mb-0">Academix LMS</p>
+            </div>
+          </div>
+          <nav class="d-flex flex-column gap-1 mt-4 sidebar-nav">
+            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+              <span class="material-symbols-outlined">dashboard</span>
+              <p class="fs-sm fw-medium mb-0">Dashboard</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+              <span class="material-symbols-outlined">school</span>
+              <p class="fs-sm fw-medium mb-0">Courses</p>
+            </a>
+            <a class="nav-link active d-flex align-items-center gap-3 px-3 py-2" href="#">
+              <span class="material-symbols-outlined">group</span>
+              <p class="fs-sm fw-medium mb-0">Instructors</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+              <span class="material-symbols-outlined">face</span>
+              <p class="fs-sm fw-medium mb-0">Students</p>
+            </a>
+            <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+              <span class="material-symbols-outlined">settings</span>
+              <p class="fs-sm fw-medium mb-0">Settings</p>
+            </a>
+          </nav>
+        </div>
+        <nav class="d-flex flex-column gap-1 sidebar-nav">
+          <a class="nav-link d-flex align-items-center gap-3 px-3 py-2" href="#">
+            <span class="material-symbols-outlined">logout</span>
+            <p class="fs-sm fw-medium mb-0">Logout</p>
+          </a>
+        </nav>
+      </div>
+    </aside>
+    
+    <main class="flex-grow-1 p-4 p-lg-5 overflow-auto">
+      <div class="mx-auto" style="max-width: 56rem;">
+        
+        <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium mb-0">
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="#">Instructors</a></li>
+            <li class="breadcrumb-item active text-body-emphasis" aria-current="page">Edit Instructor</li>
+          </ol>
+        </nav>
+        
+        <div class="d-flex flex-wrap justify-content-between gap-3 mb-5">
+          <h1 class="text-body-emphasis h2 fw-bolder">Edit Instructor: John Doe</h1>
+        </div>
+        
+        <div class="card bg-tertiary border rounded-4 shadow-sm">
+          <form>
+            <div class="card-body p-4 p-lg-5 vstack gap-5">
+              
+              <section>
+                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Basic Information</h3>
+                <div class="row g-4 mt-1">
+                  <div class="col-md-6">
+                    <label class="form-label fs-sm fw-medium" for="full-name">Full Name</label>
+                    <input class="form-control form-control-h-12 rounded-lg" id="full-name" type="text" value="John Doe" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
+                    <input class="form-control form-control-h-12 rounded-lg" id="email" type="email" value="john.doe@academix.edu" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fs-sm fw-medium" for="password">Password</label>
+                    <input class="form-control form-control-h-12 rounded-lg" id="password" placeholder="Leave blank to keep current password" type="password" />
+                  </div>
+                </div>
+              </section>
+              
+              <section>
+                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Academic Details</h3>
+                <div class="row g-4 mt-1">
+                  <div class="col-12">
+                    <label class="form-label fs-sm fw-medium" for="department">Department</label>
+                    <select class="form-select form-control-h-12 rounded-lg fs-sm" id="department">
+                      <option>Computer Science</option>
+                      <option selected>Mathematics</option>
+                      <option>Physics</option>
+                      <option>Literature</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label fs-sm fw-medium" for="biography">Biography</label>
+                    <textarea class="form-control rounded-lg fs-sm p-4" id="biography" placeholder="Enter a professional bio...">Dr. John Doe is a professor in the Mathematics department, specializing in theoretical physics and quantum mechanics. He has published numerous papers and is a recipient of the prestigious Academix Research Award.</textarea>
+                  </div>
+                </div>
+              </section>
+              
+              <section>
+                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Course Management</h3>
+                <div class="mt-4">
+                  <label class="form-label fs-sm fw-medium" for="assign-courses">Assigned Courses</label>
+                  <div class="form-control form-control-tags p-3 rounded-lg">
+                    <div class="tags-wrapper">
+                      <span class="badge rounded-pill">
+                        <span>MATH-101: Calculus I</span>
+                        <button class="btn-close" type="button" aria-label="Remove"></button>
+                      </span>
+                      <span class="badge rounded-pill">
+                        <span>PHYS-201: Quantum Mechanics</span>
+                        <button class="btn-close" type="button" aria-label="Remove"></button>
+                      </span>
+                    </div>
+                    <input class="form-control-tags-input fs-sm" id="assign-courses" placeholder="Search and add courses..." />
+                  </div>
+                </div>
+              </section>
+              
+              <section>
+                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Account Control</h3>
+                <div class="mt-4">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="text-body-emphasis fs-sm fw-medium mb-0">Account Status</p>
+                      <p class="text-secondary fs-xs mt-1 mb-0">Inactive accounts cannot log in or be assigned to new courses.</p>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="account-status" checked>
+                      <label class="form-check-label fs-sm fw-medium ms-2" for="account-status">Active</label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              
+            </div>
+            
+            <div class="card-footer bg-transparent d-flex justify-content-end gap-3 p-4 border-top">
+              <button class="btn btn-light rounded-lg fs-sm fw-medium px-4 py-2" type="button">Cancel</button>
+              <button class="btn btn-primary rounded-lg fs-sm fw-medium px-4 py-2" type="submit">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

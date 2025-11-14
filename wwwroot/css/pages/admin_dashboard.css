@@ -1,0 +1,115 @@
+/* Define theme colors using Bootstrap 5.3+ CSS Variables */
+        :root, [data-bs-theme="light"] {
+            --bs-primary: #1173d4;
+            --bs-primary-rgb: 17, 115, 212;
+            --bs-success: #22C55E;
+            --bs-success-rgb: 34, 197, 94;
+            --bs-warning: #F59E0B;
+            --bs-warning-rgb: 245, 158, 11;
+            --bs-danger: #EF4444;
+            --bs-danger-rgb: 239, 68, 68;
+            --bs-info: #06B6D4;
+            --bs-info-rgb: 6, 182, 212;
+
+            --bs-body-bg: #f6f7f8; /* background-light */
+            --bs-body-color: #18232E; /* text-light */
+            --bs-border-color: #E5E7EB; /* border-light */
+            
+            /* Custom variable for components */
+            --bs-component-bg: #ffffff; /* component-light */
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-primary: #1173d4;
+            --bs-primary-rgb: 17, 115, 212;
+            /* Keep semantic colors consistent, Bootstrap will handle subtle shades */
+            --bs-success: #22C55E;
+            --bs-warning: #F59E0B;
+            --bs-danger: #EF4444;
+            --bs-info: #06B6D4;
+
+            --bs-body-bg: #101922; /* background-dark */
+            --bs-body-color: #F9FAFB; /* text-dark */
+            --bs-border-color: #2A3B4D; /* border-dark */
+            
+            /* Custom variable for components */
+            --bs-component-bg: #18232E; /* component-dark */
+        }
+
+        /* Apply component background */
+        .bg-body-component {
+            background-color: var(--bs-component-bg) !important;
+        }
+
+        /* Apply custom font */
+        body {
+            font-family: "Lexend", sans-serif;
+        }
+
+        /* Material Symbols style */
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+            line-height: 1; /* Aligns icons better */
+        }
+        
+        /* Filled icon style */
+        .material-symbols-filled {
+            font-family: 'Material Symbols Outlined';
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 256px;
+            min-width: 256px;
+        }
+
+        /* Custom nav link styles to match Tailwind */
+        .nav-link {
+            color: var(--bs-body-color);
+        }
+
+        [data-bs-theme="light"] .nav-link:not(.active):hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-bs-theme="dark"] .nav-link:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-link.active {
+            background-color: var(--bs-primary-bg-subtle) !important;
+            color: var(--bs-primary) !important;
+        }
+        
+        /* Stat card hover effect */
+        .stat-card:hover {
+            border-color: var(--bs-primary) !important;
+            opacity: 0.85;
+            transition: border-color 0.3s, opacity 0.3s;
+        }
+
+        /* Custom bar chart styles */
+        .chart-bar {
+             background-color: var(--bs-primary-bg-subtle);
+        }
+        [data-bs-theme="dark"] .chart-bar {
+            /* Mimic Tailwind's dark:bg-primary/30 */
+            background-color: var(--bs-primary);
+            opacity: 0.3;
+        }
+        .fs-xs {
+            font-size: 0.75rem; /* For bar chart labels */
+        }
+
+        /* Theme toggle icon display */
+        .dark-icon { display: none; }
+        .light-icon { display: inline; }
+        
+        [data-bs-theme="dark"] .dark-icon { display: inline; }
+        [data-bs-theme="dark"] .light-icon { display: none; }
+     

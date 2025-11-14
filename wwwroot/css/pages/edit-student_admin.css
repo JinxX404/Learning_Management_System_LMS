@@ -1,0 +1,127 @@
+    /* Google Material Symbols Base Style */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .material-symbols-outlined.icon-fill {
+      font-variation-settings: 'FILL' 1;
+    }
+
+    /* Theme Consolidation & Customization
+      Mapping Tailwind's theme.extend to Bootstrap 5.3 CSS Variables
+    */
+    :root {
+      /* Colors */
+      --bs-primary: #1173d4;
+      --bs-primary-rgb: 17, 115, 212;
+      --bs-success: #10b981;
+      --bs-danger: #ef4444;
+
+      /* Light Mode Palette (from Tailwind config) */
+      --bs-body-bg: #f6f7f8; /* background-light */
+      --bs-body-color: #1f2937; /* text-light */
+      --bs-secondary-color: #6b7280; /* text-muted-light */
+      --bs-border-color: #e5e7eb; /* border-light */
+      --bs-tertiary-bg: #ffffff; /* card-light */
+
+      /* Font */
+      --bs-body-font-family: "Lexend", sans-serif;
+      
+      /* Border Radius */
+      --bs-border-radius-lg: 0.5rem; /* rounded-lg */
+      --bs-border-radius-xl: 0.75rem; /* rounded-xl */
+      
+      /* Focus Ring (from focus:ring-primary/50) */
+      --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.5);
+      --bs-form-control-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+      --bs-form-select-focus-box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+      
+      /* Form Variables (Light) */
+      --bs-form-control-bg: var(--bs-body-bg);
+      --bs-form-control-border-color: var(--bs-border-color);
+      --bs-form-control-color: var(--bs-body-color);
+      --bs-form-control-placeholder-color: var(--bs-secondary-color);
+      --bs-form-select-color: var(--bs-body-color); /* Set select text color */
+    }
+
+    [data-bs-theme="dark"] {
+      /* Dark Mode Palette (from Tailwind config) */
+      --bs-body-bg: #101922; /* background-dark */
+      --bs-body-color: #e5e7eb; /* text-dark */
+      --bs-secondary-color: #92adc9; /* text-muted-dark */
+      --bs-border-color: #324d67; /* border-dark */
+      --bs-tertiary-bg: #192633; /* card-dark */
+      
+      /* Form Variables (Dark) */
+      --bs-form-control-bg: var(--bs-body-bg);
+      --bs-form-control-border-color: var(--bs-border-color);
+      --bs-form-control-color: var(--bs-body-color);
+      --bs-form-control-placeholder-color: var(--bs-secondary-color);
+      --bs-form-select-color: var(--bs-body-color);
+    }
+
+    /* Custom Component Styles */
+    
+    /* Helper classes from Tailwind */
+    .fs-sm {
+      font-size: 0.875rem; /* T-wind text-sm */
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav .nav-link {
+      color: var(--bs-secondary-color);
+      border-radius: var(--bs-border-radius-lg);
+      font-weight: 500;
+    }
+    .sidebar-nav .nav-link:hover {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+    .sidebar-nav .nav-link.active {
+      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      color: var(--bs-primary);
+    }
+
+    /* Custom Form Control Size (from h-12, text-sm) */
+    .form-control, .form-select {
+      height: 3rem; /* T-wind h-12 */
+      font-size: 0.875rem; /* T-wind text-sm */
+      padding-left: 1rem; /* T-wind px-4 */
+      padding-right: 1rem;
+      border-radius: var(--bs-border-radius-lg);
+    }
+    .form-select {
+      background-position: right 1rem center; /* T-wind px-4 */
+    }
+    
+    /* Custom Button Heights (from h-10, h-11) */
+    .btn-h-10 { height: 2.5rem; }
+    .btn-h-11 { height: 2.75rem; }
+    
+    /* Custom "Cancel" Button (btn-light override) */
+    .btn-light {
+      --bs-btn-bg: var(--bs-body-bg);
+      --bs-btn-color: var(--bs-body-color);
+      --bs-btn-border-color: var(--bs-border-color);
+      --bs-btn-hover-bg: #e9ecef; /* Approx. gray-100 */
+    }
+    [data-bs-theme="dark"] .btn-light {
+      --bs-btn-bg: var(--bs-tertiary-bg); /* card-dark */
+      --bs-btn-color: var(--bs-body-color);
+      --bs-btn-border-color: var(--bs-border-color);
+      --bs-btn-hover-bg: var(--bs-border-color); /* border-dark */
+    }
+
+    /* Custom Breadcrumb Link */
+    .breadcrumb-item a {
+      text-decoration: none;
+      color: var(--bs-secondary-color);
+    }
+    .breadcrumb-item a:hover {
+      color: var(--bs-primary);
+    }
+
+    #account-toggle:checked ~ .dot { transform: translateX(1.5rem); }
+    #account-toggle:checked ~ .block { background-color: #1173d4; }
+    [data-bs-theme="dark"] #account-toggle:not(:checked) ~ .block { background-color: #4b5563; }
