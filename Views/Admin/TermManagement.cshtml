@@ -72,7 +72,8 @@
                             <a class="btn btn-icon" asp-action="EditAcademicTerm" asp-route-id="@term.AcademicTermId">
                               <span class="material-symbols-outlined fs-5">edit</span>
                             </a>
-                            <form asp-action="DeleteAcademicTerm" asp-route-id="@term.AcademicTermId" method="post" onsubmit="return confirm('Are you sure you want to delete this term?');" style="display:inline;">
+                            <form asp-action="DeleteAcademicTerm" method="post" onsubmit="return confirm('Are you sure you want to delete this term?');" style="display:inline;">
+                                <input type="hidden" name="id" value="@term.AcademicTermId" />
                                 <button type="submit" class="btn btn-icon hover-danger">
                                   <span class="material-symbols-outlined fs-5">delete</span>
                                 </button>
