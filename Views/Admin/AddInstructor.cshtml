@@ -14,8 +14,8 @@
     <main class="flex-grow-1 p-4 p-lg-5">
       <div class="mx-auto" style="max-width: 42rem;"> <nav aria-label="breadcrumb" class="mb-4">
           <ol class="breadcrumb fs-sm fw-medium">
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">Instructors</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Instructors">Instructors</a></li>
             <li class="breadcrumb-item active" aria-current="page">Add New</li>
           </ol>
         </nav>
@@ -28,17 +28,17 @@
         </div>
         
         <div class="card border rounded-4 shadow-sm">
-          <form class="p-4 p-lg-5 vstack gap-4">
+          <form class="p-4 p-lg-5 vstack gap-4" asp-action="CreateInstructor" method="POST">
             
             <div class="vstack gap-4">
               <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="form-label fs-sm fw-medium" for="full-name">Full Name</label>
-                  <input class="form-control form-control-h-11" id="full-name" placeholder="e.g., Jane Doe" type="text" />
+                  <label class="form-label fs-sm fw-medium" for="fullName">Full Name</label>
+                  <input class="form-control form-control-h-11" id="fullName" name="fullName" placeholder="e.g., Jane Doe" type="text" />
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
-                  <input class="form-control form-control-h-11" id="email" placeholder="e.g., jane.doe@university.edu" type="email" />
+                  <input class="form-control form-control-h-11" id="email" name="email" placeholder="e.g., jane.doe@university.edu" type="email" />
                 </div>
               </div>
               
@@ -46,7 +46,7 @@
                 <div class="col-md-6">
                   <label class="form-label fs-sm fw-medium" for="password">Password</label>
                   <div class="position-relative">
-                    <input class="form-control form-control-h-11" id="password" placeholder="Enter a secure password" type="password" />
+                    <input class="form-control form-control-h-11" id="password" name="password" placeholder="Enter a secure password" type="password" />
                     <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y" type="button" style="padding-right: 0.75rem;">
                       <span class="material-symbols-outlined" style="font-size: 20px;">visibility_off</span>
                     </button>
@@ -55,7 +55,7 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fs-sm fw-medium" for="department">Department</label>
-                  <select class="form-select form-control-h-11" id="department">
+                  <select class="form-select form-control-h-11" id="department" name="department">
                     <option>Computer Science</option>
                     <option>Mathematics</option>
                     <option>Physics</option>
@@ -66,7 +66,7 @@
               
               <div>
                 <label class="form-label fs-sm fw-medium" for="biography">Biography</label>
-                <textarea class="form-control" id="biography" placeholder="Briefly describe the instructor's background and expertise..."></textarea>
+                <textarea class="form-control" id="biography" name="biography" placeholder="Briefly describe the instructor's background and expertise..."></textarea>
                 <div class="form-text fs-xs mt-1 text-end">0 / 500 characters</div>
               </div>
             </div>
@@ -91,7 +91,7 @@
             <hr class="my-3" />
             
             <div class="d-flex justify-content-end gap-3">
-              <a class="btn btn-cancel rounded-3 fs-sm fw-semibold px-4 py-2" asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement" role="button">Cancel</a>
+              <a class="btn btn-cancel rounded-3 fs-sm fw-semibold px-4 py-2" asp-action="Instructors" role="button">Cancel</a>
               <button class="btn btn-primary rounded-3 fs-sm fw-semibold px-4 py-2" type="submit">Save Instructor</button>
             </div>
           </form>

@@ -14,23 +14,23 @@
             </div>
 
             <nav class="nav flex-column gap-2 mt-4 sidebar-nav">
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "dashboard" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "dashboard" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Dashboard">
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="fs-sm fw-medium">Dashboard</span>
                 </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "courses" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "courses" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Courses">
                     <span class="material-symbols-outlined">menu_book</span>
                     <span class="fs-sm fw-medium">Courses</span>
                 </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "instructors" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "instructors" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Instructors">
                     <span class="material-symbols-outlined">co_present</span>
                     <span class="fs-sm fw-medium">Instructors</span>
                 </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "students" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "students" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Students">
                     <span class="material-symbols-outlined">school</span>
                     <span class="fs-sm fw-medium">Students</span>
                 </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "terms" ? "active" : string.Empty)" asp-controller="Preview" asp-action="ViewPage" asp-route-name="TermManagement">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "terms" ? "active" : string.Empty)" asp-controller="Admin" asp-action="AcademicTerms">
                     <span class="material-symbols-outlined">calendar_month</span>
                     <span class="fs-sm fw-medium">Academic Terms</span>
                 </a>

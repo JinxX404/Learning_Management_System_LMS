@@ -2,122 +2,120 @@
     ViewData["Title"] = "Edit Course";
     Layout = "_Layout";
     ViewData["AdminActive"] = "courses";
+    var course = ViewBag.Course;
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/edit-course_admin.css">
-}
+<div class="d-flex min-vh-100 w-100">
+    @await Html.PartialAsync("_AdminSidebar")
 
-<div class="d-flex vh-100">
-    
-    <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
-      <div class="container-xl mx-auto">
-        
-        <nav aria-label="breadcrumb" class="mb-4">
-          <ol class="breadcrumb fs-sm fw-medium">
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard" class="text-body-secondary text-decoration-none">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" class="text-body-secondary text-decoration-none">Courses</a></li>
-            <li class="breadcrumb-item active text-body" aria-current="page">Edit Course</li>
-          </ol>
-        </nav>
-        
-        <div class="mb-5">
-          <h1 class="display-5 fw-bolder text-body-emphasis">Edit Course: Introduction to Web Design</h1>
-        </div>
-        
-        <div class="card border shadow-sm rounded-4">
-          <form>
-            <div class="card-body p-4 p-md-5 border-bottom">
-              <h3 class="h5 fw-bold text-body-emphasis mb-4">Core Information</h3>
-              <div class="row g-4">
-                <div class="col-md-6">
-                  <label class="form-label fw-medium fs-sm mb-2">Course Title</label>
-                  <input class="form-control rounded-3" value="Introduction to Web Design" />
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label fw-medium fs-sm mb-2">Course Code</label>
-                  <input class="form-control rounded-3" value="WD101" />
-                </div>
-              </div>
-              <div class="mt-4">
-                <label class="form-label fw-medium fs-sm mb-2">Course Description</label>
-                <textarea class="form-control rounded-3" rows="5">Learn the fundamentals of web design, including HTML, CSS, and responsive design principles. This course covers everything from basic syntax to creating modern, mobile-first websites.</textarea>
-              </div>
-            </div>
-            
-            <div class="card-body p-4 p-md-5 border-bottom">
-              <h3 class="h5 fw-bold text-body-emphasis mb-4">Organization & Details</h3>
-              <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label fw-medium fs-sm mb-2">Category</label>
-                  <select class="form-select rounded-3">
-                    <option>Technology</option>
-                    <option selected>Web Development</option>
-                    <option>Design</option>
-                  </select>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label fw-medium fs-sm mb-2">Assigned Instructor</label>
-                  <select class="form-select rounded-3">
-                    <option selected>Dr. Evelyn Reed</option>
-                    <option>Prof. Samuel Chen</option>
-                    <option>Dr. Aisha Khan</option>
-                  </select>
-                </div>
-                <div class="col-md-12 col-lg-4">
-                  <label class="form-label fw-medium fs-sm mb-2">Course Price ($)</label>
-                  <input class="form-control rounded-3" type="number" value="199.99" />
-                </div>
-              </div>
-            </div>
-            
-            <div class="card-body p-4 p-md-5 border-bottom">
-              <h3 class="h5 fw-bold text-body-emphasis mb-4">Media</h3>
-              <label class="form-label fw-medium fs-sm mb-2">Course Thumbnail</label>
-              <div class="d-flex align-items-center gap-4">
-                <img class="rounded-3 border" data-alt="Abstract image of HTML code on a screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDh2tqHoZvGXJCPuPPCUKCXaxZVD8RIei2qj7baGA39pT4K6DkhYob4GlDtV2mbHOat52IzuLA1VR43LPKIG3Mhbu7IEHcvevHam-xh5WSI-RvxQf8qVu5VOfUtUgzarR2CRSskaP9EdT-Ef8o7wrNUBA0m9Icfrh58wZAuHPhPszhtWoy30vF7AMYYCGjZjpkeMemSuCRarrwhl3WbWpsTqfOqHlubZHAh1H4HnXCHbT4TjoqJZNEl21QYpS-CwIVT0JiNc4wlO34" style="width: 10rem; height: 6rem; object-fit: cover;" />
-                <label class="btn btn-outline-secondary d-inline-flex align-items-center gap-2 rounded-3 fw-bold fs-sm py-2" for="file-upload">
-                  <span class="material-symbols-outlined fs-6">upload</span>
-                  <span>Upload New Image</span>
-                </label>
-                <input class="visually-hidden" id="file-upload" name="file-upload" type="file" />
-              </div>
-            </div>
-            
-            <div class="card-body p-4 p-md-5 border-bottom">
-              <h3 class="h5 fw-bold text-body-emphasis mb-3">Course Status</h3>
-              <div class="d-flex flex-wrap gap-4">
-                <div class="form-check">
-                  <input checked class="form-check-input" id="status-published" name="status" type="radio" />
-                  <label class="form-check-label fs-sm" for="status-published">Published</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" id="status-draft" name="status" type="radio" />
-                  <label class="form-check-label fs-sm" for="status-draft">Draft</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" id="status-archived" name="status" type="radio" />
-                  <label class="form-check-label fs-sm" for="status-archived">Archived</label>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card-footer bg-transparent p-4 p-md-5 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-4">
-              <button class="btn btn-danger-soft d-inline-flex align-items-center gap-2 py-2 px-4" type="button">
-                <span class="material-symbols-outlined fs-6">delete</span>
-                <span>Delete Course</span>
-              </button>
-              <div class="d-flex gap-3">
-                <a class="btn btn-cancel py-2 px-4" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" role="button">
-                  <span>Cancel</span>
+    <main class="flex-grow-1">
+        <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
+            <div class="d-flex align-items-center gap-3">
+                <a asp-action="Courses" class="btn btn-icon btn-light rounded-circle">
+                    <span class="material-symbols-outlined">arrow_back</span>
                 </a>
-                <button class="btn btn-primary rounded-3 fw-bold fs-sm py-2 px-4" type="submit">
-                  <span>Save Changes</span>
-                </button>
-              </div>
+                <h2 class="fs-5 fw-bold mb-0">Edit Course</h2>
             </div>
-          </form>
+        </header>
+
+        <div class="p-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <form asp-action="EditCourse" method="post">
+                                <input type="hidden" name="courseId" value="@course.CourseId" />
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label for="courseCode" class="form-label fw-medium">Course Code</label>
+                                        <input type="text" class="form-control" id="courseCode" name="courseCode" value="@course.CourseCode" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="title" class="form-label fw-medium">Course Title</label>
+                                        <input type="text" class="form-control" id="title" name="title" value="@course.Title" required>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="description" class="form-label fw-medium">Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="4">@course.Description</textarea>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="instructorId" class="form-label fw-medium">Instructor</label>
+                                        <select class="form-select" id="instructorId" name="instructorId" required>
+                                            @foreach (var instructor in ViewBag.Instructors)
+                                            {
+                                                if (instructor.UserId == course.InstructorId)
+                                                {
+                                                    <option value="@instructor.UserId" selected>@instructor.FirstName @instructor.LastName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@instructor.UserId">@instructor.FirstName @instructor.LastName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="academicTermId" class="form-label fw-medium">Academic Term</label>
+                                        <select class="form-select" id="academicTermId" name="academicTermId" required>
+                                            @foreach (var term in ViewBag.Terms)
+                                            {
+                                                if (term.AcademicTermId == course.AcademicTermId)
+                                                {
+                                                    <option value="@term.AcademicTermId" selected>@term.TermName</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@term.AcademicTermId">@term.TermName</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="creditHours" class="form-label fw-medium">Credit Hours</label>
+                                        <input type="number" class="form-control" id="creditHours" name="creditHours" value="@course.CreditHours" min="1" max="6" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="maxEnrollment" class="form-label fw-medium">Max Enrollment</label>
+                                        <input type="number" class="form-control" id="maxEnrollment" name="maxEnrollment" value="@course.MaxEnrollment" min="1" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="status" class="form-label fw-medium">Status</label>
+                                        <select class="form-select" id="status" name="status" required>
+                                            @if (course.Status == "Active")
+                                            {
+                                                <option value="Active" selected>Active</option>
+                                                <option value="Inactive">Inactive</option>
+                                                <option value="Archived">Archived</option>
+                                            }
+                                            else if (course.Status == "Inactive")
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option value="Inactive" selected>Inactive</option>
+                                                <option value="Archived">Archived</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="Active">Active</option>
+                                                <option value="Inactive">Inactive</option>
+                                                <option value="Archived" selected>Archived</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                                        <a asp-action="Courses" class="btn btn-light">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </main>
 </div>

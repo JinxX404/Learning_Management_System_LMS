@@ -1,6 +1,19 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Academix - Grades";
     Layout = "_Layout";
+    var grades = ViewBag.Grades as IEnumerable<Grade> ?? Enumerable.Empty<Grade>();
+    decimal gpa = ViewBag.Gpa is decimal ? ViewBag.Gpa : 0m;
+    int totalCredits = ViewBag.TotalCredits ?? 0;
+    string academicStanding = ViewBag.AcademicStanding as string ?? "N/A";
+    Func<decimal, string> letter = (percentage) =>
+    {
+        if (percentage >= 90) return "A";
+        if (percentage >= 80) return "B";
+        if (percentage >= 70) return "C";
+        if (percentage >= 60) return "D";
+        return "F";
+    };
 }
 
 @section Styles {
@@ -63,7 +76,7 @@
         <div class="summary-card card bg-body-tertiary border-secondary-subtle shadow-sm h-100 rounded-4">
           <div class="card-body p-4">
             <h3 class="summary-label text-secondary">Overall GPA</h3>
-            <div class="gpa-value display-4 fw-bold mt-1">3.80</div>
+            <div class="gpa-value display-4 fw-bold mt-1">@gpa.ToString("0.00")</div>
           </div>
         </div>
       </div>
@@ -71,7 +84,7 @@
         <div class="summary-card card bg-body-tertiary border-secondary-subtle shadow-sm h-100 rounded-4">
           <div class="card-body p-4">
             <h3 class="summary-label text-secondary">Total Credits</h3>
-            <div class="credits-value display-4 fw-bold mt-1">15</div>
+            <div class="credits-value display-4 fw-bold mt-1">@totalCredits</div>
           </div>
         </div>
       </div>
@@ -79,7 +92,7 @@
         <div class="summary-card card text-bg-primary shadow-sm h-100 rounded-4">
           <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
             <h3 class="summary-label text-white-50">Academic Standing</h3>
-            <div class="standing-value display-5 fw-bold text-white">Good</div>
+            <div class="standing-value display-5 fw-bold text-white">@academicStanding</div>
           </div>
         </div>
       </div>
@@ -100,26 +113,25 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="px-4 fw-medium">Introduction to Psychology</td>
-                <td class="px-4 text-center text-secondary">12/15</td>
-                <td class="px-4 text-end fw-semibold grade-cell">A</td>
-              </tr>
-              <tr>
-                <td class="px-4 fw-medium">Calculus I</td>
-                <td class="px-4 text-center text-secondary">15/15</td>
-                <td class="px-4 text-end fw-semibold grade-cell">B+</td>
-              </tr>
-              <tr>
-                <td class="px-4 fw-medium">English Composition</td>
-                <td class="px-4 text-center text-secondary">10/10</td>
-                <td class="px-4 text-end fw-semibold grade-cell">A-</td>
-              </tr>
-              <tr>
-                <td class="px-4 fw-medium">Art History</td>
-                <td class="px-4 text-center text-secondary">8/8</td>
-                <td class="px-4 text-end fw-semibold grade-cell">A</td>
-              </tr>
+              @if (!grades.Any())
+              {
+                  <tr>
+                      <td class="px-4 fw-medium text-secondary" colspan="3">No grades recorded yet.</td>
+                  </tr>
+              }
+              else
+              {
+                  foreach (var grade in grades)
+                  {
+                      var course = grade.GradeBook?.Course;
+                      var percentage = grade.MaxPoints > 0 ? (grade.Points / grade.MaxPoints) * 100 : 0;
+                      <tr>
+                        <td class="px-4 fw-medium">@course?.Title ?? "Course"</td>
+                        <td class="px-4 text-center text-secondary">@grade.GradableItemType</td>
+                        <td class="px-4 text-end fw-semibold grade-cell">@letter(percentage) (@Math.Round(percentage, 1)%)</td>
+                      </tr>
+                  }
+              }
             </tbody>
           </table>
         </div>

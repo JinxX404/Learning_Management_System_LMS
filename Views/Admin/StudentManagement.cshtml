@@ -17,7 +17,7 @@
         <h2 class="text-body-emphasis h5 fw-bold mb-0">Student Management</h2>
       </div>
       <div class="d-flex flex-grow-1 align-items-center justify-content-end gap-4">
-        <a class="btn btn-primary fw-bold fs-sm py-2 px-3" style="min-width: 84px;" asp-controller="Preview" asp-action="ViewPage" asp-route-name="AddStudent" role="button">
+        <a class="btn btn-primary fw-bold fs-sm py-2 px-3" style="min-width: 84px;" asp-controller="Admin" asp-action="CreateStudent" role="button">
           <span>Add New Student</span>
         </a>
         <div class="d-flex align-items-center gap-3">
@@ -45,7 +45,7 @@
     <div class="container-xxl mx-auto">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5 mt-4">
         <h1 class="h2 fw-bolder text-body">Student Management</h1>
-        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold fs-sm px-4" style="min-width: 84px; height: 2.5rem;" asp-controller="Preview" asp-action="ViewPage" asp-route-name="AddStudent" role="button">
+        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold fs-sm px-4" style="min-width: 84px; height: 2.5rem;" asp-action="CreateStudent" role="button">
           <span class="material-symbols-outlined">add</span>
           <span>Add New Student</span>
         </a>
@@ -102,138 +102,58 @@
               </tr>
             </thead>
             <tbody>
-              <tr class="border-top">
-                <td class="w-4 p-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkbox-table-1" />
-                    <label class="form-check-label visually-hidden" for="checkbox-table-1">Select row 1</label>
-                  </div>
-                </td>
-                <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
-                  <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKEeUOMsnmYqAcAJz98-17rtRV5izNGMop_FdkEnooCuYa0R2ivLf9IV9pfwFLaFUDx-HNEGyOiiN_dVqO1g9--Ay0_UUNxBHGt3sxgvdn4YpsTWWEuOQLWMsOCReAC06hcHzm4U_kMW83KnMqIJqvXDTfs6Hn2PdW3u9Nz7SgzJpKonN5bzFioU55kEFG_RJPumTSXZjEyLadWZhw_ToRl3H4DjqQNPqa-aGUk-_uyFYWS2kOsk9KGt-F18H7tAHT9HbVDcaIIEw"); width: 2.5rem; height: 2.5rem;'></div>
-                  <div class="ps-3">
-                    <div class="fw-semibold">John Doe</div>
-                  </div>
-                </th>
-                <td class="px-4 py-3">STU-10234</td>
-                <td class="px-4 py-3">john.doe@example.edu</td>
-                <td class="px-4 py-3">Oct 26, 2023</td>
-                <td class="px-4 py-3">
-                  <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs fw-medium px-2 py-1">Active</span>
-                </td>
-                <td class="px-4 py-3 text-end">
-                  <div class="d-flex align-items-center justify-content-end gap-2">
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">edit</span>
-                    </button>
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">visibility</span>
-                    </button>
-                    <button class="btn btn-icon-table hover-danger rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr class="border-top">
-                <td class="w-4 p-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkbox-table-2" />
-                    <label class="form-check-label visually-hidden" for="checkbox-table-2">Select row 2</label>
-                  </div>
-                </td>
-                <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
-                  <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvqYydAfv1J1Mqdic2NyfCdOB0CumSQk2xtlLDlzfFbxvORQIQLd6X-a7RT4XctAyXnUXLPShk1i2AOCAKRDF6fhRf69pVEL1XrfwmkH0kgHZN5fPj6fB88K1ErZFM0_kfkygq0DhPTKMeXbEJAZ1EdqgslWqTpUhrb_TBom0oWpdYq4tbPQR_td2fmGHO3JSmChuXeHu82pS6jtFBiw0oAr2hBuQSbKHV0cpB1BFNZXL8it3b7JAina8sJRfZ6M04r8IIKYGzh44"); width: 2.5rem; height: 2.5rem;'></div>
-                  <div class="ps-3">
-                    <div class="fw-semibold">Liam Garcia</div>
-                  </div>
-                </th>
-                <td class="px-4 py-3">STU-10235</td>
-                <td class="px-4 py-3">liam.garcia@example.edu</td>
-                <td class="px-4 py-3">Oct 25, 2023</td>
-                <td class="px-4 py-3">
-                  <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs fw-medium px-2 py-1">Active</span>
-                </td>
-                <td class="px-4 py-3 text-end">
-                  <div class="d-flex align-items-center justify-content-end gap-2">
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">edit</span>
-                    </button>
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">visibility</span>
-                    </button>
-                    <button class="btn btn-icon-table hover-danger rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr class="border-top">
-                <td class="w-4 p-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkbox-table-3" />
-                    <label class="form-check-label visually-hidden" for="checkbox-table-3">Select row 3</label>
-                  </div>
-                </td>
-                <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
-                  <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAINbznssMHq0EN1bsC9qy-0YZ3BmPwMldUSSMsuRH3YKHhjUwAdq-y36BCBmCQet191ShpD_qCRTNqUtKgbxim8LB0Xn4RZPpKhS-t3XwevYyCD27-qqKnxfUw5-ZqeE92iy5UgOqMwaFR_IE6o57CXJqOVQDanWUKyiriFOy2I4VV38OsTv4aVHWds20-_Hmi34HqsGPTRnbHs0LtaJYUVr9j7NNBq-cjAQUekG2YhlqPCeyT_QwxeBkqU-kR1tSEz-TbiiD5FpI"); width: 2.5rem; height: 2.5rem;'></div>
-                  <div class="ps-3">
-                    <div class="fw-semibold">Ava Martinez</div>
-                  </div>
-                </th>
-                <td class="px-4 py-3">STU-10236</td>
-                <td class="px-4 py-3">ava.martinez@example.edu</td>
-                <td class="px-4 py-3">Sep 15, 2023</td>
-                <td class="px-4 py-3">
-                  <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis fs-xs fw-medium px-2 py-1">Inactive</span>
-                </td>
-                <td class="px-4 py-3 text-end">
-                  <div class="d-flex align-items-center justify-content-end gap-2">
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">edit</span>
-                    </button>
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">visibility</span>
-                    </button>
-                    <button class="btn btn-icon-table hover-danger rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr class="border-top">
-                <td class="w-4 p-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkbox-table-4" />
-                    <label class="form-check-label visually-hidden" for="checkbox-table-4">Select row 4</label>
-                  </div>
-                </td>
-                <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
-                  <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="Student avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBqLgFRrzF5COGNaSk6XCLsHlKPvNp_WupDRYyx-QNKSYtQvbLdWVknKmdiOIO580X7Y9rhgvxMVTjxLD9vJvUflbPRRS47MOiizr2ApbzN-lKvg_ndc1yCmZdfl7irWDdzILNnJ2r-F-5CSbi7qr4Iioa-qWTf8LNwrD_OzmPgWrHzS7PLR3HYShH8Pr2K9LgLNTrUkyfnxrNL37UVCg_zaeW_TYHiPelUOf0CplnXbGOq9FEPL1HQKHf2rZWngsO_zDJ9SvU2WCA"); width: 2.5rem; height: 2.5rem;'></div>
-                  <div class="ps-3">
-                    <div class="fw-semibold">Noah Rodriguez</div>
-                  </div>
-                </th>
-                <td class="px-4 py-3">STU-10237</td>
-                <td class="px-4 py-3">noah.rodriguez@example.edu</td>
-                <td class="px-4 py-3">Aug 01, 2023</td>
-                <td class="px-4 py-3">
-                  <span class="badge rounded-pill bg-danger-subtle text-danger-emphasis fs-xs fw-medium px-2 py-1">Suspended</span>
-                </td>
-                <td class="px-4 py-3 text-end">
-                  <div class="d-flex align-items-center justify-content-end gap-2">
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">edit</span>
-                    </button>
-                    <button class="btn btn-icon-table rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">visibility</span>
-                    </button>
-                    <button class="btn btn-icon-table hover-danger rounded-circle p-2">
-                      <span class="material-symbols-outlined fs-6">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              @if (ViewBag.Students != null)
+              {
+                  foreach (var student in ViewBag.Students)
+                  {
+                      <tr class="border-top">
+                        <td class="w-4 p-4">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="@student.UserId" id="checkbox-table-@student.UserId" />
+                            <label class="form-check-label visually-hidden" for="checkbox-table-@student.UserId">Select row @student.UserId</label>
+                          </div>
+                        </td>
+                        <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
+                          <div class="bg-center bg-no-repeat bg-cover rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary fw-bold" style="width: 2.5rem; height: 2.5rem;">
+                              @{
+                                  var firstInitial = !string.IsNullOrEmpty(student.FirstName) ? student.FirstName.Substring(0,1) : "?";
+                                  var lastInitial = !string.IsNullOrEmpty(student.LastName) ? student.LastName.Substring(0,1) : "?";
+                              }
+                              @firstInitial@lastInitial
+                          </div>
+                          <div class="ps-3">
+                            <div class="fw-semibold">@student.FirstName @student.LastName</div>
+                          </div>
+                        </th>
+                        <td class="px-4 py-3">STU-@student.UserId.ToString("D5")</td>
+                        <td class="px-4 py-3">@student.Email</td>
+                        <td class="px-4 py-3">@student.CreatedAt.ToShortDateString()</td>
+                        <td class="px-4 py-3">
+                          @if (student.IsActive)
+                          {
+                              <span class="badge rounded-pill bg-success-subtle text-success-emphasis fs-xs fw-medium px-2 py-1">Active</span>
+                          }
+                          else
+                          {
+                              <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis fs-xs fw-medium px-2 py-1">Inactive</span>
+                          }
+                        </td>
+                        <td class="px-4 py-3 text-end">
+                          <div class="d-flex align-items-center justify-content-end gap-2">
+                            <a asp-action="EditUser" asp-route-id="@student.UserId" class="btn btn-icon-table rounded-circle p-2">
+                              <span class="material-symbols-outlined fs-6">edit</span>
+                            </a>
+                            <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline;">
+                                <input type="hidden" name="id" value="@student.UserId" />
+                                <button type="submit" class="btn btn-icon-table hover-danger rounded-circle p-2">
+                                  <span class="material-symbols-outlined fs-6">delete</span>
+                                </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                  }
+              }
             </tbody>
           </table>
         </div>

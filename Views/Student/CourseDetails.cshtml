@@ -1,7 +1,17 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Course Details | ESU";
     Layout = "_Layout";
-    var courseId = ViewBag.CourseId ?? 1;
+    var course = ViewBag.Course as Course;
+    if (course == null)
+    {
+        <div class="container py-5">
+            <div class="alert alert-warning">Course not found.</div>
+        </div>
+        return;
+    }
+    var instructorName = course.Instructor != null ? $"{course.Instructor.FirstName} {course.Instructor.LastName}" : "Instructor unavailable";
+    var courseId = course.CourseId;
 }
 
 @section Styles {
@@ -59,8 +69,8 @@
     <div class="course-header position-relative rounded-4 overflow-hidden shadow-sm mb-4">
       <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient" style="--bs-gradient: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.1));"></div>
       <div class="position-relative text-white p-4 p-md-5 d-flex flex-column justify-content-end hero-bg-image">
-        <h1 class="course-title display-5 fw-bold">Introduction to Computer Science</h1>
-        <p class="course-instructor fs-5 mt-1" style="color: rgba(255,255,255,0.9)">with Dr. Eleanor Harper</p>
+        <h1 class="course-title display-5 fw-bold">@course.Title</h1>
+        <p class="course-instructor fs-5 mt-1" style="color: rgba(255,255,255,0.9)">with @instructorName</p>
       </div>
     </div>
 
@@ -88,7 +98,9 @@
         <section class="course-section mb-5">
           <h2 class="section-title fs-2 fw-bold mb-3">Course Description</h2>
           <p class="course-desc text-secondary">
-            This course provides a comprehensive introduction to the fundamental concepts of computer science. Students will learn programming basics, data structures, algorithms, and software development methodologies. The course includes hands-on projects and real-world applications to enhance practical skills.
+            @(!string.IsNullOrWhiteSpace(course.Description)
+                ? course.Description
+                : "No description has been provided for this course yet.")
           </p>
         </section>
 
@@ -108,23 +120,23 @@
           <dl class="row g-3">
             <div class="col-md-6">
               <dt class="small text-secondary">Course Code</dt>
-              <dd class="fw-medium text-body-emphasis">CS101</dd>
+              <dd class="fw-medium text-body-emphasis">@course.CourseCode</dd>
             </div>
             <div class="col-md-6">
               <dt class="small text-secondary">Credits</dt>
-              <dd class="fw-medium text-body-emphasis">4</dd>
+              <dd class="fw-medium text-body-emphasis">@course.CreditHours</dd>
             </div>
             <div class="col-md-6">
-              <dt class="small text-secondary">Duration</dt>
-              <dd class="fw-medium text-body-emphasis">15 weeks</dd>
+              <dt class="small text-secondary">Term</dt>
+              <dd class="fw-medium text-body-emphasis">@course.AcademicTerm?.TermName ?? "N/A"</dd>
             </div>
             <div class="col-md-6">
-              <dt class="small text-secondary">Schedule</dt>
-              <dd class="fw-medium text-body-emphasis">Mon, Wed 10:00 AM - 11:30 AM</dd>
+              <dt class="small text-secondary">Status</dt>
+              <dd class="fw-medium text-body-emphasis">@course.Status</dd>
             </div>
             <div class="col-12">
-              <dt class="small text-secondary">Location</dt>
-              <dd class="fw-medium text-body-emphasis">Room 301, Science Building</dd>
+              <dt class="small text-secondary">Instructor</dt>
+              <dd class="fw-medium text-body-emphasis">@instructorName</dd>
             </div>
           </dl>
         </section>

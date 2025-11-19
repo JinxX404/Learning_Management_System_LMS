@@ -2,114 +2,83 @@
     ViewData["Title"] = "Edit Instructor";
     Layout = "_Layout";
     ViewData["AdminActive"] = "instructors";
+    var user = ViewBag.User as Learning_Management_System.Models.User;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/pages/edit-instructor_admin.css">
+    <link rel="stylesheet" href="~/css/pages/add-instructor_admin.css">
 }
 
-<div class="d-flex vh-100 w-100">
+<div class="d-flex position-relative min-vh-100 w-100">
     
-    <main class="flex-grow-1 p-4 p-lg-5 overflow-auto">
-      <div class="mx-auto" style="max-width: 56rem;">
-        
-        <nav aria-label="breadcrumb" class="mb-4">
-          <ol class="breadcrumb fs-sm fw-medium mb-0">
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">Instructors</a></li>
-            <li class="breadcrumb-item active text-body-emphasis" aria-current="page">Edit Instructor</li>
+    
+    <main class="flex-grow-1 p-4 p-lg-5">
+      <div class="mx-auto" style="max-width: 42rem;"> <nav aria-label="breadcrumb" class="mb-4">
+          <ol class="breadcrumb fs-sm fw-medium">
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Instructors">Instructors</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Instructor</li>
           </ol>
         </nav>
         
         <div class="d-flex flex-wrap justify-content-between gap-3 mb-5">
-          <h1 class="text-body-emphasis h2 fw-bolder">Edit Instructor: John Doe</h1>
+          <div class="d-flex flex-column gap-2">
+            <h1 class="text-body-emphasis h3 fw-bold mb-0">Edit Instructor</h1>
+            <p class="text-secondary fs-6 mb-0">Update the instructor's details.</p>
+          </div>
         </div>
         
-        <div class="card bg-tertiary border rounded-4 shadow-sm">
-          <form>
-            <div class="card-body p-4 p-lg-5 vstack gap-5">
+        <div class="card border rounded-4 shadow-sm">
+          <form class="p-4 p-lg-5 vstack gap-4" asp-action="EditUser" method="POST">
+            <input type="hidden" name="userId" value="@(user?.UserId)" />
+            <input type="hidden" name="role" value="Instructor" />
+            
+            <div class="vstack gap-4">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="firstName">First Name</label>
+                  <input class="form-control form-control-h-11" id="firstName" name="firstName" value="@(user?.FirstName)" type="text" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="lastName">Last Name</label>
+                  <input class="form-control form-control-h-11" id="lastName" name="lastName" value="@(user?.LastName)" type="text" />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
+                  <input class="form-control form-control-h-11" id="email" name="email" value="@(user?.Email)" type="text" />
+                </div>
+              </div>
               
-              <section>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Basic Information</h3>
-                <div class="row g-4 mt-1">
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="full-name">Full Name</label>
-                    <input class="form-control form-control-h-12 rounded-lg" id="full-name" type="text" value="John Doe" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
-                    <input class="form-control form-control-h-12 rounded-lg" id="email" type="email" value="john.doe@academix.edu" />
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="password">Password</label>
-                    <input class="form-control form-control-h-12 rounded-lg" id="password" placeholder="Leave blank to keep current password" type="password" />
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="password">Password</label>
+                  <div class="position-relative">
+                    <input class="form-control form-control-h-11" id="password" name="password" placeholder="Leave blank to keep current" type="password" />
+                    <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y" type="button" style="padding-right: 0.75rem;">
+                      <span class="material-symbols-outlined" style="font-size: 20px;">visibility_off</span>
+                    </button>
                   </div>
                 </div>
-              </section>
-              
-              <section>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Academic Details</h3>
-                <div class="row g-4 mt-1">
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="department">Department</label>
-                    <select class="form-select form-control-h-12 rounded-lg fs-sm" id="department">
-                      <option>Computer Science</option>
-                      <option selected>Mathematics</option>
-                      <option>Physics</option>
-                      <option>Literature</option>
-                    </select>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="biography">Biography</label>
-                    <textarea class="form-control rounded-lg fs-sm p-4" id="biography" placeholder="Enter a professional bio...">Dr. John Doe is a professor in the Mathematics department, specializing in theoretical physics and quantum mechanics. He has published numerous papers and is a recipient of the prestigious Academix Research Award.</textarea>
-                  </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="isActive">Status</label>
+                  <select class="form-select form-control-h-11" id="isActive" name="isActive">
+                    <!option value="true" @(user?.IsActive == true ? "selected" : "")>Active</!option>
+                    <!option value="false" @(user?.IsActive == false ? "selected" : "")>Inactive</!option>
+                  </select>
                 </div>
-              </section>
-              
-              <section>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Course Management</h3>
-                <div class="mt-4">
-                  <label class="form-label fs-sm fw-medium" for="assign-courses">Assigned Courses</label>
-                  <div class="form-control form-control-tags p-3 rounded-lg">
-                    <div class="tags-wrapper">
-                      <span class="badge rounded-pill">
-                        <span>MATH-101: Calculus I</span>
-                        <button class="btn-close" type="button" aria-label="Remove"></button>
-                      </span>
-                      <span class="badge rounded-pill">
-                        <span>PHYS-201: Quantum Mechanics</span>
-                        <button class="btn-close" type="button" aria-label="Remove"></button>
-                      </span>
-                    </div>
-                    <input class="form-control-tags-input fs-sm" id="assign-courses" placeholder="Search and add courses..." />
-                  </div>
-                </div>
-              </section>
-              
-              <section>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Account Control</h3>
-                <div class="mt-4">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                      <p class="text-body-emphasis fs-sm fw-medium mb-0">Account Status</p>
-                      <p class="text-secondary fs-xs mt-1 mb-0">Inactive accounts cannot log in or be assigned to new courses.</p>
-                    </div>
-                    <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" role="switch" id="account-status" checked>
-                      <label class="form-check-label fs-sm fw-medium ms-2" for="account-status">Active</label>
-                    </div>
-                  </div>
-                </div>
-              </section>
+              </div>
               
             </div>
             
-            <div class="card-footer bg-transparent d-flex justify-content-end gap-3 p-4 border-top">
-              <a class="btn btn-light rounded-lg fs-sm fw-medium px-4 py-2" asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement" role="button">Cancel</a>
-              <button class="btn btn-primary rounded-lg fs-sm fw-medium px-4 py-2" type="submit">Save Changes</button>
+            <hr class="my-3" />
+            
+            <div class="d-flex justify-content-end gap-3">
+              <a class="btn btn-cancel rounded-3 fs-sm fw-semibold px-4 py-2" asp-action="Instructors" role="button">Cancel</a>
+              <button class="btn btn-primary rounded-3 fs-sm fw-semibold px-4 py-2" type="submit">Update Instructor</button>
             </div>
           </form>
         </div>
       </div>
     </main>
-  </div>
+</div>

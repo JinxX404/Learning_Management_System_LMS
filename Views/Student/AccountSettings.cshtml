@@ -1,6 +1,8 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Account Settings";
     Layout = "_Layout";
+    var user = ViewBag.User as User;
 }
 
 @section Styles {
@@ -58,6 +60,34 @@
     <p class="page-subtitle text-secondary">Manage your notification, privacy, and account settings.</p>
 
     <div class="mt-5 d-flex flex-column gap-5">
+        <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3" aria-labelledby="profile-heading">
+            <div class="card-body p-3">
+                <h2 id="profile-heading" class="section-title fs-4 fw-semibold p-3">Profile Information</h2>
+                @if (!string.IsNullOrWhiteSpace(ViewBag.SuccessMessage as string))
+                {
+                    <div class="alert alert-success mx-3">@ViewBag.SuccessMessage</div>
+                }
+                <form class="p-3" method="post" asp-action="AccountSettings" asp-controller="Student">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">First Name</label>
+                            <input type="text" class="form-control" name="firstName" value="@user?.FirstName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Last Name</label>
+                            <input type="text" class="form-control" name="lastName" value="@user?.LastName" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small text-secondary">Email</label>
+                            <input type="email" class="form-control" name="email" value="@user?.Email" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-end">
+                        <button class="btn btn-primary fw-semibold px-4" type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </section>
         <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3" aria-labelledby="notifications-heading">
             <div class="card-body p-2">
                 <h2 id="notifications-heading" class="section-title fs-4 fw-semibold p-3">Notifications</h2>
