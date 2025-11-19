@@ -1,0 +1,140 @@
+@{
+    ViewData["Title"] = "Manage Enrollments";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "enrollments";
+}
+
+<div class="d-flex min-vh-100 w-100">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-grow-1">
+        <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
+            <h2 class="fs-5 fw-bold mb-0">Manage Enrollments</h2>
+        </header>
+
+        <div class="p-4">
+            <!-- Course Selection -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <form method="get" class="row align-items-end g-3">
+                        <div class="col-md-8">
+                            <label for="courseId" class="form-label fw-medium">Select Course</label>
+                            <select class="form-select" id="courseId" name="courseId" onchange="this.form.submit()">
+                                <option value="">-- Select a Course --</option>
+                                @foreach (var course in ViewBag.Courses)
+                                {
+                                    if (ViewBag.SelectedCourseId == course.CourseId)
+                                    {
+                                        <option value="@course.CourseId" selected>@course.CourseCode - @course.Title</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@course.CourseId">@course.CourseCode - @course.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">Load Enrollments</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (ViewBag.SelectedCourseId != null)
+            {
+                <div class="row g-4">
+                    <!-- Enroll New Student -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="card-title mb-0 fs-6 fw-bold">Enroll Student</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <form asp-action="EnrollStudent" method="post">
+                                    <input type="hidden" name="courseId" value="@ViewBag.SelectedCourseId" />
+                                    
+                                    <div class="mb-3">
+                                        <label for="studentId" class="form-label fw-medium">Select Student</label>
+                                        <select class="form-select" id="studentId" name="studentId" required>
+                                            <option value="">-- Select Student --</option>
+                                            @if (ViewBag.AvailableStudents != null)
+                                            {
+                                                foreach (var student in ViewBag.AvailableStudents)
+                                                {
+                                                    <option value="@student.UserId">@student.LastName, @student.FirstName (@student.Email)</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <span class="material-symbols-outlined fs-6 me-2 align-middle">person_add</span>
+                                        Enroll Student
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Enrollments List -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0 fs-6 fw-bold">Current Enrollments</h5>
+                                <span class="badge bg-primary-subtle text-primary">Total: @(ViewBag.Enrollments?.Count ?? 0)</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0 align-middle">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="border-bottom-0 py-3 ps-4">Student</th>
+                                                <th class="border-bottom-0 py-3">Email</th>
+                                                <th class="border-bottom-0 py-3">Enrolled Date</th>
+                                                <th class="border-bottom-0 py-3">Status</th>
+                                                <th class="border-bottom-0 py-3 text-end pe-4">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (ViewBag.Enrollments != null)
+                                            {
+                                                foreach (var enrollment in ViewBag.Enrollments)
+                                                {
+                                                    <tr>
+                                                        <td class="ps-4 fw-medium">@enrollment.User.FirstName @enrollment.User.LastName</td>
+                                                        <td>@enrollment.User.Email</td>
+                                                        <td>@enrollment.EnrolledAt.ToShortDateString()</td>
+                                                        <td>
+                                                            <span class="badge bg-success-subtle text-success border border-success-subtle">@enrollment.Status</span>
+                                                        </td>
+                                                        <td class="text-end pe-4">
+                                                            <form asp-action="DropStudent" method="post" onsubmit="return confirm('Are you sure you want to remove this student from the course?');">
+                                                                <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentId" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 ms-auto">
+                                                                    <span class="material-symbols-outlined fs-6">person_remove</span>
+                                                                    Drop
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                    @if (ViewBag.Enrollments == null || ViewBag.Enrollments.Count == 0)
+                                    {
+                                        <div class="text-center py-5 text-body-secondary">
+                                            <span class="material-symbols-outlined fs-1 mb-2">school</span>
+                                            <p class="mb-0">No students enrolled in this course yet.</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>

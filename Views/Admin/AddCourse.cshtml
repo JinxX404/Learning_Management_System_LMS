@@ -13,9 +13,8 @@
 
     <main class="flex-grow-1 p-4 p-md-5">
         <div class="container-lg mx-auto"> <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="breadcrumb">
-                <a class="breadcrumb-link small fw-medium" asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a>
-                <span class="breadcrumb-divider small fw-medium">/</span>
-                <a class="breadcrumb-link small fw-medium" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement">Courses</a>
+                <li class="breadcrumb-item"><a class="breadcrumb-link small fw-medium" asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+                <li class="breadcrumb-item"><a class="breadcrumb-link small fw-medium" asp-controller="Admin" asp-action="Courses">Courses</a></li>
                 <span class="breadcrumb-divider small fw-medium">/</span>
                 <span class="text-body-emphasis small fw-medium">Add New</span>
             </nav>
@@ -104,7 +103,7 @@
                     </div>
 
                     <div class="d-flex align-items-center justify-content-end gap-3 pt-4 border-top">
-                        <a class="btn btn-cancel rounded-3 px-4 py-2" asp-controller="Preview" asp-action="ViewPage" asp-route-name="CourseManagement" role="button">Cancel</a>
+                        <a class="btn btn-cancel rounded-3 px-4 py-2" asp-controller="Admin" asp-action="Courses" role="button">Cancel</a>
                         <button class="btn btn-primary rounded-3 px-4 py-2 fw-semibold d-flex align-items-center gap-2" type="submit">
                             Create Course
                         </button>

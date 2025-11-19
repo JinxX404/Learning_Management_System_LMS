@@ -15,8 +15,8 @@
       <div class="w-100 mx-auto" style="max-width: 80rem;">
         <nav aria-label="breadcrumb" class="mb-4">
           <ol class="breadcrumb fs-sm fw-medium">
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Admin Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="InstructorManagement">Instructors</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Instructors">Instructors</a></li>
             <li class="breadcrumb-item active" aria-current="page">Dr. Eleanor Vance</li>
           </ol>
         </nav>
@@ -37,7 +37,7 @@
                 </div>
               </div>
               <div class="d-flex w-100 w-md-auto flex-shrink-0 gap-3">
-                <a class="btn btn-profile rounded-lg h-10 px-4 flex-fill flex-md-auto" asp-controller="Preview" asp-action="ViewPage" asp-route-name="EditInstructor" role="button">
+                <a class="btn btn-profile rounded-lg h-10 px-4 flex-fill flex-md-auto" asp-controller="Admin" asp-action="EditUser" asp-route-id="@Model.UserId" role="button">
                   <span class="truncate">Edit Profile</span>
                 </a>
                 <button class="btn btn-primary rounded-lg h-10 px-4 flex-fill flex-md-auto text-sm fw-bold">

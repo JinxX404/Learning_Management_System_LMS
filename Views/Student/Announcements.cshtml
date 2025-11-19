@@ -1,6 +1,9 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "ESU - Announcements";
     Layout = "_Layout";
+    var notifications = ViewBag.Notifications as IEnumerable<Notification> ?? Enumerable.Empty<Notification>();
+    int unread = ViewBag.UnreadCount ?? 0;
 }
 
 @section Styles {
@@ -61,6 +64,7 @@
                     <h1 class="page-title fs-2 fw-bold">Announcements</h1>
                     <p class="page-subtitle text-secondary">Stay updated with the latest news and announcements.</p>
                 </div>
+                <span class="badge text-bg-primary rounded-pill">Unread: @unread</span>
             </header>
 
             <div class="search-container d-flex justify-content-between align-items-center mb-5">
@@ -75,61 +79,37 @@
         </button> *@
       </div>
 
-      <div class="d-flex flex-column gap-5">
-        <section id="important">
-          <h2 class="section-title fs-5 fw-bold mb-3">Important</h2>
-          <div class="announcement-card card bg-tertiary rounded-3">
-            <div class="card-body p-4">
-              <div class="d-flex align-items-start">
-                <div class="flex-grow-1">
-                  <div class="d-flex align-items-center gap-3 mb-2">
-                    <span class="badge badge-urgent rounded-pill">Urgent</span>
-                    <h5 class="card-title mb-0 fs-6 fw-semibold">Campus Closure Due to Weather</h5>
-                  </div>
-                  <p class="card-text text-secondary small">Due to the severe weather forecast, the university campus will be closed tomorrow. All classes, both in-person and online, are canceled. Please stay safe and check your email for further updates.</p>
-                  <small class="text-secondary opacity-75" style="font-size: 0.75rem;">Posted by: University Administration</small>
-                </div>
-                <small class="text-secondary ms-4 flex-shrink-0">1 hour ago</small>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="recent">
-          <h2 class="section-title fs-5 fw-bold mb-3">Recent Announcements</h2>
-          <div class="d-flex flex-column gap-3">
+      <div class="d-flex flex-column gap-4">
+        @if (!notifications.Any())
+        {
             <div class="announcement-card card bg-tertiary rounded-3">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="flex-grow-1">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                      <span class="badge badge-academics rounded-pill">Academics</span>
-                      <h5 class="card-title mb-0 fs-6 fw-semibold">Research Paper Submission Deadline</h5>
-                    </div>
-                    <p class="card-text text-secondary small">This is a reminder that the deadline for submitting your research papers is next Friday. Please ensure all submissions adhere to the guidelines provided in the course syllabus. Late submissions will not be accepted.</p>
-                    <small class="text-secondary opacity-75" style="font-size: 0.75rem;">Posted by: Dr. Eleanor Harper</small>
-                  </div>
-                  <small class="text-secondary ms-4 flex-shrink-0">2 days ago</small>
+                <div class="card-body p-4">
+                    <p class="card-text text-secondary small mb-0">You’re all caught up! No announcements at the moment.</p>
                 </div>
-              </div>
             </div>
-            <div class="announcement-card card bg-tertiary rounded-3">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start">
-                  <div class="flex-grow-1">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                      <span class="badge badge-events rounded-pill">Events</span>
-                      <h5 class="card-title mb-0 fs-6 fw-semibold">Annual Tech Expo</h5>
+        }
+        else
+        {
+            foreach (var notification in notifications)
+            {
+                <div class="announcement-card card bg-tertiary rounded-3">
+                  <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                      <div class="flex-grow-1">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                          <span class="badge @(notification.IsRead ? "badge-events" : "badge-urgent") rounded-pill">
+                              @(notification.IsRead ? "Info" : "New")
+                          </span>
+                          <h5 class="card-title mb-0 fs-6 fw-semibold">@notification.Message</h5>
+                        </div>
+                        <small class="text-secondary opacity-75" style="font-size: 0.75rem;">@notification.CreatedAt.ToString("MMMM d, yyyy h:mm tt")</small>
+                      </div>
+                      <small class="text-secondary ms-4 flex-shrink-0">@notification.CreatedAt.ToShortDateString()</small>
                     </div>
-                    <p class="card-text text-secondary small">The annual Tech Expo is scheduled for next month. Students are encouraged to submit their projects for display. Prizes will be awarded for the most innovative projects.</p>
-                    <small class="text-secondary opacity-75" style="font-size: 0.75rem;">Posted by: Department of Computer Science</small>
                   </div>
-                  <small class="text-secondary ms-4 flex-shrink-0">1 week ago</small>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
+            }
+        }
       </div>
     </div>
   </main>

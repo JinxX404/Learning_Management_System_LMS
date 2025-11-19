@@ -2,133 +2,80 @@
     ViewData["Title"] = "Edit Student";
     Layout = "_Layout";
     ViewData["AdminActive"] = "students";
+    var user = ViewBag.User as Learning_Management_System.Models.User;
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/pages/edit-student_admin.css">
+    <link rel="stylesheet" href="~/css/pages/add-student_admin.css">
 }
 
-<div class="d-flex vh-100 w-100">
+<div class="d-flex position-relative w-100" style="min-height: 100vh;">
     
-    <main class="flex-grow-1 p-4 p-lg-5 overflow-auto">
-      <div class="mx-auto" style="max-width: 56rem;">
-        
-        <nav aria-label="breadcrumb" class="mb-4">
-          <ol class="breadcrumb fs-sm fw-medium">
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="Dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement">Students</a></li>
-            <li class="breadcrumb-item active text-body" aria-current="page">Edit Student</li>
-          </ol>
-        </nav>
-        
-        <div class="d-flex flex-wrap justify-content-between gap-3 mb-5">
-          <div class="d-flex flex-column gap-1">
-            <h1 class="text-body-emphasis h2 fw-bolder mb-0">Edit Student: Jane Doe</h1>
-            <p class="text-secondary fs-6 mb-0">Update the student's profile and academic details.</p>
-          </div>
+    <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
+      <div class="mx-auto" style="max-width: 42rem;"> <div class="mb-5">
+          <nav aria-label="breadcrumb" class="mb-2">
+            <ol class="breadcrumb fs-sm fw-medium mb-0">
+              <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Dashboard">Dashboard</a></li>
+              <li class="breadcrumb-item"><a asp-controller="Admin" asp-action="Students">Students</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit Student</li>
+            </ol>
+          </nav>
+          <h1 class="h3 fw-bold">Edit Student Profile</h1>
         </div>
         
-        <div class="card bg-tertiary border rounded-4 p-4 p-lg-5 shadow-sm">
-          <form action="#" method="POST">
-            <div class="vstack gap-5">
+        <div class="card bg-body-tertiary border shadow-sm rounded-4">
+          <div class="card-body p-4 p-sm-5">
+            <form asp-action="EditUser" method="POST">
+              <input type="hidden" name="userId" value="@(user?.UserId)" />
+              <input type="hidden" name="role" value="Student" />
               
-              <div>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Personal Information</h3>
-                <div class="row g-4 pt-2">
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="full-name">Full Name</label>
-                    <input class="form-control" id="full-name" type="text" value="Jane Doe" />
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
-                    <input class="form-control" id="email" type="email" value="jane.doe@example.com" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="dob">Date of Birth</label>
-                    <input class="form-control" id="dob" type="date" value="1998-05-15" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="gender">Gender</label>
-                    <select class="form-select" id="gender">
-                      <option selected>Female</option>
-                      <option>Male</option>
-                      <option>Non-binary</option>
-                      <option>Prefer not to say</option>
-                    </select>
+              <div class="row g-4 gx-md-5">
+                <div class="col-12">
+                  <h3 class="h5 fw-bold pb-3 border-bottom mb-4">Personal Information</h3>
+                </div>
+                
+                <div class="col-12">
+                  <label class="form-label fs-sm fw-medium" for="firstName">First Name</label>
+                  <input class="form-control form-control-sm rounded-3" id="firstName" name="firstName" value="@(user?.FirstName)" type="text"/>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fs-sm fw-medium" for="lastName">Last Name</label>
+                  <input class="form-control form-control-sm rounded-3" id="lastName" name="lastName" value="@(user?.LastName)" type="text"/>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="email">Email Address</label>
+                  <input class="form-control form-control-sm rounded-3" id="email" name="email" value="@(user?.Email)" type="email"/>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="password">Password</label>
+                  <div class="position-relative">
+                    <input class="form-control form-control-sm rounded-3" id="password" name="password" placeholder="Leave blank to keep current" type="password"/>
+                    <button class="btn btn-link text-secondary position-absolute end-0 top-50 translate-middle-y" type="button" style="padding-top: 0.6rem; padding-bottom: 0.6rem;">
+                      <span class="material-symbols-outlined fs-6">visibility_off</span>
+                    </button>
                   </div>
                 </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label fs-sm fw-medium" for="isActive">Status</label>
+                  <select class="form-select form-select-sm rounded-3" id="isActive" name="isActive">
+                    <!option value="true" @(user?.IsActive == true ? "selected" : "")>Active</!option>
+                    <!option value="false" @(user?.IsActive == false ? "selected" : "")>Inactive</!option>
+                  </select>
+                </div>
+                
               </div>
               
-              <div>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Academic Details</h3>
-                <div class="row g-4 pt-2">
-                  <div class="col-12">
-                    <label class="form-label fs-sm fw-medium" for="department">Department</label>
-                    <select class="form-select" id="department">
-                      <option selected>Computer Science</option>
-                      <option>Business Administration</option>
-                      <option>Fine Arts</option>
-                      <option>Mechanical Engineering</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="term">Academic Term</label>
-                    <select class="form-select" id="term">
-                      <option selected>Fall 2024</option>
-                      <option>Spring 2024</option>
-                      <option>Fall 2023</option>
-                      <option>Spring 2023</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="status">Status</label>
-                    <select class="form-select" id="status">
-                      <option selected>Active</option>
-                      <option>Graduated</option>
-                      <option>Withdrawn</option>
-                      <option>On Leave</option>
-                    </select>
-                  </div>
-                </div>
+              <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                <a class="btn btn-cancel fs-sm fw-medium rounded-3 px-3 py-2" asp-action="Students" role="button">Cancel</a>
+                <button class="btn btn-primary fs-sm fw-medium rounded-3 px-4 py-2" type="submit">Update Student</button>
               </div>
-              
-              <div>
-                <h3 class="text-body-emphasis h5 fw-bold pb-3 border-bottom mb-4">Account Management</h3>
-                <div class="row g-4 pt-2">
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="new-pass">New Password (Optional)</label>
-                    <input class="form-control" id="new-pass" placeholder="Enter new password" type="password" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fs-sm fw-medium" for="confirm-pass">Confirm New Password</label>
-                    <input class="form-control" id="confirm-pass" placeholder="Confirm new password" type="password" />
-                  </div>
-                  <div class="col-12">
-                    <p class="text-body fs-sm fw-medium mb-2">Account Status</p>
-                    
-                    <label class="d-inline-flex align-items-center" for="account-toggle" style="cursor: pointer;">
-                      <div class="position-relative">
-                        <input checked class="visually-hidden" id="account-toggle" type="checkbox" />
-                        <div class="block rounded-pill" style="width: 3.5rem; height: 2rem; background-color: #6b7280;"></div>
-                        <div class="dot position-absolute bg-white rounded-circle" style="width: 1.5rem; height: 1.5rem; top: 0.25rem; left: 0.25rem; transition: all 0.2s ease-in-out;"></div>
-                      </div>
-                      <div class="ms-3 fw-medium text-body">Active</div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="d-flex align-items-center justify-content-end gap-3 pt-5 mt-5 border-top">
-              <a class="btn btn-light btn-h-11 px-4 fs-sm fw-bold d-flex align-items-center justify-content-center" asp-controller="Preview" asp-action="ViewPage" asp-route-name="StudentManagement" role="button">
-                <span>Cancel</span>
-              </a>
-              <button class="btn btn-primary btn-h-11 px-4 fs-sm fw-bold d-flex align-items-center justify-content-center" type="submit">
-                <span>Save Changes</span>
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </main>
-  </div>
+</div>

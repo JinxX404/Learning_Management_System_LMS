@@ -1,9 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Learning_Management_System.Models;
+using Learning_Management_System.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Learning_Management_System.Controllers
 {
     public class AuthController : Controller
     {
+        private readonly LmsContext _context;
+
+        public AuthController(LmsContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Login()
         {
             ViewData["Title"] = "Login";
@@ -11,19 +21,44 @@ namespace Learning_Management_System.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string email, string password, bool rememberMe = false)
+        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false)
         {
-            // TODO: Implement actual authentication logic
-            // For now, redirect to dashboard for any login attempt
-            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+            // Find user by email
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            // Check if user exists and password is correct
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                return RedirectToAction("Dashboard", "Student");
+                ViewBag.ErrorMessage = "Invalid email or password.";
+                ViewData["Title"] = "Login";
+                return View();
             }
-            
-            // If login fails, stay on login page
-            ViewData["Title"] = "Login";
-            ViewBag.ErrorMessage = "Invalid email or password.";
-            return View();
+
+            // Check if user is active
+            if (!user.IsActive)
+            {
+                ViewBag.ErrorMessage = "Your account is inactive.";
+                ViewData["Title"] = "Login";
+                return View();
+            }
+
+            // Store user ID in session
+            SessionHelper.SetUserId(HttpContext.Session, user.UserId);
+
+            // Update last login time
+            user.LastLoginAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            // Redirect based on role
+            if (user.Role == "Student")
+                return RedirectToAction("Dashboard", "Student");
+            else if (user.Role == "Instructor")
+                return RedirectToAction("Dashboard", "Instructor");
+            else if (user.Role == "Admin")
+                return RedirectToAction("Dashboard", "Admin");
+
+            return RedirectToAction("Login");
         }
 
         public IActionResult ResetPassword()
@@ -43,7 +78,7 @@ namespace Learning_Management_System.Controllers
 
         public IActionResult Logout()
         {
-            // TODO: Implement logout logic
+            SessionHelper.ClearSession(HttpContext.Session);
             return RedirectToAction("Login");
         }
     }

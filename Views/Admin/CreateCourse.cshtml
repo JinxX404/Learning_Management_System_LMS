@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "Create Course";
+    Layout = "_Layout";
+    ViewData["AdminActive"] = "courses";
+}
+
+<div class="d-flex min-vh-100 w-100">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <main class="flex-grow-1">
+        <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
+            <div class="d-flex align-items-center gap-3">
+                <a asp-action="Courses" class="btn btn-icon btn-light rounded-circle">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <h2 class="fs-5 fw-bold mb-0">Create New Course</h2>
+            </div>
+        </header>
+
+        <div class="p-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mb-4">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            <form asp-action="CreateCourse" method="post">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label for="courseCode" class="form-label fw-medium">Course Code</label>
+                                        <input type="text" class="form-control" id="courseCode" name="courseCode" placeholder="e.g. CS101" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="title" class="form-label fw-medium">Course Title</label>
+                                        <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Introduction to Computer Science" required>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="description" class="form-label fw-medium">Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="instructorId" class="form-label fw-medium">Instructor</label>
+                                        <select class="form-select" id="instructorId" name="instructorId" required>
+                                            <option value="">Select Instructor...</option>
+                                            @foreach (var instructor in ViewBag.Instructors)
+                                            {
+                                                <option value="@instructor.UserId">@instructor.FirstName @instructor.LastName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="academicTermId" class="form-label fw-medium">Academic Term</label>
+                                        <select class="form-select" id="academicTermId" name="academicTermId" required>
+                                            <option value="">Select Term...</option>
+                                            @foreach (var term in ViewBag.Terms)
+                                            {
+                                                <option value="@term.AcademicTermId">@term.TermName</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="creditHours" class="form-label fw-medium">Credit Hours</label>
+                                        <input type="number" class="form-control" id="creditHours" name="creditHours" value="3" min="1" max="6" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="maxEnrollment" class="form-label fw-medium">Max Enrollment</label>
+                                        <input type="number" class="form-control" id="maxEnrollment" name="maxEnrollment" value="50" min="1" required>
+                                    </div>
+
+                                    <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+                                        <a asp-action="Courses" class="btn btn-light">Cancel</a>
+                                        <button type="submit" class="btn btn-primary px-4">Create Course</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

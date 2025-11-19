@@ -1,6 +1,8 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "My Courses";
     Layout = "_Layout";
+    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
 }
 
 @section Styles {
@@ -56,62 +58,44 @@
   <h2 class="fs-2 fw-bold mb-5">My Courses</h2>
 
   <div class="row g-4">
-    <div class="col-md-6 col-lg-4">
-      <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBUtnk5u6RcGgvxKk1MFFEqxmILF_bbxE5-CF8GU7vM3viexZVk1bG4YxsY5klOA52NvJit7YBj-aCn2OH9ctJb_4cveDVkruQdux6tcL2N3Sxn46P2mNyMdY_9v1Rb2nAGKgbN9OyCRlt09AzN52kDyHQ5mffpha9V3_4Gw0ESUH_e0rp5H8kKzEqqwL1MV5k1QPmZgF8XbjENrAi6uM6eM9MxMGurAFUuPV64pNT2occUuO-YMfQVe2CyxtlwgHJUH7mtwBZOngK" class="card-img-top" alt="Psychology course image" style="height: 160px; object-fit: cover;">
-        <div class="card-body d-flex flex-column flex-grow-1 p-4">
-          <h3 class="card-title fs-6 fw-bold">Introduction to Psychology</h3>
-          <p class="card-text small text-secondary">Dr. Emily Carter</p>
-          <div class="mt-auto">
-            <div class="d-flex justify-content-between small text-secondary mb-1">
-              <span>Progress</span>
-              <span>60%</span>
+    @if (!enrollments.Any())
+    {
+        <div class="col-12">
+            <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column p-4">
+                <p class="mb-0 text-secondary">No courses found. Once you enroll, they will appear here.</p>
             </div>
-            <div class="progress" role="progressbar" style="height: 8px;">
-              <div class="progress-bar" style="width: 60%;"></div>
-            </div>
-            <a asp-action="CourseContent" asp-controller="Student" class="btn btn-primary w-100 fw-semibold mt-3">Resume</a>
-          </div>
         </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-      <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8PB45j-qVayWITgvDLSmiw9XNlnD_rreGfuQ3WNro1_cPoMDzf0_8l9luzAeFy-wYEkKoluOGu-50HXweMC3op1C-Htmb_-jLNdvOHnoa5I8iFeTi-uSubiLxS0VM2kX9ovsO_EgHrBAAfkmWjAeDHMuAm1Sqzd0izK_pKYMu_Q_RU8zDDoXHIy--qrnrLuVLzQMFdAT4PC1ZOdP6js5PJRSW_JlXi8PW3vrPgO3Y4DKfpxxQQS_ltjFxESp3oWMLo8rgGVBHW0nT" class="card-img-top" alt="Calculus course image" style="height: 160px; object-fit: cover;">
-        <div class="card-body d-flex flex-column flex-grow-1 p-4">
-          <h3 class="card-title fs-6 fw-bold">Calculus I</h3>
-          <p class="card-text small text-secondary">Professor David Lee</p>
-          <div class="mt-auto">
-            <div class="d-flex justify-content-between small text-secondary mb-1">
-              <span>Progress</span>
-              <span>30%</span>
+    }
+    else
+    {
+        foreach (var enrollment in enrollments)
+        {
+            var course = enrollment.Course;
+            <div class="col-md-6 col-lg-4">
+              <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column">
+                <div class="card-body d-flex flex-column flex-grow-1 p-4">
+                  <h3 class="card-title fs-6 fw-bold">@course?.Title ?? "Course"</h3>
+                  <p class="card-text small text-secondary">
+                      @if (course?.Instructor != null)
+                      {
+                          @($"{course.Instructor.FirstName} {course.Instructor.LastName}")
+                      }
+                      else
+                      {
+                          @:Instructor unavailable
+                      }
+                  </p>
+                  <div class="mt-auto">
+                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                      <span>Credits</span>
+                      <span>@course?.CreditHours</span>
+                    </div>
+                    <a asp-action="CourseDetails" asp-controller="Student" asp-route-id="@course?.CourseId" class="btn btn-primary w-100 fw-semibold mt-3">View Course</a>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="progress" role="progressbar" style="height: 8px;">
-              <div class="progress-bar" style="width: 30%;"></div>
-            </div>
-            <a asp-action="CourseContent" asp-controller="Student" class="btn btn-primary w-100 fw-semibold mt-3">Resume</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-lg-4">
-      <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column">
-        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyx6VlDA2LjuA3tA2Zrpsxi_o3EKNUBC_iU-xsE2A14RGVQv7dqTIcKHuoFlPE96ETsQMtJPSGSR6i5L5cOyzhI6cNN790qodXa-fA9h9nNVUT7BENdtJwt8bz9u7j-slAkGWtGg4tHfvz_UJPvyFU3-cNkZBf2t7orbGgd_gtF0i8FSFojiD7EaQRkRuJejhK_v0PZnQK2uDh9gUS6-c4kej-tPTjJIv2vDnw0RSjV8ZFWwLw8n96t-xlYvIk2Q1S9ajtEPa4MUnl" class="card-img-top" alt="History course image" style="height: 160px; object-fit: cover;">
-        <div class="card-body d-flex flex-column flex-grow-1 p-4">
-          <h3 class="card-title fs-6 fw-bold">World History</h3>
-          <p class="card-text small text-secondary">Ms. Sarah Jones</p>
-          <div class="mt-auto">
-            <div class="d-flex justify-content-between small text-secondary mb-1">
-              <span>Progress</span>
-              <span>85%</span>
-            </div>
-            <div class="progress" role="progressbar" style="height: 8px;">
-              <div class="progress-bar bg-warning" style="width: 85%;"></div>
-            </div>
-            <a asp-action="CourseContent" asp-controller="Student" class="btn btn-primary w-100 fw-semibold mt-3">Resume</a>
-          </div>
-        </div>
-      </div>
-    </div>
+        }
+    }
   </div>
 </main>

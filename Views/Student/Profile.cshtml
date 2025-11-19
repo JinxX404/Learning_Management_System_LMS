@@ -1,6 +1,18 @@
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "ESU - Profile";
     Layout = "_Layout";
+    var user = ViewBag.User as User;
+    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
+    decimal gpa = ViewBag.Gpa is decimal ? ViewBag.Gpa : 0m;
+    if (user == null)
+    {
+        <div class="container py-5">
+            <div class="alert alert-warning">Unable to load profile information.</div>
+        </div>
+        return;
+    }
+    var studentProfile = user.StudentProfile;
 }
 
 @section Styles {
@@ -60,13 +72,13 @@
       <div class="card-body">
           <div class="d-flex flex-column flex-md-row align-items-center gap-4">
               <div class="position-relative flex-shrink-0">
-                  <div class="profile-img profile-avatar rounded-circle" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSTIXuIf59UfMKi-7LJqSctCdj2J4ViVjwnNaxJRmBz_cRWLJn4FEZl2lM2faAkXUxfBF1GPyl6754BEzQHgpeXsjot3IXWHTMK7YgEyZ2ZW5Zl7UGoXgAGz27akT6F43RDCAR2_r0Ucn4VUC6THTOOulDbY6cZzyLPpB4SGQRwpp0bp8S1ww1VvVjTRy1l9zKD2vNevGoR4xqmz8HWSONmrRO7AORPwrdAkzPGfQIVp90TI00WZasmdCMWmBva9pGOLeXsvrrGtxZ');"></div>
+                  <div class="profile-img profile-avatar rounded-circle" style="background-image: url('https://ui-avatars.com/api/?name=@user.FirstName+@user.LastName&background=0D8ABC&color=fff');"></div>
                   <span class="online-indicator position-absolute bottom-0 end-0 bg-success rounded-circle" style="transform: translate(-25%, -25%);"></span>
               </div>
               <div class="text-center text-md-start">
-                  <h1 class="profile-name display-6 fw-bold">Sophia Clark</h1>
-                  <p class="profile-meta fs-5 text-secondary">Sophomore, Computer Science</p>
-                  <p class="profile-meta text-muted small">Joined August 2022</p>
+                  <h1 class="profile-name display-6 fw-bold">@user.FirstName @user.LastName</h1>
+                  <p class="profile-meta fs-5 text-secondary">@user.Institution?.Name ?? "Institution"</p>
+                  <p class="profile-meta text-muted small">Student ID: @studentProfile?.StudentIdNumber ?? "N/A"</p>
               </div>
           </div>
       </div>
@@ -83,7 +95,24 @@
         <h2 class="section-title fs-2 fw-bold text-body-emphasis">About</h2>
         <div class="card bg-tertiary border-custom shadow-sm rounded-4 mt-3">
             <div class="card-body p-4">
-                <p class="lead">I'm a passionate computer science student at State University, specializing in software development. I enjoy tackling complex problems and collaborating on innovative projects. Outside of academics, I love hiking, photography, and exploring new technologies.</p>
+                <dl class="row mb-0">
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">Email</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@user.Email</dd>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">GPA</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@gpa.ToString("0.00")</dd>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">Admission Date</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@studentProfile?.AdmissionDate?.ToString("MMMM d, yyyy") ?? "N/A"</dd>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">Status</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@((user.IsActive ? "Active" : "Inactive"))</dd>
+                    </div>
+                </dl>
             </div>
         </div>
       </section>
@@ -91,33 +120,39 @@
       <section>
           <h2 class="section-title fs-2 fw-bold text-body-emphasis">Enrolled Courses</h2>
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mt-2">
-              <div class="col course-item">
-                  <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
-                      <div class="course-card-img" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXLUsUPoVBr0OR8LBLWBnfZ8YOnfoKL1DcW6tK5zG0bUWc8UwU4fvEcSSmgLppPE9FHF5etDqB4y7Sj_VMBVAlhKQpqAZE_BBTkCeeb72XAVyl2nHh4SXFpsgVZyayoq1Yz63nacF4Jyhlw7jW83O73bVgvBruTmO0Jf7vnnJaSxYyiT9NApWOWktGLDwMefc4G5gk5Lye0ro98d75rqbsNsT6imphH1Rw_l6xVosws_RS_8gI3V0Cn1dqAQt5lasVh74RCK6Y8JpL');"></div>
-                      <div class="card-body">
-                          <h5 class="card-title fw-semibold">Introduction to Programming</h5>
-                          <p class="card-text text-secondary small">Professor Davis</p>
+              @if (!enrollments.Any())
+              {
+                  <div class="col">
+                      <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
+                          <div class="card-body">
+                              <p class="card-text text-secondary small mb-0">No enrolled courses to display.</p>
+                          </div>
                       </div>
                   </div>
-              </div>
-              <div class="col course-item">
-                  <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
-                      <div class="course-card-img" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqPzAtotaOVyMRwNcJKOwE7Q16s_D-0-PhLINxDjoUjXEQL3C-uflwN8KYNECKyFs695NtbUd9R4BSwnm7Rbrivo022mk3mzmDFpKyjTx5tyd3gBoeWt0xWyUUr6eBbXkhpmdZzb320WMyPIKz8poHFfhIbyffynmGvEpOE3R3YJG4edD-ylvVu8kiztOR1fV8t-h4apOfRJq6e_PCxwjW76JqpAcOjg5SloL4XIj0PEhJHOKL1-Pp5cXoQwnbfiukj0Kbe1nzcJ4j');"></div>
-                      <div class="card-body">
-                          <h5 class="card-title fw-semibold">Calculus II</h5>
-                          <p class="card-text text-secondary small">Professor Lee</p>
+              }
+              else
+              {
+                  foreach (var enrollment in enrollments)
+                  {
+                      <div class="col course-item">
+                          <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
+                              <div class="card-body">
+                                  <h5 class="card-title fw-semibold">@enrollment.Course?.Title</h5>
+                                  <p class="card-text text-secondary small">
+                                      @if (enrollment.Course?.Instructor != null)
+                                      {
+                                          @($"{enrollment.Course.Instructor.FirstName} {enrollment.Course.Instructor.LastName}")
+                                      }
+                                      else
+                                      {
+                                          @:Instructor unavailable
+                                      }
+                                  </p>
+                              </div>
+                          </div>
                       </div>
-                  </div>
-              </div>
-              <div class="col course-item">
-                  <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
-                      <div class="course-card-img" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAEUVJw3LKEQfyDISDPiFMNQt4wEnwHFXxu-RS2aC6Bs40srO3LZFHMmvS7_vQfu0r3-wgk-hC50DkzGb1jeKlofuayGTCCzf_9veFrZPJBK0oDlgtWQPQpbkTWNH8jrmVTtYBiw3qbuoTzpUjOMzqk0lxBFoMxmJRLAMCKBnEMYqLF-ytDi0FWaUHescYMhjgYuaPXwJHP2o-T_oI_f1AsrsGHkCIZIQ_rWNyBG4gTImasgvnxBguUB0naWLSjguyuBhVgVWAw0ntC');"></div>
-                      <div class="card-body">
-                          <h5 class="card-title fw-semibold">Linear Algebra</h5>
-                          <p class="card-text text-secondary small">Professor Chen</p>
-                      </div>
-                  </div>
-              </div>
+                  }
+              }
           </div>
       </section>
 
@@ -127,27 +162,7 @@
               <div class="col achievement-item">
                   <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100">
                       <div class="card-body text-center p-3">
-                          <div class="achievement-card-img rounded-3 mx-auto" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBSP-IPQfDAuUtFX-rBiorYuv1vVnhtUJZulenlWSlsU4s95Oqe0EgTw_t7PSWM90oLB8UG8F-yn4NxHQwnM3HAh4M0ejJO22iKsCP0-sXdmbCorUaltCHiz-TbHJRhAY20TjEe0FnJFj9eAuT4EHjyZD1ibCC800MVXUIyUZDYzc2WU5cnxMSjp4cOTKb6LoyOY4yUM-hu2CPZZREeT0MFC3cgSroOoWBrTNLI3TAo16focUdU4prOhNo-3736jzKMqbp9a5dH6zW9');"></div>
-                          <h5 class="card-title fw-semibold mt-3">Dean's List Fall 2022</h5>
-                          <p class="card-text text-secondary small">Awarded for academic excellence</p>
-                      </div>
-                  </div>
-              </div>
-              <div class="col achievement-item">
-                  <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100">
-                      <div class="card-body text-center p-3">
-                          <div class="achievement-card-img rounded-3 mx-auto" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3Kqgk7AFuRyuyV6-Os4tTu9Ic5p71fFmYNNfJWrBLUETEUi1wLHDMYBbtEAIFLtyNTmFJ-JhemVA6yWtwjdC2oNyIdQC8MNUiOG3yHMJqYymPpCSVh5_4epV04S7CS28qepvtY8wfYXVtQXJlBpPuKW3bCYKXUs9jioTcTcK2sP07JgOcjlDMmrZqCNDDk7Sl8pQPhd6I0XHgC3NsylHOGQZ6cFBtsQ6Lf6tf1ci_vRzRTFFVrhTj7FKWLCikJLGDeGCNOtvH3aEy');"></div>
-                          <h5 class="card-title fw-semibold mt-3">Dean's List Spring 2023</h5>
-                          <p class="card-text text-secondary small">Awarded for academic excellence</p>
-                      </div>
-                  </div>
-              </div>
-              <div class="col achievement-item">
-                  <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100">
-                      <div class="card-body text-center p-3">
-                          <div class="achievement-card-img rounded-3 mx-auto" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAmLvYy-5_pbrHf7Om1O6cQX3vn6iqA7tjgvilGePsE7JsDZvJqRO2FWhDgsdjRCLAPay376y9JdeCboNmQmLZe6pK9q8FS60LdB80PKWl6OmHgNpEZlwywewqaRXST5LZWc0_eqrEqh3Xw2KjXCG7leSRjl-y8405Qj_8grlMEzEKJEanbmieu_p1zaHxO_8d-o7GdofT2nyLOlc9Esuxo0y3IHBB82ODzUxVR77aVCYsYPv3VnbTsfODklgIN9T_y4O97oOJgqMsU');"></div>
-                          <h5 class="card-title fw-semibold mt-3">Hackathon Winner</h5>
-                          <p class="card-text text-secondary small">First place in the annual university hackathon</p>
+                          <p class="card-text text-secondary small mb-0">Achievements will appear here as they are added.</p>
                       </div>
                   </div>
               </div>
@@ -156,3 +171,4 @@
     </div>
   </div>
 </main>
+
