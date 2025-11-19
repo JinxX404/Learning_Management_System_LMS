@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+    Layout = "_Layout";
+}
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 fw-bold">Instructor Dashboard</h1>
+            <p class="text-muted">Welcome back! Here's an overview of your courses and activities.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <span class="material-symbols-outlined fs-1 text-primary">school</span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">My Courses</h6>
+                            <h3 class="mb-0">@ViewBag.CoursesCount</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <span class="material-symbols-outlined fs-1 text-warning">pending_actions</span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Pending Grades</h6>
+                            <h3 class="mb-0">@ViewBag.PendingGradesCount</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <span class="material-symbols-outlined fs-1 text-success">groups</span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Total Students</h6>
+                            <h3 class="mb-0">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <span class="material-symbols-outlined fs-1 text-info">assignment</span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Assignments</h6>
+                            <h3 class="mb-0">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">My Courses</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">You don't have any courses assigned yet. Contact the administrator to get courses assigned to you.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary">
+                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">add</span>
+                            Create Assignment
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">grade</span>
+                            Grade Submissions
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">campaign</span>
+                            Post Announcement
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

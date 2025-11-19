@@ -9,6 +9,7 @@
 }
 
 <div class="d-flex min-vh-100">
+    @await Html.PartialAsync("_AdminSidebar")
     
     <main class="flex-grow-1 d-flex flex-column">
    
@@ -33,31 +34,24 @@
           <div class="card-header bg-transparent px-4 py-3">
             <h2 class="h5 fw-bold text-body-emphasis mb-0">Term Details</h2>
           </div>
-          <form class="card-body p-4 vstack gap-4" asp-action="CreateAcademicTerm" method="POST">
+          <form class="card-body p-4 vstack gap-4" asp-action="CreateAcademicTerm" method="post">
             <div>
               <label class="form-label fs-sm fw-medium" for="termName">Term Name</label>
-              <input class="form-control rounded-3" id="termName" name="termName" placeholder="e.g., Fall Semester 2024" type="text" />
+              <input class="form-control rounded-3" id="termName" name="termName" placeholder="e.g., Fall Semester 2024" type="text" required />
             </div>
             
             <div class="row g-4">
               <div class="col-md-6">
                 <label class="form-label fs-sm fw-medium" for="startDate">Start Date</label>
-                <input class="form-control rounded-3" id="startDate" name="startDate" type="date" />
+                <input class="form-control rounded-3" id="startDate" name="startDate" type="date" required />
               </div>
               <div class="col-md-6">
                 <label class="form-label fs-sm fw-medium" for="endDate">End Date</label>
-                <input class="form-control rounded-3" id="endDate" name="endDate" type="date" />
+                <input class="form-control rounded-3" id="endDate" name="endDate" type="date" required />
               </div>
             </div>
             
-            <div>
-              <label class="form-label fs-sm fw-medium" for="status">Status</label>
-              <select class="form-select rounded-3" id="status" name="status">
-                <option>Upcoming</option>
-                <option>Active</option>
-                <option>Inactive</option>
-              </select>
-            </div>
+            <input type="hidden" name="institutionId" value="1" />
             
             <div class="d-flex justify-content-end gap-3 pt-3">
               <a class="btn btn-light rounded-3 fs-sm fw-medium" asp-action="AcademicTerms" role="button">Cancel</a>
@@ -68,3 +62,4 @@
       </div>
     </main>
 </div>
+
