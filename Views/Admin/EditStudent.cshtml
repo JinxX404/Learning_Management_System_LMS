@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Edit Student";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "students";
     var user = ViewBag.User as Learning_Management_System.Models.User;
 }
@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="~/css/pages/add-student_admin.css">
 }
 
-<div class="d-flex position-relative w-100" style="min-height: 100vh;">
-    
     <main class="flex-grow-1 p-4 p-lg-5 overflow-y-auto">
       <div class="mx-auto" style="max-width: 42rem;"> <div class="mb-5">
           <nav aria-label="breadcrumb" class="mb-2">
@@ -26,8 +24,16 @@
         <div class="card bg-body-tertiary border shadow-sm rounded-4">
           <div class="card-body p-4 p-sm-5">
             <form asp-action="EditUser" method="POST">
+              @Html.AntiForgeryToken()
               <input type="hidden" name="userId" value="@(user?.UserId)" />
               <input type="hidden" name="role" value="Student" />
+              
+              @if (ViewBag.Error != null)
+              {
+                  <div class="alert alert-danger rounded-3 mb-4" role="alert">
+                      @ViewBag.Error
+                  </div>
+              }
               
               <div class="row g-4 gx-md-5">
                 <div class="col-12">
@@ -62,8 +68,8 @@
                 <div class="col-md-6">
                   <label class="form-label fs-sm fw-medium" for="isActive">Status</label>
                   <select class="form-select form-select-sm rounded-3" id="isActive" name="isActive">
-                    <!option value="true" @(user?.IsActive == true ? "selected" : "")>Active</!option>
-                    <!option value="false" @(user?.IsActive == false ? "selected" : "")>Inactive</!option>
+                    <option value="true" selected="@(user?.IsActive == true)">Active</option>
+                    <option value="false" selected="@(user?.IsActive == false)">Inactive</option>
                   </select>
                 </div>
                 
@@ -78,4 +84,3 @@
         </div>
       </div>
     </main>
-</div>

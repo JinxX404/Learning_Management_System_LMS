@@ -1,0 +1,263 @@
+@model Learning_Management_System.Models.Quiz
+@{
+    ViewData["Title"] = "Create Quiz";
+    Layout = "_Layout";
+    var courses = ViewBag.Courses as List<Learning_Management_System.Models.Course>;
+}
+
+@await Html.PartialAsync("_InstructorNav")
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/create-quiz.css">
+}
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="MyCourses">My Courses</a></li>
+                    <li class="breadcrumb-item active">Create Quiz</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold">Create New Quiz</h1>
+            <p class="text-muted">Design an assessment to test student knowledge</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-controller="Instructor" asp-action="CreateQuiz" method="post">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Quiz Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Select Course <span class="text-danger">*</span></label>
+                            <select asp-for="CourseId" class="form-select" required>
+                                <option value="">Choose a course...</option>
+                                @if (courses != null)
+                                {
+                                    @foreach (var course in courses)
+                                    {
+                                        <option value="@course.CourseId">@course.CourseCode - @course.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Quiz Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g., Chapter 3 Quiz" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Brief description of what this quiz covers..."></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Due Date</label>
+                                <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Time Limit (minutes)</label>
+                                <input asp-for="TimeLimitMinutes" type="number" class="form-control" min="5" value="30" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Questions</h5>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addQuestion()">
+                            <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
+                            Add Question
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="questionsContainer">
+                            <!-- Question template will be added here via JavaScript -->
+                            <div class="alert alert-info text-center">
+                                <span class="material-symbols-outlined fs-1">quiz</span>
+                                <p class="mb-0 mt-2">Click "Add Question" to start building your quiz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Quiz Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="shuffleQuestions" class="form-check-input" id="shuffle" />
+                                <label class="form-check-label" for="shuffle">
+                                    Shuffle questions for each student
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="showCorrectAnswers" class="form-check-input" id="showAnswers" />
+                                <label class="form-check-label" for="showAnswers">
+                                    Show correct answers after submission
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="allowReview" class="form-check-input" id="allowReview" checked />
+                                <label class="form-check-label" for="allowReview">
+                                    Allow students to review their submissions
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Quiz Type</label>
+                            <select name="quizType" class="form-select">
+                                <option value="Graded">Graded Quiz</option>
+                                <option value="Practice">Practice Quiz</option>
+                                <option value="Survey">Survey</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">publish</span>
+                        Publish Quiz
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Question Types</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">radio_button_checked</span>
+                            <strong>Multiple Choice</strong>
+                            <p class="small text-muted mb-0">Single correct answer from options</p>
+                        </li>
+                        <li class="mb-2">
+                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">check_box</span>
+                            <strong>Multiple Select</strong>
+                            <p class="small text-muted mb-0">Multiple correct answers</p>
+                        </li>
+                        <li class="mb-2">
+                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">edit</span>
+                            <strong>Short Answer</strong>
+                            <p class="small text-muted mb-0">Text-based response</p>
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">check_circle</span>
+                            <strong>True/False</strong>
+                            <p class="small text-muted mb-0">Binary choice question</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Tips</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li class="mb-2">Write clear, unambiguous questions</li>
+                        <li class="mb-2">Avoid "trick" questions</li>
+                        <li class="mb-2">Test understanding, not memorization</li>
+                        <li class="mb-2">Provide immediate feedback when possible</li>
+                        <li>Review quiz before publishing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+let questionCount = 0;
+
+function addQuestion() {
+    questionCount++;
+    const container = document.getElementById('questionsContainer');
+    
+    // Remove info message if this is the first question
+    if (questionCount === 1) {
+        container.innerHTML = '';
+    }
+    
+    const questionHtml = `
+        <div class="card mb-3 question-card" id="question-${questionCount}">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Question ${questionCount}</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(${questionCount})">
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">delete</span>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Question Type</label>
+                    <select name="questions[${questionCount}].type" class="form-select">
+                        <option value="MultipleChoice">Multiple Choice</option>
+                        <option value="TrueFalse">True/False</option>
+                        <option value="ShortAnswer">Short Answer</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Question Text <span class="text-danger">*</span></label>
+                    <textarea name="questions[${questionCount}].text" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Points</label>
+                    <input type="number" name="questions[${questionCount}].points" class="form-control" min="1" value="1" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Correct Answer</label>
+                    <input type="text" name="questions[${questionCount}].answer" class="form-control" placeholder="Enter the correct answer" />
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', questionHtml);
+}
+
+function removeQuestion(id) {
+    const question = document.getElementById(`question-${id}`);
+    if (question) {
+        question.remove();
+        questionCount--;
+        
+        if (questionCount === 0) {
+            document.getElementById('questionsContainer').innerHTML = `
+                <div class="alert alert-info text-center">
+                    <span class="material-symbols-outlined fs-1">quiz</span>
+                    <p class="mb-0 mt-2">Click "Add Question" to start building your quiz</p>
+                </div>
+            `;
+        }
+    }
+}
+</script>
+}

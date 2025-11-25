@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Grade Submissions";
+    Layout = "_Layout";
+    var ungraded = ViewBag.Ungraded as IEnumerable<Learning_Management_System.Models.Grade> ?? Enumerable.Empty<Learning_Management_System.Models.Grade>();
+}
+
+@await Html.PartialAsync("_InstructorNav")
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 fw-bold">Grade Submissions</h1>
+            <p class="text-muted">Review and grade student submissions for your courses.</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h5 class="mb-0">Ungraded Submissions</h5>
+        </div>
+        <div class="card-body">
+            @if (!ungraded.Any())
+            {
+                <div class="alert alert-info mb-0">No ungraded submissions found.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Assignment/Quiz</th>
+                                <th>Submission Date</th>
+                                <th>Points</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var grade in ungraded)
+                        {
+                            <tr>
+                                <td>@grade.User?.FirstName @grade.User?.LastName</td>
+                                <td>@grade.GradeBook?.Course?.Title</td>
+                                <td>@grade.GradeBook?.Name</td>
+                                <td>@grade.GradeBook?.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                <td>@grade.Points</td>
+                                <td>
+                                    <form asp-action="GradeSubmission" asp-controller="Instructor" method="post" class="d-flex gap-2 align-items-center">
+                                        <input type="hidden" name="gradeId" value="@grade.GradeId" />
+                                        <input type="number" name="points" class="form-control form-control-sm" min="0" max="100" value="@grade.Points" style="width: 80px;" required />
+                                        <input type="text" name="feedback" class="form-control form-control-sm" placeholder="Feedback" style="width: 160px;" />
+                                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

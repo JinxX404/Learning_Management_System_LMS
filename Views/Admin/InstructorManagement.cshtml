@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Instructor Management";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "instructors";
 }
 
@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="~/css/pages/instructor-manegment_admin.css">
 }
 
-<div class="d-flex min-vh-100">
-  @await Html.PartialAsync("_AdminSidebar")
-  
   <main class="flex-grow-1 p-4">
     <div class="container-xxl mx-auto">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5 mt-4">
@@ -21,30 +18,38 @@
             </a>
         </div>
 
-        <div class="row g-4">
+        <form asp-action="Instructors" method="get" class="row g-4">
           <div class="col-lg-6">
             <label class="w-100">
               <div class="input-group rounded-3" style="height: 2.5rem;">
                 <span class="input-group-text bg-body-secondary border-0" id="search-addon">
                   <span class="material-symbols-outlined text-secondary">search</span>
                 </span>
-                <input class="form-control bg-body-secondary border-0 fs-sm" placeholder="Search by name or email..." type="text" aria-label="Search" aria-describedby="search-addon" />
+                <input class="form-control bg-body-secondary border-0 fs-sm" placeholder="Search by name or email..." type="text" name="searchString" value="@ViewBag.SearchString" aria-label="Search" aria-describedby="search-addon" />
+                <button class="btn btn-outline-secondary border-0" type="submit">Search</button>
               </div>
             </label>
           </div>
           <div class="col-md-6 col-lg-3">
-            <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
-              <span>Status: All</span>
-              <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
-            </button>
+            <select name="status" class="form-select border-0 bg-body-secondary rounded-3 fs-sm fw-medium h-100" onchange="this.form.submit()">
+                <option value="All" selected="@(ViewBag.CurrentStatus == "All" || ViewBag.CurrentStatus == null)">Status: All</option>
+                <option value="Active" selected="@(ViewBag.CurrentStatus == "Active")">Status: Active</option>
+                <option value="Inactive" selected="@(ViewBag.CurrentStatus == "Inactive")">Status: Inactive</option>
+            </select>
           </div>
           <div class="col-md-6 col-lg-3">
-            <button class="btn btn-filter d-flex align-items-center justify-content-between w-100 rounded-3 fs-sm fw-medium" style="height: 2.5rem;">
-              <span>Department: All</span>
-              <span class="material-symbols-outlined text-secondary fs-5">expand_more</span>
-            </button>
+            <select name="department" class="form-select border-0 bg-body-secondary rounded-3 fs-sm fw-medium h-100" onchange="this.form.submit()">
+                <option value="All" selected="@(ViewBag.CurrentDepartment == "All" || ViewBag.CurrentDepartment == null)">Department: All</option>
+                @if (ViewBag.Departments != null)
+                {
+                    foreach (var dept in ViewBag.Departments)
+                    {
+                        <option value="@dept" selected="@(ViewBag.CurrentDepartment == dept)">@dept</option>
+                    }
+                }
+            </select>
           </div>
-        </div>
+        </form>
       </div>
       
       <div class="card bg-body-tertiary border rounded-4 overflow-hidden">
@@ -52,9 +57,6 @@
           <table class="table w-100 fs-sm text-start align-middle mb-0">
             <thead>
               <tr>
-                <th class="p-4" scope="col">
-                  <input class="form-check-input bg-body-secondary" type="checkbox" />
-                </th>
                 <th class="px-4 py-3" scope="col">Instructor Name</th>
                 <th class="px-4 py-3" scope="col">Email</th>
                 <th class="px-4 py-3" scope="col">Department</th>
@@ -69,9 +71,6 @@
                   foreach (var instructor in ViewBag.Instructors)
                   {
                       <tr class="border-top">
-                        <td class="w-4 p-4">
-                          <input class="form-check-input" type="checkbox" value="@instructor.UserId" />
-                        </td>
                         <td class="px-4 py-3 text-nowrap">
                           <div class="d-flex align-items-center gap-3">
                             <div class="rounded-circle d-flex align-items-center justify-content-center bg-info-subtle text-info fw-bold" style="width: 2.5rem; height: 2.5rem;">
@@ -109,6 +108,7 @@
                           <div class="d-flex align-items-center justify-content-center gap-2">
                             <a asp-action="EditUser" asp-route-id="@instructor.UserId" class="btn btn-icon-table text-body"><span class="material-symbols-outlined">edit</span></a>
                             <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline;">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@instructor.UserId" />
                                 <button type="submit" class="btn btn-icon-table text-danger"><span class="material-symbols-outlined">delete</span></button>
                             </form>
@@ -120,21 +120,13 @@
             </tbody>
           </table>
         </div>
-        <nav aria-label="Table navigation" class="d-flex align-items-center justify-content-between p-4 border-top">
-          <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">1-4</span> of <span class="fw-semibold text-body">100</span></span>
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item"><a class="page-link rounded-start-2" href="#">Previous</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active" aria-current="page"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link rounded-end-2" href="#">Next</a></li>
-          </ul>
-        </nav>
+        <div class="p-4 border-top">
+          <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@((ViewBag.Instructors as IEnumerable<dynamic>)?.Count() ?? 0)</span> results</span>
+        </div>
       </div>
     </div>
     </div>
   </main>
-</div>
 
 @section Scripts {
     <script>

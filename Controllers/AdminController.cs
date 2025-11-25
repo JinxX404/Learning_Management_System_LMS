@@ -31,36 +31,116 @@ namespace Learning_Management_System.Controllers
             return user?.Role == "Admin";
         }
 
+        public class ActivityItem
+        {
+            public string? Type { get; set; }
+            public string? Message { get; set; }
+            public DateTime Date { get; set; }
+            public string? Icon { get; set; }
+            public string? ColorClass { get; set; }
+        }
+
+        [Route("Admin/Dashboard")]
         public async Task<IActionResult> Dashboard()
         {
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
 
+            // 1. Statistics
             var totalUsers = await _context.Users.CountAsync();
-            var totalStudents = await _context.Users
-                .Where(u => u.Role == "Student")
-                .CountAsync();
             var totalCourses = await _context.Courses.CountAsync();
+            var activeCourses = await _context.Courses.Where(c => c.Status == "Active").CountAsync();
+            var courseEnrollments = await _context.CourseEnrollments.CountAsync();
+            var aiGenerations = await _context.AigeneratedContents.CountAsync();
+
+            // Calculate trends (mock logic for now as we don't have historical snapshots, 
+            // but we could compare with created_at < 30 days ago)
+            var lastMonth = DateTime.Now.AddDays(-30);
+            var newUsersLastMonth = await _context.Users.CountAsync(u => u.CreatedAt >= lastMonth);
+            var newEnrollmentsLastMonth = await _context.CourseEnrollments.CountAsync(e => e.EnrolledAt >= lastMonth);
 
             ViewBag.TotalUsers = totalUsers;
-            ViewBag.TotalStudents = totalStudents;
-            ViewBag.TotalCourses = totalCourses;
+            ViewBag.TotalCourses = totalCourses; // Used in view?
+            ViewBag.ActiveCourses = activeCourses;
+            ViewBag.CourseEnrollments = courseEnrollments;
+            ViewBag.AiGenerations = aiGenerations;
+            
+            ViewBag.NewUsersLastMonth = newUsersLastMonth;
+            ViewBag.NewEnrollmentsLastMonth = newEnrollmentsLastMonth;
+
+            // 2. Recent Activity (Combine New Users and New Courses)
+            var recentUsers = await _context.Users
+                .OrderByDescending(u => u.CreatedAt)
+                .Take(5)
+                .Select(u => new ActivityItem
+                {
+                    Type = "User",
+                    Message = $"New user registered: {u.FirstName} {u.LastName}",
+                    Date = u.CreatedAt,
+                    Icon = "group_add",
+                    ColorClass = "info"
+                })
+                .ToListAsync();
+
+            var recentCourses = await _context.Courses
+                .OrderByDescending(c => c.CreatedAt)
+                .Take(5)
+                .Select(c => new ActivityItem
+                {
+                    Type = "Course",
+                    Message = $"New course published: {c.Title}",
+                    Date = c.CreatedAt,
+                    Icon = "add_circle",
+                    ColorClass = "success"
+                })
+                .ToListAsync();
+
+            var recentActivity = recentUsers.Concat(recentCourses)
+                .OrderByDescending(a => a.Date)
+                .Take(5)
+                .ToList();
+
+            ViewBag.RecentActivity = recentActivity;
+
+            // 3. AI Usage (Group by ModelName)
+            // Using VwAiinteractionsByUser or AigeneratedContent
+            // AigeneratedContent has AimodelId, need to join with AIModels
+            var aiUsage = await _context.AigeneratedContents
+                .Include(c => c.Aimodel)
+                .GroupBy(c => c.Aimodel.ModelName)
+                .Select(g => new { Model = g.Key, Count = g.Count() })
+                .ToListAsync();
+            
+            ViewBag.AiUsage = aiUsage;
+
             ViewData["Title"] = "Admin Dashboard";
 
             return View();
         }
 
-        public async Task<IActionResult> Users()
+        public async Task<IActionResult> Users(string searchString)
         {
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
 
-            var users = await _context.Users
+            var usersQuery = _context.Users
                 .Include(u => u.Institution)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                usersQuery = usersQuery.Where(u => 
+                    u.FirstName.Contains(searchString) || 
+                    u.LastName.Contains(searchString) || 
+                    u.Email.Contains(searchString));
+            }
+
+            var users = await usersQuery
                 .OrderBy(u => u.LastName)
                 .ToListAsync();
 
             ViewBag.Users = users;
+            ViewBag.SearchString = searchString;
             ViewData["Title"] = "User Management";
 
             return View();
@@ -281,6 +361,7 @@ namespace Learning_Management_System.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(
             int userId,
             string email,
@@ -297,10 +378,34 @@ namespace Learning_Management_System.Controllers
             if (user == null)
                 return NotFound();
 
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            {
+                // Return to edit page with error
+                var institutions = await _context.Institutions.ToListAsync();
+                ViewBag.Institutions = institutions;
+                ViewBag.User = user;
+                ViewBag.Error = "Email, First Name, and Last Name are required.";
+                
+                if (role == "Student")
+                {
+                    ViewData["Title"] = "Edit Student";
+                    return View("EditStudent");
+                }
+                else if (role == "Instructor")
+                {
+                    ViewData["Title"] = "Edit Instructor";
+                    return View("EditInstructor");
+                }
+                
+                ViewData["Title"] = "Edit User";
+                return View();
+            }
+
             // Update properties
-            user.Email = email;
-            user.FirstName = firstName;
-            user.LastName = lastName;
+            user.Email = email.Trim();
+            user.FirstName = firstName.Trim();
+            user.LastName = lastName.Trim();
             user.Role = role;
             user.IsActive = isActive;
             user.UpdatedAt = DateTime.Now;
@@ -314,10 +419,139 @@ namespace Learning_Management_System.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Users");
+            // Redirect based on role
+            if (role == "Student")
+                return RedirectToAction("Students");
+            else if (role == "Instructor")
+                return RedirectToAction("Instructors");
+            else
+                return RedirectToAction("Dashboard");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteStudent(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.Role != "Student")
+                return NotFound();
+
+            // Check if student has active enrollments
+            var hasEnrollments = await _context.CourseEnrollments
+                .AnyAsync(e => e.UserId == id && e.Status == "Enrolled");
+
+            if (hasEnrollments)
+            {
+                // Soft delete - set IsActive to false
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Can safely soft delete
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Students");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteInstructor(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null || user.Role != "Instructor")
+                return NotFound();
+
+            // Check if instructor has active courses
+            var hasCourses = await _context.Courses
+                .AnyAsync(c => c.InstructorId == id && c.Status == "Active");
+
+            if (hasCourses)
+            {
+                // Cannot delete instructor with active courses
+                // Just soft delete for now
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Can safely soft delete
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Instructors");
+        }
+
+        public async Task<IActionResult> StudentDetails(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var student = await _context.Users
+                .Include(u => u.StudentProfile)
+                .Include(u => u.Institution)
+                .FirstOrDefaultAsync(u => u.UserId == id && u.Role == "Student");
+
+            if (student == null)
+                return NotFound();
+
+            // Get enrollments
+            var enrollments = await _context.CourseEnrollments
+                .Where(e => e.UserId == id)
+                .Include(e => e.Course)
+                .ThenInclude(c => c.AcademicTerm)
+                .Include(e => e.Course)
+                .ThenInclude(c => c.Instructor)
+                .OrderByDescending(e => e.EnrolledAt)
+                .ToListAsync();
+
+            ViewBag.Student = student;
+            ViewBag.Enrollments = enrollments;
+            ViewData["Title"] = $"{student.FirstName} {student.LastName} - Details";
+
+            return View();
+        }
+
+        public async Task<IActionResult> InstructorDetails(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var instructor = await _context.Users
+                .Include(u => u.InstructorProfile)
+                .Include(u => u.Institution)
+                .FirstOrDefaultAsync(u => u.UserId == id && u.Role == "Instructor");
+
+            if (instructor == null)
+                return NotFound();
+
+            // Get courses taught
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == id)
+                .Include(c => c.AcademicTerm)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.Instructor = instructor;
+            ViewBag.Courses = courses;
+            ViewData["Title"] = $"{instructor.FirstName} {instructor.LastName} - Details";
+
+            return View();
         }
 
         public async Task<IActionResult> AcademicTerms()
+
         {
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
@@ -405,6 +639,7 @@ namespace Learning_Management_System.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAcademicTerm(
             int academicTermId,
             string termName,
@@ -420,6 +655,16 @@ namespace Learning_Management_System.Controllers
             if (term == null)
                 return NotFound();
 
+            // Validate term name
+            if (string.IsNullOrWhiteSpace(termName))
+            {
+                ViewBag.Error = "Term Name is required.";
+                var institutions = await _context.Institutions.ToListAsync();
+                ViewBag.Institutions = institutions;
+                ViewBag.Term = term;
+                return View("EditTerm");
+            }
+
             // Validate dates
             if (endDate <= startDate)
             {
@@ -430,7 +675,7 @@ namespace Learning_Management_System.Controllers
                 return View("EditTerm");
             }
 
-            term.TermName = termName;
+            term.TermName = termName.Trim();
             term.StartDate = DateOnly.FromDateTime(startDate);
             term.EndDate = DateOnly.FromDateTime(endDate);
             term.InstitutionId = institutionId;
@@ -482,21 +727,25 @@ namespace Learning_Management_System.Controllers
             var currentUserId = GetCurrentUserId();
             if (user.UserId == currentUserId)
             {
-                ViewBag.Error = "You cannot delete your own account.";
-                var users = await _context.Users
-                    .Include(u => u.Institution)
-                    .OrderBy(u => u.LastName)
-                    .ToListAsync();
-                ViewBag.Users = users;
-                return View("Users");
+                // Cannot delete yourself, just redirect back
+                return RedirectToAction("Dashboard");
             }
+
+            // Store role before soft delete
+            var userRole = user.Role;
 
             // Soft delete - set IsActive to false instead of deleting
             user.IsActive = false;
             user.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Users");
+            // Redirect based on role
+            if (userRole == "Student")
+                return RedirectToAction("Students");
+            else if (userRole == "Instructor")
+                return RedirectToAction("Instructors");
+            else
+                return RedirectToAction("Dashboard");
         }
 
         public async Task<IActionResult> Reports()
@@ -518,6 +767,37 @@ namespace Learning_Management_System.Controllers
             ViewBag.TotalCourses = totalCourses;
             ViewBag.TotalEnrollments = totalEnrollments;
             ViewBag.ActiveTerms = activeTerms;
+
+            // 1. Top Performing Students
+            var topStudents = await _context.VwTopPerformingStudents
+                .OrderByDescending(s => s.Gpa)
+                .Take(10)
+                .ToListAsync();
+            ViewBag.TopStudents = topStudents;
+
+            // 2. Course Pass/Fail Rates
+            var courseRates = await _context.VwCoursePassFailRates
+                .Join(_context.Courses,
+                    rate => rate.CourseId,
+                    course => course.CourseId,
+                    (rate, course) => new {
+                        CourseTitle = course.Title,
+                        CourseCode = course.CourseCode,
+                        PassRate = rate.PassRate,
+                        PassCount = rate.PassCount,
+                        FailCount = rate.FailCount,
+                        Total = rate.TotalCompletedStudents
+                    })
+                .OrderByDescending(x => x.PassRate)
+                .ToListAsync();
+            ViewBag.CourseRates = courseRates;
+
+            // 3. Institution Summary
+            var institutionSummary = await _context.VwInstitutionSummaries
+                .OrderByDescending(i => i.UserCount)
+                .ToListAsync();
+            ViewBag.InstitutionSummary = institutionSummary;
+
             ViewData["Title"] = "Reports";
 
             return View();
@@ -532,6 +812,7 @@ namespace Learning_Management_System.Controllers
             var courses = await _context.Courses
                 .Include(c => c.Instructor)
                 .Include(c => c.AcademicTerm)
+                .Where(c => c.Status != "Inactive")
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 
@@ -540,6 +821,8 @@ namespace Learning_Management_System.Controllers
 
             return View("CourseManagement");
         }
+
+
 
         public async Task<IActionResult> CreateCourse()
         {
@@ -663,7 +946,67 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteCourse(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null)
+                return NotFound();
+
+            // Check if course has enrollments
+            var hasEnrollments = await _context.CourseEnrollments
+                .AnyAsync(e => e.CourseId == id);
+
+            if (hasEnrollments)
+            {
+                // Cannot delete course with enrollments, set to inactive
+                course.Status = "Archived";
+                _context.Courses.Update(course);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                // Can safely delete
+                _context.Courses.Remove(course);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Courses");
+        }
+
+        public async Task<IActionResult> CourseDetails(int id)
+        {
+            if (!IsLoggedIn() || !await IsAdmin())
+                return RedirectToAction("Login", "Auth");
+
+            var course = await _context.Courses
+                .Include(c => c.Instructor)
+                .Include(c => c.AcademicTerm)
+                .ThenInclude(t => t.Institution)
+                .FirstOrDefaultAsync(c => c.CourseId == id);
+
+            if (course == null)
+                return NotFound();
+
+            // Get enrollments
+            var enrollments = await _context.CourseEnrollments
+                .Where(e => e.CourseId == id)
+                .Include(e => e.User)
+                .OrderBy(e => e.User.LastName)
+                .ToListAsync();
+
+            ViewBag.Course = course;
+            ViewBag.Enrollments = enrollments;
+            ViewData["Title"] = $"{course.Title} - Details";
+
+            return View();
+        }
+
         // Enrollment Management
+
         public async Task<IActionResult> Enrollments(int? courseId)
         {
             if (!IsLoggedIn() || !await IsAdmin())

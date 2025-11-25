@@ -1,0 +1,17 @@
+@{
+    Layout = "_Layout";
+}
+@section Styles {
+    @await RenderSectionAsync("Styles", required: false)
+}
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}
+
+<div class="d-flex min-vh-100 w-100">
+    @await Html.PartialAsync("_AdminSidebar")
+
+    <div class="flex-grow-1 d-flex flex-column">
+        @RenderBody()
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -83,120 +83,90 @@ namespace Learning_Management_System.Controllers
 
 
 
-        public async Task<IActionResult> CourseDetails(int id = 1)
+
+        public async Task<IActionResult> CourseContent(int id, int? lectureId = null)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Verify student is enrolled
-            var isEnrolled = await _context.CourseEnrollments
-                .AnyAsync(e => e.UserId == userId && e.CourseId == id);
-
-            if (!isEnrolled)
-                return RedirectToAction("MyCourses");
-
-            // Get course with all details
-            var course = await _context.Courses
-                .Include(c => c.Instructor)
-                .Include(c => c.AcademicTerm)
-                .Include(c => c.Lectures)
-                .FirstOrDefaultAsync(c => c.CourseId == id);
-
-            if (course == null)
-                return NotFound();
-
-            ViewBag.Course = course;
-            ViewData["Title"] = course.Title;
-
-            return View();
-        }
-
-        public async Task<IActionResult> CourseContent(int id = 1)
-        {
-            if (!IsLoggedIn())
-                return RedirectToAction("Login", "Auth");
-
-            var userId = GetCurrentUserId() ?? 0;
-
-            // Verify enrollment
-            var isEnrolled = await _context.CourseEnrollments
-                .AnyAsync(e => e.UserId == userId && e.CourseId == id);
-
-            if (!isEnrolled)
-                return RedirectToAction("MyCourses");
-
-            // Get course with lectures and learning assets
+            // Get course with lectures
             var course = await _context.Courses
                 .Include(c => c.Lectures)
                     .ThenInclude(l => l.LearningAssets)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
 
-            if (course == null)
-                return NotFound();
+            // Get current lecture
+            var lecture = course.Lectures.FirstOrDefault(l => l.LectureId == lectureId) ?? course.Lectures.FirstOrDefault();
+
+            // Get assets for current lecture
+            var assets = lecture?.LearningAssets ?? Enumerable.Empty<LearningAsset>();
+
+            // Calculate progress
+            var totalLectures = course.Lectures.Count;
+            var completedLectures = await _context.CourseEnrollments
+                .CountAsync(lp => lp.UserId == userId && lp.Status == "Completed");
+            var progress = totalLectures > 0 ? (decimal)completedLectures / totalLectures * 100 : 0;
 
             ViewBag.Course = course;
-            ViewData["Title"] = "Course Content";
+            ViewBag.Lecture = lecture;
+            ViewBag.Assets = assets;
+            ViewBag.Progress = progress;
 
             return View();
         }
-
-        public async Task<IActionResult> Assignments()
+        public async Task<IActionResult> Assignments(int? courseId = null)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-            var enrolledCourses = await _context.CourseEnrollments
+            // Get enrolled courses
+            var enrollments = await _context.CourseEnrollments
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Course)
                     .ThenInclude(c => c.Instructor)
                 .ToListAsync();
 
-            ViewBag.EnrolledCourses = enrolledCourses;
-            ViewData["Title"] = "Assignments";
+            ViewBag.EnrolledCourses = enrollments;
 
-            return View();
-        }
+            // Get quizzes for enrolled courses
+            var enrolledCourseIds = enrollments.Select(e => e.CourseId).ToList();
 
-        public async Task<IActionResult> AssignmentsSubmissions()
-        {
-            if (!IsLoggedIn())
-                return RedirectToAction("Login", "Auth");
+            // لو مفيش courseId محدد، نعرض كل الكويزات
+            var query = _context.Quizzes
+                .Where(q => enrolledCourseIds.Contains(q.CourseId));
 
-            var userId = GetCurrentUserId() ?? 0;
+            // لو في courseId محدد، نعرض الكويزات بتاع الكورس ده بس
+            if (courseId.HasValue)
+            {
+                query = query.Where(q => q.CourseId == courseId.Value);
+            }
 
-            // Get grades that represent submissions (simplified)
-            var submissions = await _context.Grades
-                .Where(g => g.UserId == userId && g.GradableItemType == "Assignment")
-                .Include(g => g.GradeBook)
-                    .ThenInclude(gb => gb.Course)
-                .OrderByDescending(g => g.GradedAt)
+            var quizzes = await query
+                .Include(q => q.Course)
+                .Select(q => new
+                {
+                    QuizId = q.QuizId,
+                    Title = q.Title,
+                    CourseTitle = q.Course.Title,
+                    CourseId = q.CourseId,
+                    DueDate = q.DueDate,
+                    HasSubmitted = _context.QuizAttempts
+                        .Any(a => a.UserId == userId && a.QuizId == q.QuizId)
+                })
                 .ToListAsync();
 
-            ViewBag.Submissions = submissions;
-            ViewData["Title"] = "Assignment Submissions";
+            ViewBag.Quizzes = quizzes;
+            ViewBag.SelectedCourseId = courseId;
+
+            ViewData["Title"] = "Course Assignments";
 
             return View();
-        }
-
-        public IActionResult QuizPage(int id = 1)
-        {
-            ViewData["Title"] = "Quiz";
-            ViewBag.QuizId = id;
-            return View();
-        }
-
-        public IActionResult QuizResult(int id = 1)
-        {
-            ViewData["Title"] = "Quiz Results";
-            ViewBag.QuizId = id;
-            return View();
-        }
-
-        public async Task<IActionResult> Grades()
+        }     
+        public async Task<IActionResult> Grades(int? courseId = null)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
@@ -212,9 +182,28 @@ namespace Learning_Management_System.Controllers
                 .ToListAsync();
 
             ViewBag.Grades = grades;
-            ViewBag.Gpa = CalculateGpa(grades);
-            ViewBag.TotalCredits = CalculateTotalCredits(grades);
-            ViewBag.AcademicStanding = GetAcademicStanding(ViewBag.Gpa);
+
+            // Calculate GPA
+            decimal gpa = CalculateGpa(grades);
+            ViewBag.Gpa = gpa;
+
+            // Calculate total credits
+            var totalCredits = grades
+                .Where(g => g.GradeBook != null && g.GradeBook.Course != null)
+                .GroupBy(g => g.GradeBook.CourseId)
+                .Sum(group => group.First().GradeBook.Course.CreditHours);
+
+            ViewBag.TotalCredits = totalCredits;
+
+            // Academic standing
+            string academicStanding = "N/A";
+            if (gpa >= 3.5m) academicStanding = "Dean's List";
+            else if (gpa >= 3.0m) academicStanding = "Good";
+            else if (gpa >= 2.0m) academicStanding = "Satisfactory";
+            else academicStanding = "Needs Attention";
+
+            ViewBag.AcademicStanding = academicStanding;
+
             ViewData["Title"] = "My Grades";
 
             return View();
@@ -241,26 +230,42 @@ namespace Learning_Management_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkNotificationRead(int notificationId)
+        public async Task<IActionResult> MarkLessonComplete(int CourseId, int userId)
         {
-            if (!IsLoggedIn())
-                return Json(new { success = false, message = "Not logged in" });
-
-            var userId = GetCurrentUserId() ?? 0;
-
-            var notification = await _context.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.UserId == userId);
-
-            if (notification != null)
+            try
             {
-                notification.IsRead = true;
+                if (!IsLoggedIn() || GetCurrentUserId() != userId)
+                    return Json(new { success = false, message = "Not authorized" });
+
+                var existingProgress = await _context.CourseEnrollments
+                    .FirstOrDefaultAsync(lp => lp.UserId == userId && lp.CourseId == CourseId);
+
+                if (existingProgress != null)
+                {
+                    existingProgress.Status = "Completed";
+                }
+                else
+                {
+                    var newProgress = new CourseEnrollment
+                    {
+                        UserId = userId,
+                        CourseId = CourseId,
+                        Status = "Completed"
+                    };
+                    _context.CourseEnrollments.Add(newProgress);
+                }
+
                 await _context.SaveChangesAsync();
-                return Json(new { success = true });
+
+                return Json(new { success = true, message = "Lesson marked as complete" });
             }
-
-            return Json(new { success = false, message = "Notification not found" });
+            catch (Exception ex)
+            {
+                // log the error for debugging
+                Console.WriteLine($"Error in MarkLessonComplete: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred while marking lesson as complete." });
+            }
         }
-
         public async Task<IActionResult> Profile()
         {
             if (!IsLoggedIn())
@@ -343,6 +348,7 @@ namespace Learning_Management_System.Controllers
 
         private decimal CalculateGpa(IEnumerable<Grade> grades)
         {
+            // احسب من كل الدرجات اللي عندك
             var scoreRatios = grades
                 .Where(g => g.MaxPoints > 0)
                 .Select(g => g.Points / g.MaxPoints)
@@ -354,7 +360,6 @@ namespace Learning_Management_System.Controllers
             var average = scoreRatios.Average(r => (double)r);
             return Math.Round((decimal)(average * 4), 2);
         }
-
         private int CalculateTotalCredits(IEnumerable<Grade> grades)
         {
             return grades
@@ -369,6 +374,259 @@ namespace Learning_Management_System.Controllers
             if (gpa >= 3.0m) return "Good";
             if (gpa >= 2.0m) return "Satisfactory";
             return "Needs Attention";
+        }
+        
+        public async Task<IActionResult> CourseDetails(int id)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Verify student is enrolled
+            var isEnrolled = await _context.CourseEnrollments
+                .AnyAsync(e => e.UserId == userId && e.CourseId == id);
+
+            if (!isEnrolled)
+                return RedirectToAction("MyCourses");
+
+            // Get course with details
+            var course = await _context.Courses
+                .Include(c => c.Instructor)
+                    .ThenInclude(i => i.InstructorProfile)
+                .Include(c => c.AcademicTerm)
+                .FirstOrDefaultAsync(c => c.CourseId == id);
+
+            if (course == null)
+                return NotFound();
+
+            ViewBag.Course = course;
+            ViewBag.IsEnrolled = isEnrolled;
+            ViewData["Title"] = course.Title;
+
+            return View();
+        }
+        public async Task<IActionResult> QuizPage(int id)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // جب الكويز مع الأسئلة والاختيارات
+            var quiz = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuestionOptions)
+                .FirstOrDefaultAsync(q => q.QuizId == id);
+
+            if (quiz == null)
+                return NotFound();
+
+            // تأكد إن الطالب مسجل في الكورس
+            var isEnrolled = await _context.CourseEnrollments
+                .AnyAsync(e => e.UserId == userId && e.CourseId == quiz.CourseId);
+
+            if (!isEnrolled)
+                return RedirectToAction("MyCourses");
+
+            ViewBag.Quiz = quiz;
+            ViewData["Title"] = quiz.Title;
+
+            return View();
+        }
+        public async Task<IActionResult> QuizResult(int id)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Get quiz attempt with questions and responses
+            var quizAttempt = await _context.QuizAttempts
+                .Include(qa => qa.Quiz)
+                    .ThenInclude(q => q.QuizQuestions)
+                        .ThenInclude(qq => qq.QuestionOptions)
+                .Include(qa => qa.QuizResponses)
+                    .ThenInclude(qr => qr.SelectedOption)
+                .FirstOrDefaultAsync(qa => qa.AttemptId == id && qa.UserId == userId);
+
+            if (quizAttempt == null)
+                return NotFound();
+
+            // Calculate correct answers
+            int correctAnswers = 0;
+            int totalQuestions = quizAttempt.Quiz.QuizQuestions.Count(); // ← هنا التعديل
+            foreach (var question in quizAttempt.Quiz.QuizQuestions)
+            {
+                var response = quizAttempt.QuizResponses.FirstOrDefault(qr => qr.QuestionId == question.QuestionId);
+                if (response != null && response.SelectedOption?.IsCorrect == true)
+                {
+                    correctAnswers++;
+                }
+            }
+
+            ViewBag.QuizAttempt = quizAttempt;
+            ViewBag.CorrectAnswers = correctAnswers;
+            ViewBag.TotalQuestions = totalQuestions;
+            ViewBag.Percentage = totalQuestions > 0 ? Math.Round((double)correctAnswers / totalQuestions * 100, 2) : 0;
+            ViewData["Title"] = "Quiz Results";
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SubmitQuiz(int quizId, Dictionary<int, int> answers)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // إنشاء محاولة جديدة
+            var attempt = new QuizAttempt
+            {
+                UserId = userId,
+                QuizId = quizId,
+                StartedAt = DateTime.Now,
+                Score= 0
+            };
+
+            _context.QuizAttempts.Add(attempt);
+            await _context.SaveChangesAsync();
+
+            // حفظ الإجابات
+            foreach (var answer in answers)
+            {
+                var response = new QuizResponse
+                {
+                    AttemptId = attempt.AttemptId,
+                    QuestionId = answer.Key,
+                    SelectedOptionId = answer.Value
+                };
+                _context.QuizResponses.Add(response);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // توجه لصفحة النتائج
+            return RedirectToAction("QuizResult", new { id = attempt.AttemptId });
+        }
+        [HttpPost]
+        // public async Task<IActionResult> SubmitAssignment(int gradeId, string? submissionText, IFormFile? file)
+        // {
+        //     if (!IsLoggedIn())
+        //         return RedirectToAction("Login", "Auth");
+
+        //     var userId = GetCurrentUserId() ?? 0;
+
+        //     // تأكد إن الطالب مسموح له ي-submit
+        //     var grade = await _context.Grades
+        //         .Include(g => g.GradeBook)
+        //             .ThenInclude(gb => gb.Course)
+        //         .FirstOrDefaultAsync(g => g.GradeId == gradeId);
+
+        //     if (grade == null || grade.UserId != userId)
+        //         return NotFound();
+
+        //     // احفظ الملف لو موجود
+        //     string? filePath = null;
+        //     if (file != null && file.Length > 0)
+        //     {
+        //         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "assignments");
+        //         Directory.CreateDirectory(uploadsFolder);
+        //         var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+        //         var fullPath = Path.Combine(uploadsFolder, fileName);
+        //         using (var stream = new FileStream(fullPath, FileMode.Create))
+        //         {
+        //             await file.CopyToAsync(stream);
+        //         }
+        //         filePath = $"/uploads/assignments/{fileName}";
+        //     }
+
+        //     // أنشئ Submission جديد
+        //     var submission = new AssignmentSubmission
+        //     {
+        //         GradeId = gradeId,
+        //         UserId = userId,
+        //         SubmissionText = submissionText,
+        //         FilePath = filePath
+        //     };
+
+        //     _context.AssignmentSubmissions.Add(submission);
+        //     await _context.SaveChangesAsync();
+
+        //     return RedirectToAction("AssignmentSubmission", new { id = gradeId });
+        // }
+        // public async Task<IActionResult> AssignmentSubmission(int id)
+        // {
+        //     if (!IsLoggedIn())
+        //         return RedirectToAction("Login", "Auth");
+
+        //     var userId = GetCurrentUserId() ?? 0;
+
+        //     var assignment = await _context.Grades
+        //         .Include(g => g.GradeBook)
+        //             .ThenInclude(gb => gb.Course)
+        //         .FirstOrDefaultAsync(g => g.GradeId == id && g.UserId == userId);
+
+        //     if (assignment == null)
+        //         return NotFound();
+
+        //     var submissionHistory = await _context.AssignmentSubmissions
+        //         .Where(s => s.GradeId == id && s.UserId == userId)
+        //         .OrderByDescending(s => s.SubmittedAt)
+        //         .ToListAsync();
+
+        //     ViewBag.Assignment = assignment;
+        //     ViewBag.SubmissionHistory = submissionHistory;
+        //     ViewBag.LastSubmissionText = submissionHistory.FirstOrDefault()?.SubmissionText;
+
+        //     return View();
+        // }
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(
+    string firstName,
+    string lastName,
+    string currentPassword,
+    string newPassword,
+    string confirmPassword)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return RedirectToAction("Login", "Auth");
+
+            // تحقق من الباسورد القديم
+            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            {
+                ViewBag.ErrorMessage = "Current password is incorrect.";
+                ViewBag.User = user;
+                return View("AccountSettings");
+            }
+
+            // تحقق من تطابق الباسورد الجديد
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.ErrorMessage = "New password and confirmation do not match.";
+                ViewBag.User = user;
+                return View("AccountSettings");
+            }
+
+            // حدّث البيانات
+            user.FirstName = firstName;
+            user.LastName = lastName;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.UpdatedAt = DateTime.Now;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            ViewBag.SuccessMessage = "Profile updated successfully.";
+            ViewBag.User = user;
+            return View("AccountSettings");
         }
     }
 }

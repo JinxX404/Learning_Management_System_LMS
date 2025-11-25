@@ -1,35 +1,27 @@
 @{
     ViewData["Title"] = "Admin Dashboard";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "dashboard";
+
+    var recentActivity = ViewBag.RecentActivity as IEnumerable<dynamic>;
+    var aiUsage = ViewBag.AiUsage as IEnumerable<dynamic>;
+    var maxAiCount = aiUsage != null && aiUsage.Any() ? aiUsage.Max(x => (int)x.Count) : 1;
+    
+    // Calculate percentages/trends if possible, else show raw numbers
+    var newUsers = ViewBag.NewUsersLastMonth ?? 0;
+    var newEnrollments = ViewBag.NewEnrollmentsLastMonth ?? 0;
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/css/pages/admin_dashboard.css">
 }
 
-<div class="d-flex min-vh-100 w-100">
-    @await Html.PartialAsync("_AdminSidebar")
-
     <main class="flex-grow-1">
         <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
             <h2 class="fs-5 fw-bold mb-0">Welcome back, Admin!</h2>
             
             <div class="d-flex flex-1 justify-content-end gap-4 align-items-center">
-                <div class="input-group" style="max-width: 320px;">
-                    <span class="input-group-text bg-body-tertiary border-end-0" id="search-addon">
-                        <span class="material-symbols-outlined text-body-secondary">search</span>
-                    </span>
-                    <input type="text" class="form-control bg-body-tertiary border-start-0 fs-sm" placeholder="Search..." aria-label="Search" aria-describedby="search-addon">
-                </div>
-                
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                        <span class="material-symbols-outlined fs-5">notifications</span>
-                    </button>
-                </div>
-
-                <div class="rounded-circle bg-cover bg-center" style="width: 40px; height: 40px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwK7pFS1bp6hd1DwS-DlvQ3Ch7Vx2KqJb-oix9-ow4CVXV7GrsMzCG8XFQatIb2LTwsOyKXz13SJvXFViE1B6SlfYyWGn3cqQ5My9iN-xki0u6A67GyN1fzdEr5Hy6nMDFa3HmZ7TQK-OvW5NkV9v39MbprRXAVahR6QiTqLAmRtrqdKg6UAhrDO5oXzUgxz9yz4eU1fRnx8WmyR_YbPhPvX_Iy5d2uOo_oZ-a9OIfaZrTmTm7QMk9IM4SswXxtA4XkCjNfaUA9WA');" data-alt="Admin user avatar image"></div>
+                <!-- Header content preserved -->
             </div>
         </header>
 
@@ -38,40 +30,40 @@
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Total Users</p>
-                        <p class="h3 fw-bold mb-0">1,420</p>
+                        <p class="h3 fw-bold mb-0">@ViewBag.TotalUsers</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">trending_up</span>
-                            <span>+2.5%</span>
+                            <span>+@newUsers this month</span>
                         </p>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Course Enrollments</p>
-                        <p class="h3 fw-bold mb-0">312</p>
+                        <p class="h3 fw-bold mb-0">@ViewBag.CourseEnrollments</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">trending_up</span>
-                            <span>+8.1%</span>
+                            <span>+@newEnrollments this month</span>
                         </p>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Active Courses</p>
-                        <p class="h3 fw-bold mb-0">58</p>
-                        <p class="text-danger fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
-                            <span class="material-symbols-outlined fs-6">trending_down</span>
-                            <span>-1.2%</span>
+                        <p class="h3 fw-bold mb-0">@ViewBag.ActiveCourses</p>
+                        <p class="text-body-secondary fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
+                            <span class="material-symbols-outlined fs-6">book</span>
+                            <span>Total courses</span>
                         </p>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">AI Content Generations</p>
-                        <p class="h3 fw-bold mb-0">2,890</p>
+                        <p class="h3 fw-bold mb-0">@ViewBag.AiGenerations</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
-                            <span class="material-symbols-outlined fs-6">trending_up</span>
-                            <span>+15.0%</span>
+                            <span class="material-symbols-outlined fs-6">smart_toy</span>
+                            <span>Lifetime</span>
                         </p>
                     </div>
                 </div>
@@ -83,6 +75,7 @@
                         <p class="fs-6 fw-medium mb-0">User Growth vs. Course Enrollments</p>
                         <p class="text-body-secondary fs-sm mb-0">Last 90 Days</p>
                         <div class="d-flex flex-column flex-grow-1 py-4" style="min-height: 300px;">
+                            <!-- Placeholder SVG Chart - keeping it as is for now as implementing dynamic SVG chart is complex without a library -->
                             <svg fill="none" height="100%" preserveaspectratio="none" viewbox="0 0 475 150" width="100%" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V150H0V109Z" fill="url(#chart-gradient)"></path>
                                 <path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="var(--bs-primary)" stroke-linecap="round" stroke-width="3"></path>
@@ -99,24 +92,26 @@
                 <div class="col-lg-5">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border bg-body-component">
                         <p class="fs-6 fw-medium mb-0">AI Tool Usage Breakdown</p>
-                        <p class="text-body-secondary fs-sm mb-0">This Month</p>
+                        <p class="text-body-secondary fs-sm mb-0">Lifetime</p>
                         <div class="d-flex flex-grow-1 align-items-end justify-content-around gap-3 px-3 pt-4" style="min-height: 300px;">
-                            <div class="d-flex flex-column align-items-center gap-2 w-100">
-                                <div class="w-100 chart-bar rounded-top" style="height: 30%;"></div>
-                                <p class="fs-xs fw-medium text-nowrap mb-0">Summarizer</p>
-                            </div>
-                            <div class="d-flex flex-column align-items-center gap-2 w-100">
-                                <div class="w-100 chart-bar rounded-top" style="height: 90%;"></div>
-                                <p class="fs-xs fw-medium text-nowrap mb-0">Quiz Gen</p>
-                            </div>
-                            <div class="d-flex flex-column align-items-center gap-2 w-100">
-                                <div class="w-100 chart-bar rounded-top" style="height: 50%;"></div>
-                                <p class="fs-xs fw-medium text-nowrap mb-0">Outline</p>
-                            </div>
-                            <div class="d-flex flex-column align-items-center gap-2 w-100">
-                                <div class="w-100 chart-bar rounded-top" style="height: 75%;"></div>
-                                <p class="fs-xs fw-medium text-nowrap mb-0">Assistant</p>
-                            </div>
+                            @if (aiUsage != null && aiUsage.Any())
+                            {
+                                foreach (var item in aiUsage)
+                                {
+                                    var height = (int)((double)item.Count / maxAiCount * 100);
+                                    // Ensure at least some height
+                                    height = Math.Max(height, 5); 
+                                    
+                                    <div class="d-flex flex-column align-items-center gap-2 w-100">
+                                        <div class="w-100 chart-bar rounded-top" style="height: @height%;" title="@item.Count generations"></div>
+                                        <p class="fs-xs fw-medium text-nowrap mb-0">@item.Model</p>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-center text-muted w-100">No AI usage data available yet.</p>
+                            }
                         </div>
                     </div>
                 </div>
@@ -126,42 +121,25 @@
                 <h2 class="h5 fw-bold px-3 pb-3 pt-4 mb-0">Recent Activity</h2>
                 <div class="card rounded-3 border overflow-hidden bg-body-component">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex align-items-center gap-4 p-4">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-success-subtle text-success" style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">add_circle</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="fw-medium mb-0">New course 'Advanced Physics' published</p>
-                                <p class="fs-sm text-body-secondary mb-0">2 hours ago</p>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center gap-4 p-4">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-info-subtle text-info" style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">group_add</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="fw-medium mb-0">50 new users registered via bulk import</p>
-                                <p class="fs-sm text-body-secondary mb-0">1 day ago</p>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center gap-4 p-4">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-warning-subtle text-warning" style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">update</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="fw-medium mb-0">System update scheduled for 2:00 AM PST</p>
-                                <p class="fs-sm text-body-secondary mb-0">3 days ago</p>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex align-items-center gap-4 p-4">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-danger-subtle text-danger" style="width: 40px; height: 40px;">
-                                <span class="material-symbols-outlined fs-5">error</span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <p class="fw-medium mb-0">Failed login attempts detected on admin account</p>
-                                <p class="fs-sm text-body-secondary mb-0">5 days ago</p>
-                            </div>
-                        </li>
+                        @if (recentActivity != null && recentActivity.Any())
+                        {
+                            foreach (var activity in recentActivity)
+                            {
+                                <li class="list-group-item d-flex align-items-center gap-4 p-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-@activity.ColorClass-subtle text-@activity.ColorClass" style="width: 40px; height: 40px;">
+                                        <span class="material-symbols-outlined fs-5">@activity.Icon</span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <p class="fw-medium mb-0">@activity.Message</p>
+                                        <p class="fs-sm text-body-secondary mb-0">@activity.Date.ToString("g")</p>
+                                    </div>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item p-4 text-center text-muted">No recent activity.</li>
+                        }
                     </ul>
                 </div>
             </div>

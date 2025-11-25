@@ -1,4 +1,4 @@
-using Learning_Management_System.Models;
+﻿using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +66,13 @@ namespace Learning_Management_System.Controllers
                 .Include(c => c.CourseEnrollments)
                 .ToListAsync();
 
+            // Also provide academic terms for the create form dropdown
+            var terms = await _context.AcademicTerms
+                .Where(t => t.IsActive == true)
+                .ToListAsync();
+
             ViewBag.Courses = courses;
+            ViewBag.AcademicTerms = terms;
             ViewData["Title"] = "My Courses";
 
             return View();
@@ -89,6 +95,7 @@ namespace Learning_Management_System.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCourse(
             string courseCode,
             string title,
@@ -99,38 +106,72 @@ namespace Learning_Management_System.Controllers
             if (!IsLoggedIn() || !await IsInstructor())
                 return RedirectToAction("Login", "Auth");
 
-            // Validate
-            if (string.IsNullOrEmpty(courseCode) || string.IsNullOrEmpty(title))
+            // Basic validation
+            if (string.IsNullOrWhiteSpace(courseCode) || string.IsNullOrWhiteSpace(title))
             {
                 ViewBag.Error = "Course code and title are required.";
                 var terms = await _context.AcademicTerms
                     .Where(t => t.IsActive == true)
                     .ToListAsync();
                 ViewBag.AcademicTerms = terms;
-                return View();
+                return View("MyCourses");
             }
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Create course
-            var course = new Course
+            // If academicTermId wasn't provided, try to pick a default
+            if (academicTermId <= 0)
             {
-                CourseCode = courseCode,
-                Title = title,
-                Description = description,
-                InstructorId = userId,
-                AcademicTermId = academicTermId,
-                CreditHours = creditHours,
-                MaxEnrollment = 50,
-                CurrentEnrollment = 0,
-                Status = "Active",
-                CreatedAt = DateTime.Now
-            };
+                var defaultTerm = await _context.AcademicTerms.FirstOrDefaultAsync(t => t.IsActive == true);
+                academicTermId = defaultTerm?.AcademicTermId ?? 0;
+            }
 
-            _context.Courses.Add(course);
-            await _context.SaveChangesAsync();
+            // Ensure creditHours has a reasonable default
+            if (creditHours <= 0) creditHours = 3;
 
-            return RedirectToAction("MyCourses");
+            try
+            {
+                // Create course
+                var course = new Course
+                {
+                    CourseCode = courseCode,
+                    Title = title,
+                    Description = description,
+                    InstructorId = userId,
+                    AcademicTermId = academicTermId,
+                    CreditHours = creditHours,
+                    MaxEnrollment = 50,
+                    CurrentEnrollment = 0,
+                    Status = "Active",
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Courses.Add(course);
+                var saved = await _context.SaveChangesAsync();
+
+                if (saved <= 0)
+                {
+                    ViewBag.Error = "Failed to save the course to the database.";
+                    var terms = await _context.AcademicTerms
+                        .Where(t => t.IsActive == true)
+                        .ToListAsync();
+                    ViewBag.AcademicTerms = terms;
+                    return View("MyCourses");
+                }
+
+                TempData["Success"] = "Course created successfully.";
+                return RedirectToAction("MyCourses");
+            }
+            catch (Exception ex)
+            {
+                // surface the error for debugging
+                ViewBag.Error = "Error saving course: " + ex.Message;
+                var terms = await _context.AcademicTerms
+                    .Where(t => t.IsActive == true)
+                    .ToListAsync();
+                ViewBag.AcademicTerms = terms;
+                return View("MyCourses");
+            }
         }
 
         public async Task<IActionResult> CourseDetails(int id)
@@ -264,6 +305,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+ 
         [HttpPost]
         public async Task<IActionResult> CreateAnnouncement(int courseId, string message, bool isImportant = false)
         {
@@ -299,6 +341,413 @@ namespace Learning_Management_System.Controllers
 
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
+
+        // صفحة عرض الإعلانات للمدرس - GET
+        public async Task<IActionResult> Announcements()
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // جلب كل الكورسات الخاصة بالمدرس مع التسجيلات
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .Include(c => c.CourseEnrollments)
+                .ToListAsync();
+
+            // جلب معرفات الطلاب المسجلين في كورسات المدرس
+            var courseIds = courses.Select(c => c.CourseId).ToList();
+            
+            var enrolledStudentIds = await _context.CourseEnrollments
+                .Where(e => courseIds.Contains(e.CourseId))
+                .Select(e => e.UserId)
+                .Distinct()
+                .ToListAsync();
+
+            // جلب آخر الإعلانات المرسلة للطلاب المسجلين في كورسات المدرس
+            var recentNotifications = await _context.Notifications
+                .Where(n => enrolledStudentIds.Contains(n.UserId))
+                .OrderByDescending(n => n.CreatedAt)
+                .Take(10)
+                .ToListAsync();
+
+            ViewBag.Courses = courses;
+            ViewBag.RecentNotifications = recentNotifications;
+            ViewData["Title"] = "Manage Announcements";
+
+            return View();
+        }
+        
+        //=======================================================================
+        //===================إرسال إعلان جديد - POST=============================
+        //=======================================================================
+        [HttpPost]
+        public async Task<IActionResult> SendAnnouncement(int courseId, string message)
+        {
+            try
+            {
+                if (!IsLoggedIn() || !await IsInstructor())
+                    return Json(new { success = false, message = "Not authorized" });
+
+                if (string.IsNullOrWhiteSpace(message))
+                    return Json(new { success = false, message = "Message cannot be empty" });
+
+                var userId = GetCurrentUserId() ?? 0;
+
+                // التحقق من ملكية الكورس
+                var course = await _context.Courses
+                    .FirstOrDefaultAsync(c => c.CourseId == courseId && c.InstructorId == userId);
+
+                if (course == null)
+                    return Json(new { success = false, message = "Course not found" });
+
+                // جلب معرفات كل الطلاب المسجلين
+                var enrolledUserIds = await _context.CourseEnrollments
+                    .Where(e => e.CourseId == courseId)
+                    .Select(e => e.UserId)
+                    .ToListAsync();
+
+                int notificationCount = 0;
+                var notificationsList = new List<Notification>();
+
+                // إذا كان هناك طلاب مسجلين، أرسل لهم الإعلانات
+                if (enrolledUserIds.Any())
+                {
+                    // إنشاء إشعار لكل طالب مسجل
+                    foreach (var studentId in enrolledUserIds)
+                    {
+                        var notification = new Notification
+                        {
+                            UserId = studentId,
+                            Message = $"[{course.Title}] {message}",
+                            IsRead = false,
+                            CreatedAt = DateTime.Now
+                        };
+                        notificationsList.Add(notification);
+                    }
+
+                    _context.Notifications.AddRange(notificationsList);
+                    notificationCount = notificationsList.Count;
+                }
+                else
+                {
+                    // حتى لو مافيش طلاب، نسجل الإعلان للمدرس نفسه كـ "سجل"
+                    var instructorNotification = new Notification
+                    {
+                        UserId = userId, // نسجله باسم المدرس
+                        Message = $"[{course.Title}] {message}",
+                        IsRead = true, // نخليه مقروء لأنه للمدرس
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _context.Notifications.Add(instructorNotification);
+                    notificationCount = 0;
+                }
+
+                // حفظ التغييرات في قاعدة البيانات
+                var savedCount = await _context.SaveChangesAsync();
+
+                // التحقق من أن البيانات تم حفظها
+                if (savedCount == 0)
+                {
+                    return Json(new { 
+                        success = false, 
+                        message = "Failed to save announcement to database" 
+                    });
+                }
+
+                string responseMessage = enrolledUserIds.Any() 
+                    ? $"Announcement sent successfully to {notificationCount} student(s) and saved to database"
+                    : $"Announcement saved successfully (No students enrolled yet)";
+
+                return Json(new { 
+                    success = true, 
+                    message = responseMessage,
+                    count = notificationCount,
+                    hasStudents = enrolledUserIds.Any(),
+                    savedToDb = true,
+                    savedRecords = savedCount
+                });
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return Json(new { 
+                    success = false, 
+                    message = $"Error: {ex.Message}",
+                    details = ex.InnerException?.Message
+                });
+            }
+        }
+
+        //=======================================================================
+        // صفحة عرض الدورات المتاحة للمستخدم
+        public async Task<IActionResult> MyEnrolledCourses()
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            int userId = GetCurrentUserId() ?? 0;
+
+            // جلب الكورسات التي تم تسجيل المستخدم فيها
+            var enrollments = await _context.CourseEnrollments
+                .Where(e => e.UserId == userId)
+                .Include(e => e.Course)
+                .ToListAsync();
+
+            return View(enrollments);
+        }
+
+        // GET: عرض نموذج تسجيل في كورس
+        public async Task<IActionResult> Enroll(int courseId)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var course = await _context.Courses
+                .Include(c => c.AcademicTerm)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            if (course == null)
+                return NotFound();
+
+            ViewBag.Course = course;
+            return View();
+        }
+
+        // POST: تسجيل في كورس
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Enroll(int courseId, string status = "Enrolled")
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            int userId = GetCurrentUserId() ?? 0;
+
+            // التأكد أن المستخدم لم يسجل من قبل
+            bool alreadyEnrolled = await _context.CourseEnrollments
+                .AnyAsync(e => e.CourseId == courseId && e.UserId == userId);
+
+            if (alreadyEnrolled)
+            {
+                TempData["Error"] = "You are already enrolled in this course.";
+                return RedirectToAction("MyCourses");
+            }
+
+            var enrollment = new CourseEnrollment
+            {
+                UserId = userId,
+                CourseId = courseId,
+                EnrolledAt = DateTime.Now,
+                Status = status
+            };
+
+            _context.CourseEnrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Successfully enrolled in the course.";
+            return RedirectToAction("MyCourses");
+        }
+
+        // GET: Instructor/CreateAssignment
+        public async Task<IActionResult> CreateAssignment(int? courseId)
+        {
+            // Only allow logged-in instructors
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            // Get instructor's courses for dropdown
+            var userId = GetCurrentUserId() ?? 0;
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .ToListAsync();
+            ViewBag.Courses = courses;
+            ViewBag.SelectedCourseId = courseId;
+            return View();
+        }
+
+        // POST: Instructor/CreateAssignment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAssignment(int courseId, string title, string description, DateTime dueDate, int maxPoints, string assignmentType, bool allowLateSubmission, int latePenalty, string allowedFileTypes, int maxFileSize, string externalLinks)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            // TODO: Save assignment to DB (add your logic here)
+            // For now, just redirect to CourseDetails
+            return RedirectToAction("CourseDetails", new { id = courseId });
+        }
+
+        // GET: Instructor/CreateQuiz
+        public async Task<IActionResult> CreateQuiz(int? courseId)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .ToListAsync();
+            ViewBag.Courses = courses;
+            ViewBag.SelectedCourseId = courseId;
+            return View();
+        }
+
+        // POST: Instructor/CreateQuiz
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateQuiz(Quiz quiz)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            if (!ModelState.IsValid)
+            {
+                var userId = GetCurrentUserId() ?? 0;
+                ViewBag.Courses = await _context.Courses.Where(c => c.InstructorId == userId).ToListAsync();
+                return View(quiz);
+            }
+
+            _context.Quizzes.Add(quiz);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Quiz created successfully.";
+            return RedirectToAction("MyCourses");
+        }
+
+        // GET: Instructor/UploadMaterials
+        public async Task<IActionResult> UploadMaterials(int? courseId)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .ToListAsync();
+            ViewBag.Courses = courses;
+            ViewBag.SelectedCourseId = courseId;
+            return View();
+        }
+
+        // POST: Instructor/UploadMaterials
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadMaterials(/* add upload parameters here */)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            // TODO: Save uploaded materials to DB (add your logic here)
+            // For now, just redirect to Dashboard
+            return RedirectToAction("Dashboard");
+        }
+        // GET: Instructor/AddLearningAsset
+        public async Task<IActionResult> AddLearningAsset(int? lectureId, int? courseId)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var model = new LearningAsset();
+
+            ViewBag.LectureId = lectureId;
+            ViewBag.LectureTitle = string.Empty;
+
+            int returnCourseId = courseId ?? 0;
+
+            if (lectureId.HasValue && lectureId.Value > 0)
+            {
+                var lecture = await _context.Lectures
+                    .Include(l => l.Course)
+                    .FirstOrDefaultAsync(l => l.LectureId == lectureId.Value);
+
+                if (lecture == null || lecture.Course.InstructorId != userId)
+                    return NotFound();
+
+                ViewBag.LectureTitle = lecture.Title;
+                ViewBag.LectureId = lecture.LectureId;
+                returnCourseId = lecture.CourseId;
+                model.LectureId = lecture.LectureId;
+            }
+
+            ViewBag.CourseId = returnCourseId;
+
+            return View(model);
+        }
+
+        // POST: AddLearningAsset (updated to require antiforgery)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLearningAsset(int? courseId, int? lectureId, string title, string assetType, string fileUrl, string description)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            Lecture? lecture = null;
+
+            // If lectureId provided, load it and verify ownership
+            if (lectureId.HasValue && lectureId.Value > 0)
+            {
+                lecture = await _context.Lectures
+                    .Include(l => l.Course)
+                    .FirstOrDefaultAsync(l => l.LectureId == lectureId.Value);
+
+                if (lecture == null || lecture.Course.InstructorId != userId)
+                    return NotFound();
+            }
+            else if (courseId.HasValue && courseId.Value > 0)
+            {
+                // Verify course ownership
+                var course = await _context.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId.Value && c.InstructorId == userId);
+                if (course == null)
+                    return NotFound();
+
+                // Try to find an existing lecture with same title for this course
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    lecture = await _context.Lectures.FirstOrDefaultAsync(l => l.CourseId == courseId.Value && l.Title == title);
+                }
+
+                // If no lecture found, create one
+                if (lecture == null)
+                {
+                    lecture = new Lecture
+                    {
+                        CourseId = courseId.Value,
+                        Title = title ?? "New Lecture",
+                        Description = description
+                    };
+
+                    _context.Lectures.Add(lecture);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                return BadRequest("LectureId or CourseId must be provided.");
+            }
+
+            // Create the learning asset
+            var asset = new LearningAsset
+            {
+                LectureId = lecture.LectureId,
+                Title = title ?? "Untitled",
+                AssetType = string.IsNullOrWhiteSpace(assetType) ? "link" : assetType,
+                FileUrl = fileUrl ?? string.Empty
+            };
+
+            _context.LearningAssets.Add(asset);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
+        }
     }
 }
-
+//instractor/AddLearningAsset

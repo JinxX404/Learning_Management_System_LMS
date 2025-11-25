@@ -1,0 +1,243 @@
+@{
+    ViewData["Title"] = "Reports";
+    Layout = "_AdminLayout";
+    ViewData["AdminActive"] = "reports";
+
+    var topStudents = ViewBag.TopStudents as IEnumerable<Learning_Management_System.Models.VwTopPerformingStudent>;
+    var courseRates = ViewBag.CourseRates as IEnumerable<dynamic>;
+    var institutionSummary = ViewBag.InstitutionSummary as IEnumerable<Learning_Management_System.Models.VwInstitutionSummary>;
+}
+
+@section Styles {
+    <style>
+        .report-card {
+            transition: all 0.2s;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+    </style>
+}
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">System Reports</h1>
+            <p class="text-muted">Overview of system performance and statistics</p>
+        </div>
+        <button class="btn btn-primary" onclick="window.print()">
+            <span class="material-symbols-outlined align-middle me-1">print</span>
+            Print Report
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalUsers</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="material-symbols-outlined text-gray-300 fs-2">group</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Courses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCourses</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="material-symbols-outlined text-gray-300 fs-2">school</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Enrollments</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalEnrollments</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="material-symbols-outlined text-gray-300 fs-2">class</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Terms</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.ActiveTerms</div>
+                        </div>
+                        <div class="col-auto">
+                            <span class="material-symbols-outlined text-gray-300 fs-2">calendar_month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Top Performing Students -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Performing Students</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>GPA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (topStudents != null && topStudents.Any())
+                                {
+                                    foreach (var student in topStudents)
+                                    {
+                                        <tr>
+                                            <td>@student.FirstName @student.LastName</td>
+                                            <td>
+                                                <span class="badge bg-success rounded-pill">@student.Gpa?.ToString("F2")</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center">No data available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Institution Summary -->
+        <!-- <div class="col-lg-6">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Institution Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Institution</th>
+                                    <th>Users</th>
+                                    <th>Courses</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (institutionSummary != null && institutionSummary.Any())
+                                {
+                                    foreach (var inst in institutionSummary)
+                                    {
+                                        <tr>
+                                            <td>@inst.Name</td>
+                                            <td>@inst.UserCount</td>
+                                            <td>@inst.CourseCount</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center">No data available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Course Pass/Fail Rates -->
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Course Pass/Fail Rates</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Title</th>
+                                    <th>Total Completed</th>
+                                    <th>Pass Count</th>
+                                    <th>Fail Count</th>
+                                    <th>Pass Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (courseRates != null && courseRates.Any())
+                                {
+                                    foreach (var course in courseRates)
+                                    {
+                                        <tr>
+                                            <td>@course.CourseCode</td>
+                                            <td>@course.CourseTitle</td>
+                                            <td>@course.Total</td>
+                                            <td class="text-success">@course.PassCount</td>
+                                            <td class="text-danger">@course.FailCount</td>
+                                            <td>
+                                                @{
+                                                    var rate = (decimal?)course.PassRate ?? 0;
+                                                    var colorClass = rate >= 0.7m ? "success" : (rate >= 0.5m ? "warning" : "danger");
+                                                }
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                                        <div class="progress-bar bg-@colorClass" role="progressbar" style="width: @(rate * 100)%" aria-valuenow="@(rate * 100)" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span class="text-@colorClass fw-bold">@((rate * 100).ToString("F1"))%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center">No data available</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,277 @@
+@await Html.PartialAsync("_InstructorNav")
+
+@{
+    ViewData["Title"] = "Upload Materials";
+    Layout = "_Layout";
+    var courses = ViewBag.Courses as List<Learning_Management_System.Models.Course>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/upload-materials.css">
+}
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="MyCourses">My Courses</a></li>
+                    <li class="breadcrumb-item active">Upload Materials</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold">Upload Course Materials</h1>
+            <p class="text-muted">Share learning resources with your students</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-controller="Instructor" asp-action="UploadMaterials" method="post" enctype="multipart/form-data">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Material Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Select Course <span class="text-danger">*</span></label>
+                            <select name="courseId" class="form-select" id="courseSelect" required>
+                                <option value="">Choose a course...</option>
+                                @if (courses != null)
+                                {
+                                    @foreach (var course in courses)
+                                    {
+                                        <option value="@course.CourseId">@course.CourseCode - @course.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Select Lecture (Optional)</label>
+                            <select name="lectureId" class="form-select" id="lectureSelect">
+                                <option value="">General course materials</option>
+                            </select>
+                            <small class="text-muted">Associate this material with a specific lecture</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Material Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g., Chapter 3 Lecture Slides" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Brief description of this material..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Material Type</label>
+                            <select name="materialType" class="form-select">
+                                <option value="Lecture">Lecture Notes</option>
+                                <option value="Slides">Presentation Slides</option>
+                                <option value="Reading">Reading Material</option>
+                                <option value="Video">Video</option>
+                                <option value="Code">Code Sample</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Upload Files</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Select Files <span class="text-danger">*</span></label>
+                            <input type="file" name="files" class="form-control" multiple required id="fileInput" />
+                            <small class="text-muted">Supported formats: PDF, DOCX, PPTX, TXT, ZIP, images, videos (Max 50MB each)</small>
+                        </div>
+
+                        <div id="filePreview" class="mt-3" style="display: none;">
+                            <h6>Selected Files:</h6>
+                            <ul id="fileList" class="list-group">
+                            </ul>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <div class="d-flex align-items-start">
+                                <span class="material-symbols-outlined me-2">info</span>
+                                <div>
+                                    <strong>File Upload Tips:</strong>
+                                    <ul class="mb-0 small">
+                                        <li>Compress large files to reduce upload time</li>
+                                        <li>Use descriptive file names</li>
+                                        <li>Test files before uploading to ensure they're not corrupted</li>
+                                        <li>Consider accessibility when choosing formats</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">External Links (Optional)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">YouTube Video URL</label>
+                            <input type="url" name="youtubeUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Other External Links</label>
+                            <textarea name="externalLinks" class="form-control" rows="3" placeholder="Add any helpful links (one per line)"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Visibility Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="isPublic" class="form-check-input" id="isPublic" checked />
+                                <label class="form-check-label" for="isPublic">
+                                    Make available to all enrolled students
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Available From</label>
+                            <input type="datetime-local" name="availableFrom" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Available Until</label>
+                            <input type="datetime-local" name="availableUntil" class="form-control" />
+                            <small class="text-muted">Leave empty for no expiration</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">upload</span>
+                        Upload Materials
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Supported File Types</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong class="small">Documents</strong>
+                        <p class="small text-muted mb-0">PDF, DOCX, DOC, TXT, RTF</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="small">Presentations</strong>
+                        <p class="small text-muted mb-0">PPTX, PPT, KEY</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="small">Images</strong>
+                        <p class="small text-muted mb-0">JPG, PNG, GIF, SVG</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="small">Videos</strong>
+                        <p class="small text-muted mb-0">MP4, AVI, MOV, WMV</p>
+                    </div>
+                    <div>
+                        <strong class="small">Archives</strong>
+                        <p class="small text-muted mb-0">ZIP, RAR, 7Z</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Best Practices</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="small mb-0">
+                        <li class="mb-2">Organize materials by topic or week</li>
+                        <li class="mb-2">Use clear, descriptive names</li>
+                        <li class="mb-2">Keep file sizes reasonable</li>
+                        <li class="mb-2">Update materials regularly</li>
+                        <li class="mb-2">Provide multiple format options</li>
+                        <li>Test downloads before publishing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.getElementById('fileInput')?.addEventListener('change', function(e) {
+    const filePreview = document.getElementById('filePreview');
+    const fileList = document.getElementById('fileList');
+    const files = e.target.files;
+    
+    if (files.length > 0) {
+        filePreview.style.display = 'block';
+        fileList.innerHTML = '';
+        
+        Array.from(files).forEach(file => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            
+            const fileSize = (file.size / 1024 / 1024).toFixed(2);
+            const fileIcon = getFileIcon(file.name);
+            
+            li.innerHTML = `
+                <div>
+                    <span class="material-symbols-outlined me-2" style="vertical-align: middle;">${fileIcon}</span>
+                    <strong>${file.name}</strong>
+                </div>
+                <span class="badge bg-primary">${fileSize} MB</span>
+            `;
+            
+            fileList.appendChild(li);
+        });
+    } else {
+        filePreview.style.display = 'none';
+    }
+});
+
+function getFileIcon(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    
+    const icons = {
+        'pdf': 'picture_as_pdf',
+        'doc': 'description',
+        'docx': 'description',
+        'txt': 'description',
+        'ppt': 'slideshow',
+        'pptx': 'slideshow',
+        'jpg': 'image',
+        'jpeg': 'image',
+        'png': 'image',
+        'gif': 'image',
+        'mp4': 'movie',
+        'avi': 'movie',
+        'mov': 'movie',
+        'zip': 'folder_zip',
+        'rar': 'folder_zip'
+    };
+    
+    return icons[ext] || 'insert_drive_file';
+}
+</script>
+}

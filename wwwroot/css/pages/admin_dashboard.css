@@ -62,29 +62,7 @@
             line-height: 1;
         }
 
-        /* Sidebar styles */
-        .sidebar {
-            width: 256px;
-            min-width: 256px;
-        }
 
-        /* Custom nav link styles to match Tailwind */
-        .nav-link {
-            color: var(--bs-body-color);
-        }
-
-        [data-bs-theme="light"] .nav-link:not(.active):hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        [data-bs-theme="dark"] .nav-link:not(.active):hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        
-        .nav-link.active {
-            background-color: var(--bs-primary-bg-subtle) !important;
-            color: var(--bs-primary) !important;
-        }
         
         /* Stat card hover effect */
         .stat-card:hover {

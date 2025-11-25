@@ -77,19 +77,16 @@
               </div>
               <div class="text-center text-md-start">
                   <h1 class="profile-name display-6 fw-bold">@user.FirstName @user.LastName</h1>
-                  <p class="profile-meta fs-5 text-secondary">@user.Institution?.Name ?? "Institution"</p>
-                  <p class="profile-meta text-muted small">Student ID: @studentProfile?.StudentIdNumber ?? "N/A"</p>
+                  <p class="profile-meta fs-5 text-secondary">@user.Institution?.Name</p>
+                  <p class="profile-meta text-muted small">Student ID: @studentProfile?.StudentIdNumber</p>
               </div>
           </div>
       </div>
     </div>
-
-    <ul class="nav nav-tabs border-bottom-1 mb-5">
-      <li class="nav-item"><a class="nav-link active fw-medium" href="#">Overview</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Courses</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Achievements</a></li>
-    </ul>
-
+        <ul class="nav nav-tabs border-bottom-1 mb-5">
+            <li class="nav-item"><a class="nav-link active fw-medium" asp-action="Profile" asp-controller="Student">Overview</a></li>
+            <li class="nav-item"><a class="nav-link" asp-action="MyCourses" asp-controller="Student">Courses</a></li>
+        </ul>
     <div class="d-grid gap-5">
       <section>
         <h2 class="section-title fs-2 fw-bold text-body-emphasis">About</h2>
@@ -106,7 +103,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <dt class="text-secondary small">Admission Date</dt>
-                        <dd class="fw-semibold text-body-emphasis m-0">@studentProfile?.AdmissionDate?.ToString("MMMM d, yyyy") ?? "N/A"</dd>
+                        <dd class="fw-semibold text-body-emphasis m-0">@studentProfile?.AdmissionDate?.ToString("MMMM d, yyyy")</dd>
                     </div>
                     <div class="col-md-6 mb-3">
                         <dt class="text-secondary small">Status</dt>
@@ -156,7 +153,7 @@
           </div>
       </section>
 
-      <section>
+      @* <section>
           <h2 class="section-title fs-2 fw-bold text-body-emphasis">Achievements</h2>
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mt-2">
               <div class="col achievement-item">
@@ -167,7 +164,7 @@
                   </div>
               </div>
           </div>
-      </section>
+      </section> *@
     </div>
   </div>
 </main>

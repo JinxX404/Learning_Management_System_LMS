@@ -1,0 +1,244 @@
+@{
+    ViewData["Title"] = "Create Course";
+    Layout = "_Layout";
+    var terms = ViewBag.AcademicTerms as List<Learning_Management_System.Models.AcademicTerm>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/create-course.css">
+}
+
+@await Html.PartialAsync("_InstructorNav")
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="MyCourses">My Courses</a></li>
+                    <li class="breadcrumb-item active">Create Course</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold">Create New Course</h1>
+            <p class="text-muted">Fill in the details to create a new course</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form asp-controller="Instructor" asp-action="CreateCourse" method="post">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Course Information</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <span class="material-symbols-outlined me-2" style="vertical-align: middle;">error</span>
+                                <strong>Error!</strong> @ViewBag.Error
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <span class="material-symbols-outlined me-2" style="vertical-align: middle;">check_circle</span>
+                                <strong>Success!</strong> @TempData["Success"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        @if (terms == null || !terms.Any())
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                <span class="material-symbols-outlined me-2" style="vertical-align: middle;">warning</span>
+                                <strong>Warning!</strong> No active academic terms found. Please contact the administrator to create an academic term first.
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Course Code <span class="text-danger">*</span></label>
+                                <input type="text" name="courseCode" class="form-control" placeholder="e.g., CS101" required />
+                                <small class="text-muted">Unique identifier for the course</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Credit Hours <span class="text-danger">*</span></label>
+                                <input type="number" name="creditHours" class="form-control" min="1" max="6" value="3" required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Title <span class="text-danger">*</span></label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g., Introduction to Programming" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Provide a detailed description of the course..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Academic Term <span class="text-danger">*</span></label>
+                            <select name="academicTermId" class="form-select" required>
+                                <option value="">Select a term...</option>
+                                @if (terms != null && terms.Any())
+                                {
+                                    @foreach (var term in terms)
+                                    {
+                                        <option value="@term.AcademicTermId">@term.TermName (@term.StartDate.ToString("MMM yyyy") - @term.EndDate.ToString("MMM yyyy"))</option>
+                                    }
+                                }
+                            </select>
+                            <small class="text-muted">Select the academic term for this course</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Course Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maximum Enrollment</label>
+                                <input type="number" name="maxEnrollment" class="form-control" min="1" value="50" />
+                                <small class="text-muted">Maximum number of students</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Course Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="Active" selected>Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Draft">Draft</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Prerequisites (Optional)</label>
+                            <input type="text" class="form-control" placeholder="e.g., CS100, MATH101" />
+                            <small class="text-muted">Comma-separated list of prerequisite courses</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">Additional Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Meeting Days</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="mon" />
+                                        <label class="form-check-label" for="mon">Mon</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="tue" />
+                                        <label class="form-check-label" for="tue">Tue</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="wed" />
+                                        <label class="form-check-label" for="wed">Wed</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="thu" />
+                                        <label class="form-check-label" for="thu">Thu</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="fri" />
+                                        <label class="form-check-label" for="fri">Fri</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Meeting Time</label>
+                                <input type="time" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location/Room</label>
+                            <input type="text" class="form-control" placeholder="e.g., Building A, Room 101" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary" @(terms == null || !terms.Any() ? "disabled" : "")>
+                        <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
+                        Create Course
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0">Tips for Creating a Course</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <div class="d-flex gap-2">
+                                <span class="material-symbols-outlined text-primary">lightbulb</span>
+                                <div>
+                                    <strong>Clear Title</strong>
+                                    <p class="small text-muted mb-0">Use a descriptive and concise course title</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex gap-2">
+                                <span class="material-symbols-outlined text-primary">description</span>
+                                <div>
+                                    <strong>Detailed Description</strong>
+                                    <p class="small text-muted mb-0">Include learning objectives and outcomes</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-3">
+                            <div class="d-flex gap-2">
+                                <span class="material-symbols-outlined text-primary">schedule</span>
+                                <div>
+                                    <strong>Set Schedule</strong>
+                                    <p class="small text-muted mb-0">Define meeting times and location clearly</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="d-flex gap-2">
+                                <span class="material-symbols-outlined text-primary">people</span>
+                                <div>
+                                    <strong>Enrollment Limit</strong>
+                                    <p class="small text-muted mb-0">Set appropriate class size</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="d-flex align-items-start">
+                    <span class="material-symbols-outlined me-2">info</span>
+                    <div>
+                        <strong>Note:</strong>
+                        <p class="small mb-0 mt-1">After creating the course, you can add lectures, assignments, and other materials from the course details page.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
