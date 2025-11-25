@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Student Management";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "students";
 }
 
@@ -8,38 +8,6 @@
     <link rel="stylesheet" href="~/css/pages/student-manegment_admin.css">
 }
 
-<div class="d-flex min-vh-100">
-  @await Html.PartialAsync("_AdminSidebar")
-  
-  <div class="flex-grow-1 d-flex flex-column">
-    <!-- <header class="d-flex align-items-center justify-content-between border-bottom bg-body-tertiary px-4 py-3">
-      <div class="d-flex align-items-center gap-4">
-        <h2 class="text-body-emphasis h5 fw-bold mb-0">Student Management</h2>
-      </div>
-      <div class="d-flex flex-grow-1 align-items-center justify-content-end gap-4">
-        <a class="btn btn-primary fw-bold fs-sm py-2 px-3" style="min-width: 84px;" asp-controller="Admin" asp-action="CreateStudent" role="button">
-          <span>Add New Student</span>
-        </a>
-        <div class="d-flex align-items-center gap-3">
-          <button class="btn btn-icon-header rounded-circle p-2">
-            <span class="material-symbols-outlined fs-5">notifications</span>
-          </button>
-          <button class="btn btn-icon-header rounded-circle p-2">
-            <span class="material-symbols-outlined fs-5">chat</span>
-          </button>
-          <div class="d-flex align-items-center gap-2">
-            <div class="bg-center bg-no-repeat bg-cover rounded-circle" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFkpYwFJxJU9bnptpIu_zw1TDI4LW_bnnw-VQ6wWa1nJO3UHgtZedu_gwhiaSjVV7FpJy5tkNGMX2fi-4b_fI6Xhq62OpBWdGI4Pt5DBh9BvH2227wQ0Rk7L19tcekVch8fe9Vxd7AGC_NtOl18UjKK0GOChazaJoiFZKEFrpCrudq9xnwgRo62RRMlVYvYvlQ9BoU2irsFF63RmegsflWNA9Ku_rJja3T-cdswDqask5XFdI_fLCrHfEBGkrGYJMbc87wMLP57WM"); width: 2.5rem; height: 2.5rem;'></div>
-            <div class="d-none d-sm-flex flex-column text-start">
-              <span class="fs-sm fw-medium text-body-emphasis">Admin User</span>
-              <span class="fs-xs text-secondary">admin@academix.edu</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header> -->
-    
-
-    
     <main class="flex-grow-1 p-4">
 
     <div class="container-xxl mx-auto">
@@ -87,12 +55,6 @@
           <table class="table w-100 fs-sm text-start align-middle mb-0 table-hover">
             <thead class="fs-xs text-uppercase">
               <tr>
-                <th class="p-4" scope="col">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="checkbox-all" />
-                    <label class="form-check-label visually-hidden" for="checkbox-all">Select all</label>
-                  </div>
-                </th>
                 <th class="px-4 py-3" scope="col">Student Name</th>
                 <th class="px-4 py-3" scope="col">Student ID</th>
                 <th class="px-4 py-3" scope="col">Email</th>
@@ -107,12 +69,6 @@
                   foreach (var student in ViewBag.Students)
                   {
                       <tr class="border-top">
-                        <td class="w-4 p-4">
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="@student.UserId" id="checkbox-table-@student.UserId" />
-                            <label class="form-check-label visually-hidden" for="checkbox-table-@student.UserId">Select row @student.UserId</label>
-                          </div>
-                        </td>
                         <th class="d-flex align-items-center px-4 py-3 text-body-emphasis text-nowrap" scope="row">
                           <div class="bg-center bg-no-repeat bg-cover rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle text-primary fw-bold" style="width: 2.5rem; height: 2.5rem;">
                               @{
@@ -144,6 +100,7 @@
                               <span class="material-symbols-outlined fs-6">edit</span>
                             </a>
                             <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure?');" style="display:inline;">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@student.UserId" />
                                 <button type="submit" class="btn btn-icon-table hover-danger rounded-circle p-2">
                                   <span class="material-symbols-outlined fs-6">delete</span>
@@ -177,8 +134,6 @@
         </nav>
       </div>
     </main>
-  </div>
-</div>
 
 @section Scripts {
     <script>

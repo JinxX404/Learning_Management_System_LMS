@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Edit Academic Term";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "terms";
     var term = ViewBag.Term as Learning_Management_System.Models.AcademicTerm;
 }
@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="~/css/pages/add-term_admin.css">
 }
 
-<div class="d-flex min-vh-100">
-    
     <main class="flex-grow-1 d-flex flex-column">
    
       
@@ -35,6 +33,7 @@
             <h2 class="h5 fw-bold text-body-emphasis mb-0">Term Details</h2>
           </div>
           <form class="card-body p-4 vstack gap-4" asp-action="EditAcademicTerm" method="POST">
+            @Html.AntiForgeryToken()
             <input type="hidden" name="academicTermId" value="@(term?.AcademicTermId)" />
             <input type="hidden" name="institutionId" value="@(term?.InstitutionId)" />
             
@@ -62,8 +61,8 @@
             <div>
               <label class="form-label fs-sm fw-medium" for="isActive">Status</label>
               <select class="form-select rounded-3" id="isActive" name="isActive">
-                <!option value="true" @(term?.IsActive == true ? "selected" : "")>Active</!option>
-                <!option value="false" @(term?.IsActive == false ? "selected" : "")>Inactive</!option>
+                <option value="true" selected="@(term?.IsActive == true)">Active</option>
+                <option value="false" selected="@(term?.IsActive == false)">Inactive</option>
               </select>
             </div>
             
@@ -75,4 +74,3 @@
         </div>
       </div>
     </main>
-</div>

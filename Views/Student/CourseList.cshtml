@@ -1,12 +1,12 @@
 ﻿@using Learning_Management_System.Models
 @{
-    ViewData["Title"] = "My Courses";
+    ViewData["Title"] = "Available Courses";
     Layout = "_Layout";
-    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
+    var courses = ViewBag.AvailableCourses as IEnumerable<Course> ?? Enumerable.Empty<Course>();
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/pages/my-courses.css">
+    <link rel="stylesheet" href="~/css/pages/course-list.css">
 }
 
 <header class="sticky-top border-bottom header-sticky" style="background-color: var(--bs-tertiary-bg);">
@@ -26,7 +26,7 @@
                     <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                     Dashboard
                 </a>
-                <a class="nav-link active d-flex align-items-center gap-2" asp-action="MyCourses" asp-controller="Student">
+                <a class="nav-link d-flex align-items-center gap-2" asp-action="MyCourses" asp-controller="Student">
                     <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
                     Courses
                 </a>
@@ -67,48 +67,49 @@
         </div>
     </div>
 </header>
-<main class="container flex-grow-1 py-5">
-    <h2 class="fs-2 fw-bold mb-5">My Courses</h2>
 
-    <div class="row g-4">
-        @if (!enrollments.Any())
-        {
-            <div class="col-12">
-                <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column p-4">
-                    <p class="mb-0 text-secondary">No courses found. Once you enroll, they will appear here.</p>
-                </div>
-            </div>
-        }
-        else
-        {
-            @foreach (var enrollment in enrollments)
+<main class="container flex-grow-1 py-5">
+    <h2 class="fs-2 fw-bold mb-5">Available Courses</h2>
+
+    @if (!courses.Any())
+    {
+        <div class="alert alert-info">
+            No courses available for enrollment at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var course in courses)
             {
-                var course = enrollment.Course;
                 <div class="col-md-6 col-lg-4">
                     <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column">
                         <div class="card-body d-flex flex-column flex-grow-1 p-4">
-                            <h3 class="card-title fs-6 fw-bold">@course?.Title</h3>
+                            <h3 class="card-title fs-6 fw-bold">@course.Title</h3>
                             <p class="card-text small text-secondary">
-                                @if (course?.Instructor != null)
-                                {
-                                    @($"{course.Instructor.FirstName} {course.Instructor.LastName}")
-                                }
-                                else
-                                {
-                                    @:Instructor unavailable
-                                }
+                                Instructor: @course.Instructor?.FirstName @course.Instructor?.LastName
+                            </p>
+                            <p class="card-text small text-secondary">
+                                Term: @course.AcademicTerm?.TermName
                             </p>
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between small text-secondary mb-1">
                                     <span>Credits</span>
-                                    <span>@course?.CreditHours</span>
+                                    <span>@course.CreditHours</span>
                                 </div>
-                                <a asp-action="CourseDetails" asp-controller="Student" asp-route-id="@course?.CourseId" class="btn btn-primary w-100 fw-semibold mt-3">View Course</a>
+                                <div class="d-flex justify-content-between small text-secondary mb-1">
+                                    <span>Enrolled</span>
+                                    <span>@course.CurrentEnrollment / @course.MaxEnrollment</span>
+                                </div>
+                                <form asp-action="EnrollInCourse" asp-controller="Student" method="post">
+                                    <input type="hidden" name="courseId" value="@course.CourseId" />
+                                    <button type="submit" class="btn btn-primary w-100 fw-semibold mt-3">Enroll Now</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             }
-        }
-    </div>
+        </div>
+    }
 </main>

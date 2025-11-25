@@ -1,0 +1,71 @@
+﻿@using Learning_Management_System.Models
+@{
+    ViewData["Title"] = "Quiz Results";
+    Layout = "_Layout";
+    var attempt = ViewBag.QuizAttempt as QuizAttempt;
+    var quiz = attempt?.Quiz;
+    var totalQuestions = quiz?.QuizQuestions.Count() ?? 0;
+    var correctAnswers = ViewBag.CorrectAnswers ?? 0;
+    var percentage = totalQuestions > 0 ? (int)((double)correctAnswers / totalQuestions * 100) : 0;
+    var grade = percentage >= 90 ? "A" : percentage >= 80 ? "B" : percentage >= 70 ? "C" : percentage >= 60 ? "D" : "F";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/quiz-result.css">
+}
+
+<!-- الـ Header زي باقي الصفحات -->
+
+<main class="container-lg my-4 my-md-5">
+    <div class="mx-auto" style="max-width: 56rem;">
+        <div class="mb-5">
+            <p class="text-muted">@quiz?.Course?.Title</p>
+            <h1 class="display-5 fw-bold">Quiz Results: @quiz?.Title</h1>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm rounded-3">
+                    <div class="card-body d-flex flex-column justify-content-center p-4">
+                        <p class="text-muted mb-1">Your Score</p>
+                        <p class="display-3 fw-bold text-primary mb-0">@percentage%</p>
+                        <p class="text-muted mt-1">Grade: @grade</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded-3">
+                    <div class="card-body d-flex align-items-start p-4 gap-3">
+                        <div class="bg-success-subtle text-success p-2 rounded-circle flex-shrink-0">
+                            <span class="material-symbols-outlined">check_circle</span>
+                        </div>
+                        <div>
+                            <h2 class="fs-5 fw-semibold mb-1">Correct Answers</h2>
+                            <p class="display-4 fw-bold text-body-tertiary mb-0">@correctAnswers</p>
+                            <p class="text-muted">out of @totalQuestions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm rounded-3">
+                    <div class="card-body d-flex align-items-start p-4 gap-3">
+                        <div class="bg-danger-subtle text-danger p-2 rounded-circle flex-shrink-0">
+                            <span class="material-symbols-outlined">cancel</span>
+                        </div>
+                        <div>
+                            <h2 class="fs-5 fw-semibold mb-1">Incorrect Answers</h2>
+                            <p class="display-4 fw-bold text-body-tertiary mb-0">@(totalQuestions - correctAnswers)</p>
+                            <p class="text-muted">out of @totalQuestions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a asp-action="Assignments" asp-controller="Student" class="btn btn-primary btn-lg px-4 fw-medium">Back to Assignments</a>
+            <a asp-action="MyCourses" asp-controller="Student" class="btn btn-secondary btn-lg px-4 fw-medium">Next Lesson</a>
+        </div>
+    </div>
+</main>

@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Course Overview";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "courses";
 }
 
@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="~/css/pages/course-details_admin.css">
 }
 
-<div class="d-flex vh-100 w-100">
-    @await Html.PartialAsync("_AdminSidebar")
-    
     <main class="flex-grow-1 overflow-auto">
       <div class="container-xxl py-4 px-3 px-sm-4 px-lg-4">
         <nav aria-label="breadcrumb">

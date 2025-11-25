@@ -21,30 +21,7 @@ body {
 }
 
 /* Sidebar styles */
-.sidebar {
-    width: 256px; /* w-64 */
-    min-width: 256px;
-}
 
-/* Custom nav link styles to match Tailwind */
-.nav-link {
-    color: var(--bs-body-color);
-}
-
-/* Replicate hover:bg-primary/10 */
-[data-bs-theme="light"] .sidebar .nav-link:not(.active):hover {
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-}
-
-[data-bs-theme="dark"] .sidebar .nav-link:not(.active):hover {
-    background-color: rgba(var(--bs-primary-rgb), 0.1);
-}
-
-/* Replicate bg-primary/20 text-primary */
-.sidebar .nav-link.active {
-    background-color: rgba(var(--bs-primary-rgb), 0.2) !important;
-    color: var(--bs-primary) !important;
-}
 
 /* Custom button hover */
 .btn-primary {

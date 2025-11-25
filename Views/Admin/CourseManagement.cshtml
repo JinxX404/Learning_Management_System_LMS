@@ -1,11 +1,9 @@
 @{
     ViewData["Title"] = "Course Management";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "courses";
 }
 
-<div class="d-flex min-vh-100 w-100">
-    @await Html.PartialAsync("_AdminSidebar")
 
     <main class="flex-grow-1">
         <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
@@ -17,6 +15,54 @@
         </header>
 
         <div class="p-4">
+            <!-- Filter Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form asp-action="Courses" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-body-secondary border-end-0">
+                                    <span class="material-symbols-outlined fs-6 text-secondary">search</span>
+                                </span>
+                                <input type="text" name="searchString" class="form-control border-start-0 ps-0" placeholder="Search by title or code..." value="@ViewBag.SearchString">
+                                <button class="btn btn-outline-secondary border-start-0" type="submit">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="All" selected="@(ViewBag.CurrentStatus == "All" || ViewBag.CurrentStatus == null)">All Statuses</option>
+                                <option value="Active" selected="@(ViewBag.CurrentStatus == "Active")">Active</option>
+                                <option value="Archived" selected="@(ViewBag.CurrentStatus == "Archived")">Archived</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="instructorId" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Instructors</option>
+                                @if (ViewBag.Instructors != null)
+                                {
+                                    foreach (var instructor in ViewBag.Instructors)
+                                    {
+                                        <option value="@instructor.UserId" selected="@(ViewBag.CurrentInstructor == instructor.UserId)">@instructor.FirstName @instructor.LastName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="termId" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Terms</option>
+                                @if (ViewBag.Terms != null)
+                                {
+                                    foreach (var term in ViewBag.Terms)
+                                    {
+                                        <option value="@term.AcademicTermId" selected="@(ViewBag.CurrentTerm == term.AcademicTermId)">@term.TermName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -80,6 +126,33 @@
                                                 <a asp-action="EditCourse" asp-route-id="@course.CourseId" class="btn btn-sm btn-outline-secondary" title="Edit">
                                                     <span class="material-symbols-outlined fs-6">edit</span>
                                                 </a>
+                                                <!-- Delete Modal Trigger -->
+                                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteCourseModal-@course.CourseId" title="Delete">
+                                                    <span class="material-symbols-outlined fs-6">delete</span>
+                                                </button>
+                                            </div>
+
+                                            <!-- Delete Modal -->
+                                            <div class="modal fade" id="deleteCourseModal-@course.CourseId" tabindex="-1" aria-labelledby="deleteCourseModalLabel-@course.CourseId" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteCourseModalLabel-@course.CourseId">Confirm Delete</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-start">
+                                                            Are you sure you want to delete course <strong>@course.Title</strong>?
+                                                            <br><br>
+                                                            <small class="text-muted">This action will deactivate the course.</small>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <form asp-action="DeleteCourse" asp-route-id="@course.CourseId" method="post">
+                                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -87,8 +160,10 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="p-3 border-top bg-light">
+                        <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@((ViewBag.Courses as IEnumerable<dynamic>)?.Count() ?? 0)</span> results</span>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-</div>

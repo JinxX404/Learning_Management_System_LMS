@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Add New Academic Term";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "terms";
 }
 
@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="~/css/pages/add-term_admin.css">
 }
 
-<div class="d-flex min-vh-100">
-    @await Html.PartialAsync("_AdminSidebar")
-    
     <main class="flex-grow-1 d-flex flex-column">
    
       
@@ -61,5 +58,4 @@
         </div>
       </div>
     </main>
-</div>
 

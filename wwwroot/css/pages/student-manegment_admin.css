@@ -82,21 +82,7 @@
       font-size: 0.875rem; /* T-wind text-sm */
     }
 
-    /* Sidebar Navigation */
-    .sidebar-nav .nav-link {
-      color: var(--bs-tertiary-color);
-      border-radius: var(--bs-border-radius-lg);
-    }
-    .sidebar-nav .nav-link:hover {
-      background-color: var(--bs-tertiary-bg-inset);
-    }
-    .sidebar-nav .nav-link.active {
-      background-color: rgba(var(--bs-primary-rgb), 0.2);
-      color: var(--bs-primary);
-    }
-    [data-bs-theme="dark"] .sidebar-nav .nav-link.active {
-      background-color: rgba(var(--bs-primary-rgb), 0.3);
-    }
+
 
     /* Header Icon Buttons */
     .btn-icon-header {

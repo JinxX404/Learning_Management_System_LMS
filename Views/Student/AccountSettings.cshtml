@@ -50,6 +50,7 @@
       <div class="d-flex align-items-center gap-2">
         <a asp-action="Profile" asp-controller="Student">            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0yqIeWjZhANVkvYizR4zvPjouwwzOg0ElzE5M2ymYIxc0EoHaO0iOxNJet-ODA3T-7ygdDvKu9PbGME49JtpxTy2txcN5GmnDNI8PX5rQaXKmRMlN5D8O7IVQjgcQ3cqy6bXyfpkejnFarNj-Cm3Iv1_HAebU5bQjF5pBqiZuGmSe5x-T-p2weAf0x5QhhNneblcnQHwzdYHg40f3XbJFFyvS5GUJfwz-GMPjxbtpW4alIvido-4ujc8iZhNBKGreBC9WI4gSpMY" alt="Sarah Chen" class="rounded-circle" style="width: 2.5rem; height: 2.5rem;">
 </a>
+                <a asp-action="Logout" asp-controller="Auth" class="btn btn-outline-danger btn-sm">Sign Out</a>
       </div>
     </div>
   </div>
@@ -63,11 +64,15 @@
         <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3" aria-labelledby="profile-heading">
             <div class="card-body p-3">
                 <h2 id="profile-heading" class="section-title fs-4 fw-semibold p-3">Profile Information</h2>
+                @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage as string))
+                {
+                    <div class="alert alert-danger mx-3">@ViewBag.ErrorMessage</div>
+                }
                 @if (!string.IsNullOrWhiteSpace(ViewBag.SuccessMessage as string))
                 {
                     <div class="alert alert-success mx-3">@ViewBag.SuccessMessage</div>
                 }
-                <form class="p-3" method="post" asp-action="AccountSettings" asp-controller="Student">
+                <form class="p-3" method="post" asp-action="ChangePassword" asp-controller="Student">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">First Name</label>
@@ -78,8 +83,16 @@
                             <input type="text" class="form-control" name="lastName" value="@user?.LastName" required>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label small text-secondary">Email</label>
-                            <input type="email" class="form-control" name="email" value="@user?.Email" required>
+                            <label class="form-label small text-secondary">Current Password</label>
+                            <input type="password" class="form-control" name="currentPassword" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">New Password</label>
+                            <input type="password" class="form-control" name="newPassword" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-secondary">Confirm Password</label>
+                            <input type="password" class="form-control" name="confirmPassword" required>
                         </div>
                     </div>
                     <div class="mt-4 text-end">
@@ -222,56 +235,6 @@
 </main>
 
 @section Scripts {
-    <script>
-        'use strict';
-        
-        // Update toggle button UI to match current theme
-        function updateToggleButton() {
-            const currentTheme = getCurrentTheme();
-            const icon = document.getElementById('themeIcon');
-            const text = document.getElementById('themeText');
-            
-            if (currentTheme === 'dark') {
-                icon.className = 'fas fa-moon';
-                text.textContent = 'Dark';
-            } else {
-                icon.className = 'fas fa-sun';
-                text.textContent = 'Light';
-            }
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set initial button state
-            updateToggleButton();
-            
-            // Add click event listener to toggle button
-            const toggleBtn = document.getElementById('themeToggleBtn');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    toggleTheme();
-                    updateToggleButton();
-                });
-            }
-            
-            // Add change listeners for switches with toast notifications
-            const switches = document.querySelectorAll('.toggle-switch');
-            switches.forEach(function(switchEl) {
-                switchEl.addEventListener('change', function() {
-                    const settingName = this.closest('.setting-item').querySelector('h3').textContent;
-                    const status = this.checked ? 'enabled' : 'disabled';
-                    Toast.success(settingName + ' ' + status);
-                });
-            });
-            
-            // Add click listeners for connect buttons
-            const connectButtons = document.querySelectorAll('.connect-btn');
-            connectButtons.forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    const service = this.closest('.setting-item').querySelector('h3').textContent.replace('Connect with ', '');
-                    Toast.info('Connecting to ' + service + '...');
-                });
-            });
-        });
-    </script>
+    <script src="~/js/account-settings.js"></script>
+}
 }

@@ -1,0 +1,50 @@
+﻿<!-- Views/Shared/_StudentSidebar.cshtml -->
+<aside class="bg-body-component border-end" style="width: 280px; min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 1010;">
+    <div class="d-flex flex-column h-100">
+        <!-- Logo -->
+        <div class="p-4 border-bottom">
+            <h4 class="fw-bold mb-0">LMS Student</h4>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-grow-1 p-3">
+            <ul class="nav nav-pills flex-column gap-1">
+                <li class="nav-item">
+                    <a asp-action="Dashboard" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "dashboard" ? "active" : "")">
+                        <span class="material-symbols-outlined me-2">dashboard</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-action="MyCourses" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "courses" ? "active" : "")">
+                        <span class="material-symbols-outlined me-2">school</span>
+                        My Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-action="Grades" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "grades" ? "active" : "")">
+                        <span class="material-symbols-outlined me-2">grading</span>
+                        My Grades
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-action="Announcements" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "announcements" ? "active" : "")">
+                        <span class="material-symbols-outlined me-2">notifications</span>
+                        Announcements
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-action="Profile" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "profile" ? "active" : "")">
+                        <span class="material-symbols-outlined me-2">person</span>
+                        Profile
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-4 border-top">
+            <a asp-action="Logout" asp-controller="Auth" class="btn btn-outline-danger w-100">Logout</a>
+        </div>
+    </div>
+</aside>

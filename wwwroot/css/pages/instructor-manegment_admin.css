@@ -85,19 +85,7 @@
 
     /* Custom Component Styles */
 
-    /* Sidebar Navigation */
-    .sidebar-nav .nav-link {
-      color: var(--bs-body-color);
-      padding: 0.5rem 0.75rem; /* py-2 px-3 */
-      border-radius: var(--bs-border-radius-lg); /* rounded-lg */
-    }
-    .sidebar-nav .nav-link:hover {
-      background-color: rgba(var(--bs-primary-rgb), 0.1);
-    }
-    .sidebar-nav .nav-link.active {
-      background-color: rgba(var(--bs-primary-rgb), 0.1);
-      color: var(--bs-primary);
-    }
+
     
     /* Filter Dropdown Buttons */
     .btn-filter {

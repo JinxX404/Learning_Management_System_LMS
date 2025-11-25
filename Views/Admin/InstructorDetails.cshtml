@@ -1,6 +1,6 @@
 @{
     ViewData["Title"] = "Instructor Profile";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "instructors";
 }
 
@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="~/css/pages/instructor-details_admin.css">
 }
 
-<div class="d-flex position-relative min-vh-100 w-100">
-    @await Html.PartialAsync("_AdminSidebar")
-    
     <main class="flex-grow-1 d-flex flex-column p-4 p-sm-6 p-lg-8">
       <div class="w-100 mx-auto" style="max-width: 80rem;">
         <nav aria-label="breadcrumb" class="mb-4">
@@ -139,4 +136,3 @@
         </div>
       </div>
     </main>
-  </div>

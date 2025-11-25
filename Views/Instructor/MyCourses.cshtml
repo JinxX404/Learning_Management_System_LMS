@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "My Courses";
+    Layout = "_Layout";
+    var courses = ViewBag.Courses as List<Learning_Management_System.Models.Course>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/my-courses.css">
+}
+
+@await Html.PartialAsync("_InstructorNav")
+
+<div class="container-xxl py-5">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h2 fw-bold">My Courses</h1>
+                <p class="text-muted">Manage your courses and content</p>
+            </div>
+            <a asp-controller="Instructor" asp-action="CreateCourse" class="btn btn-primary">
+                <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">add</span>
+                Create Course
+            </a>
+        </div>
+    </div>
+
+    @if (courses != null && courses.Any())
+    {
+        <div class="row g-4">
+            @foreach (var course in courses)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-primary">@course.CourseCode</span>
+                                <span class="badge @(course.Status == "Active" ? "bg-success" : "bg-secondary")">
+                                    @course.Status
+                                </span>
+                            </div>
+                            <h5 class="card-title fw-bold mb-2">@course.Title</h5>
+                            <p class="card-text text-muted small mb-3">
+                                @(string.IsNullOrEmpty(course.Description) ? "No description available" : 
+                                  (course.Description.Length > 100 ? course.Description.Substring(0, 100) + "..." : course.Description))
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="small text-muted">
+                                    <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">people</span>
+                                    @course.CurrentEnrollment/@course.MaxEnrollment students
+                                </div>
+                                <div class="small text-muted">
+                                    <span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">credit_card</span>
+                                    @course.CreditHours credits
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Instructor" asp-action="CourseDetails" asp-route-id="@course.CourseId" class="btn btn-primary btn-sm flex-fill">
+                                    View Details
+                                </a>
+                                <a asp-controller="Instructor" asp-action="CourseRoster" asp-route-id="@course.CourseId" class="btn btn-outline-primary btn-sm">
+                                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">people</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <span class="material-symbols-outlined fs-1 text-muted">school</span>
+                <p class="text-muted mt-3 mb-4">You don't have any courses yet.</p>
+                <a asp-controller="Instructor" asp-action="CreateCourse" class="btn btn-primary">
+                    <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">add</span>
+                    Create Your First Course
+                </a>
+            </div>
+        </div>
+    }
+</div>

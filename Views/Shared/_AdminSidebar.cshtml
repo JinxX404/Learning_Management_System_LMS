@@ -38,26 +38,26 @@
                     <span class="material-symbols-outlined">folder</span>
                     <span class="fs-sm fw-medium">Learning Assets</span>
                 </a> -->
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "users" ? "active" : string.Empty)" href="#">
+                <!-- <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "users" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Users">
                     <span class="material-symbols-outlined">group</span>
                     <span class="fs-sm fw-medium">Users</span>
-                </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "reports" ? "active" : string.Empty)" href="#">
+                </a> -->
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "reports" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Reports">
                     <span class="material-symbols-outlined">assessment</span>
                     <span class="fs-sm fw-medium">Reports</span>
                 </a>
-                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "settings" ? "active" : string.Empty)" href="#">
+                <!-- <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "settings" ? "active" : string.Empty)" href="#">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="fs-sm fw-medium">Settings</span>
-                </a>
+                </a> -->
             </nav>
         </div>
 
-        <div class="mt-4">
+        <!-- <div class="mt-4">
             <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" href="#">
                 <span class="material-symbols-outlined">help</span>
                 <span class="fs-sm fw-medium">Help Center</span>
             </a>
-        </div>
+        </div> -->
     </div>
 </aside>

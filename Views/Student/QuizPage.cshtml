@@ -1,0 +1,117 @@
+﻿@using Learning_Management_System.Models
+@{
+    ViewData["Title"] = "Take Quiz";
+    Layout = "_Layout";
+    var quiz = ViewBag.Quiz as Quiz;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/quiz-page.css">
+}
+
+<header class="sticky-top border-bottom header-sticky">
+    <div class="d-flex align-items-center px-4" style="height: 4rem;">
+        <div class="d-flex align-items-center gap-2">
+            <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3" style="width: 2rem; height: 2rem;">
+                <svg class="brand-icon" style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+            </div>
+            <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">LMS Student</h1>
+        </div>
+        <!-- ... باقي الـ Navbar زي باقي الصفحات ... -->
+    </div>
+</header>
+
+<main class="container-lg my-4 my-md-5">
+    <div class="mx-auto" style="max-width: 48rem;">
+        <div class="card shadow-lg rounded-4">
+            <div class="card-body p-4 p-md-5">
+
+                <!-- Progress -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2 class="fs-6 fw-semibold text-body-secondary">Quiz Progress</h2>
+                        <p class="fs-6 text-muted mb-0">1/@quiz?.QuizQuestions.Count() Questions</p>
+                    </div>
+                    <div class="progress" role="progressbar" style="height: 8px;">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Timer -->
+                <div class="d-flex justify-content-center align-items-center gap-3 gap-sm-4 text-center mb-5">
+                    <div>
+                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                            <span class="display-5 fw-bold">00</span>
+                        </div>
+                        <p class="text-muted small mt-2">Hours</p>
+                    </div>
+                    <span class="display-5 fw-bold text-primary">:</span>
+                    <div>
+                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                            <span class="display-5 fw-bold">15</span>
+                        </div>
+                        <p class="text-muted small mt-2">Minutes</p>
+                    </div>
+                    <span class="display-5 fw-bold text-primary">:</span>
+                    <div>
+                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                            <span class="display-5 fw-bold">00</span>
+                        </div>
+                        <p class="text-muted small mt-2">Seconds</p>
+                    </div>
+                </div>
+
+                <hr class="my-5" />
+
+                <!-- Form -->
+                <form asp-action="SubmitQuiz" asp-controller="Student" method="post">
+                    <input type="hidden" name="quizId" value="@quiz?.QuizId" />
+
+                    @if (quiz?.QuizQuestions != null)
+                    {
+                        var questions = quiz.QuizQuestions.ToList();
+                        for (int i = 0; i < questions.Count; i++)
+                        {
+                            var question = questions[i];
+                            <div class="quiz-question mb-5">
+                                <h3 class="fs-5 fw-semibold">
+                                    <span class="text-primary fw-bold">Question @(i + 1):</span>
+                                </h3>
+                                <p class="mt-2 fs-5">@question.QuestionText</p>
+                                <div class="d-grid gap-3 mt-4">
+                                    @foreach (var option in question.QuestionOptions)
+                                    {
+                                        <div class="answer-option form-check p-0">
+                                            <input class="form-check-input visually-hidden"
+                                                   type="radio"
+                                                   name="answers[@question.QuestionId]"
+                                                   id="option-@option.OptionId"
+                                                   value="@option.OptionId">
+                                            <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer"
+                                                   for="option-@option.OptionId">
+                                                @option.OptionText
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <div class="text-end pt-5 mt-3">
+                        <button type="submit" class="btn btn-primary w-100 w-sm-auto px-5 py-2 fw-semibold">Submit Quiz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script>
+        // Timer code here if needed
+    </script>
+}

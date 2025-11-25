@@ -1,12 +1,9 @@
 @{
     ViewData["Title"] = "Edit Course";
-    Layout = "_Layout";
+    Layout = "_AdminLayout";
     ViewData["AdminActive"] = "courses";
     var course = ViewBag.Course;
 }
-
-<div class="d-flex min-vh-100 w-100">
-    @await Html.PartialAsync("_AdminSidebar")
 
     <main class="flex-grow-1">
         <header class="d-flex align-items-center justify-content-between border-bottom px-4 py-3 bg-body-component sticky-top" style="min-height: 65px; z-index: 1020;">
@@ -118,4 +115,3 @@
             </div>
         </div>
     </main>
-</div>
