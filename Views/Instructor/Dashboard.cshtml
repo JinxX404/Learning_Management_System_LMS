@@ -21,73 +21,78 @@
 
     <div class="row g-4 mb-4">
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body text-white">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <span class="material-symbols-outlined fs-1 text-primary">school</span>
+                            <span class="material-symbols-outlined fs-1 opacity-75">school</span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">My Courses</h6>
-                            <h3 class="mb-0">@ViewBag.CoursesCount</h3>
+                            <h6 class="mb-1 opacity-90">My Courses</h6>
+                            <h3 class="mb-0 fw-bold">@ViewBag.CoursesCount</h3>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-sm btn-link p-0">
-                        View all courses ?
+                <div class="card-footer bg-transparent border-0" style="background: rgba(255,255,255,0.1) !important;">
+                    <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-sm btn-link text-white p-0 text-decoration-none">
+                        View all courses <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="card-body text-white">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <span class="material-symbols-outlined fs-1 text-warning">pending_actions</span>
+                            <span class="material-symbols-outlined fs-1 opacity-75">pending_actions</span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Pending Grades</h6>
-                            <h3 class="mb-0">@ViewBag.PendingGradesCount</h3>
+                            <h6 class="mb-1 opacity-90">Pending Grades</h6>
+                            <h3 class="mb-0 fw-bold">@ViewBag.PendingGradesCount</h3>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <a asp-controller="Instructor" asp-action="GradeSubmissions" class="btn btn-sm btn-link p-0">
-                        Grade now ?
+                <div class="card-footer bg-transparent border-0" style="background: rgba(255,255,255,0.1) !important;">
+                    <a asp-controller="Instructor" asp-action="GradeSubmissions" class="btn btn-sm btn-link text-white p-0 text-decoration-none">
+                        Grade now <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-white">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <span class="material-symbols-outlined fs-1 text-success">groups</span>
+                            <span class="material-symbols-outlined fs-1 opacity-75">quiz</span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Total Students</h6>
-                            <h3 class="mb-0">@ViewBag.TotalStudents</h3>
+                            <h6 class="mb-1 opacity-90">My Quizzes</h6>
+                            <h3 class="mb-0 fw-bold">@ViewBag.QuizzesCount</h3>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer bg-transparent border-0" style="background: rgba(255,255,255,0.1) !important;">
+                    <a asp-controller="Instructor" asp-action="MyQuizzes" class="btn btn-sm btn-link text-white p-0 text-decoration-none">
+                        Manage quizzes <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
+            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body text-white">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <span class="material-symbols-outlined fs-1 text-info">assignment</span>
+                            <span class="material-symbols-outlined fs-1 opacity-75">groups</span>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <h6 class="text-muted mb-1">Active Assignments</h6>
-                            <h3 class="mb-0">@ViewBag.ActiveAssignments</h3>
+                            <h6 class="mb-1 opacity-90">Total Students</h6>
+                            <h3 class="mb-0 fw-bold">@ViewBag.TotalStudents</h3>
                         </div>
                     </div>
                 </div>
@@ -138,19 +143,23 @@
                             <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">school</span>
                             My Courses
                         </a>
-                        <a asp-controller="Instructor" asp-action="CreateAssignment" class="btn btn-outline-primary">
-                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">add</span>
-                            Create Assignment
-                        </a>
-                        <a asp-controller="Instructor" asp-action="CreateQuiz" class="btn btn-outline-primary">
+                        <a asp-controller="Instructor" asp-action="MyQuizzes" class="btn btn-outline-primary">
                             <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">quiz</span>
+                            My Quizzes
+                        </a>
+                        <a asp-controller="Instructor" asp-action="CreateQuiz" class="btn btn-outline-success">
+                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">add</span>
                             Create Quiz
                         </a>
-                        <a asp-controller="Instructor" asp-action="GradeSubmissions" class="btn btn-outline-primary">
+                        <a asp-controller="Instructor" asp-action="CreateAssignment" class="btn btn-outline-primary">
+                            <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">assignment</span>
+                            Create Assignment
+                        </a>
+                        <a asp-controller="Instructor" asp-action="GradeSubmissions" class="btn btn-outline-warning">
                             <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">grade</span>
                             Grade Submissions
                         </a>
-                        <a asp-controller="Instructor" asp-action="UploadMaterials" class="btn btn-outline-primary">
+                        <a asp-controller="Instructor" asp-action="UploadMaterials" class="btn btn-outline-info">
                             <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">upload</span>
                             Upload Materials
                         </a>

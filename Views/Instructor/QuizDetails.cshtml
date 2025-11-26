@@ -1,0 +1,219 @@
+@model Learning_Management_System.Models.Quiz
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "Quiz Details";
+    Layout = "_Layout";
+    var totalAttempts = ViewBag.TotalAttempts as int? ?? 0;
+    var averageScore = ViewBag.AverageScore as double? ?? 0;
+    var completionRate = ViewBag.CompletionRate as double? ?? 0;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/quiz-management.css">
+}
+
+<div class="container-lg py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-2">
+                    <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a asp-action="MyQuizzes">My Quizzes</a></li>
+                    <li class="breadcrumb-item active">@Model.Title</li>
+                </ol>
+            </nav>
+            <h1 class="display-6 fw-bold mb-0">@Model.Title</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="EditQuiz" asp-route-id="@Model.QuizId" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i>Edit Quiz
+            </a>
+            <a asp-action="MyQuizzes" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- Quiz Information Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5 class="card-title mb-3">Quiz Information</h5>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Course:</dt>
+                        <dd class="col-sm-9">@Model.Course.Title (@Model.Course.CourseCode)</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <dt class="col-sm-3">Description:</dt>
+                            <dd class="col-sm-9">@Model.Description</dd>
+                        }
+
+                        @if (Model.DueDate.HasValue)
+                        {
+                            <dt class="col-sm-3">Due Date:</dt>
+                            <dd class="col-sm-9">@Model.DueDate.Value.ToString("MMMM dd, yyyy h:mm tt")</dd>
+                        }
+
+                        @if (Model.TimeLimitMinutes.HasValue && Model.TimeLimitMinutes > 0)
+                        {
+                            <dt class="col-sm-3">Time Limit:</dt>
+                            <dd class="col-sm-9">@Model.TimeLimitMinutes minutes</dd>
+                        }
+
+                        <dt class="col-sm-3">Total Questions:</dt>
+                        <dd class="col-sm-9">@Model.QuizQuestions.Count</dd>
+
+                        <dt class="col-sm-3">Total Points:</dt>
+                        <dd class="col-sm-9">@Model.QuizQuestions.Sum(q => q.Points)</dd>
+                    </dl>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="card-title mb-3">Statistics</h5>
+                    <div class="stat-card bg-light p-3 rounded mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Total Attempts</span>
+                            <span class="h4 mb-0 fw-bold">@totalAttempts</span>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-light p-3 rounded mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Average Score</span>
+                            <span class="h4 mb-0 fw-bold">@averageScore.ToString("F1")%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-light p-3 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Completion Rate</span>
+                            <span class="h4 mb-0 fw-bold">@completionRate.ToString("F1")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions -->
+    <h3 class="mb-3">Questions</h3>
+    @if (Model.QuizQuestions != null && Model.QuizQuestions.Any())
+    {
+        @foreach (var question in Model.QuizQuestions.OrderBy(q => q.QuestionId))
+        {
+            var questionNumber = Model.QuizQuestions.ToList().IndexOf(question) + 1;
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">
+                            <span class="badge bg-primary me-2">Q@questionNumber</span>
+                            @question.QuestionText
+                        </h5>
+                        <span class="badge bg-light text-dark border">@question.Points pts</span>
+                    </div>
+
+                    <div class="question-type mb-2">
+                        <span class="badge bg-secondary">@question.QuestionType</span>
+                    </div>
+
+                    @if (question.QuestionOptions != null && question.QuestionOptions.Any())
+                    {
+                        <div class="options-list mt-3">
+                            <h6 class="text-muted small mb-2">Answer Options:</h6>
+                            <ul class="list-group">
+                                @foreach (var option in question.QuestionOptions)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center @(option.IsCorrect ? "list-group-item-success" : "")">
+                                        <span>
+                                            @if (option.IsCorrect)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-circle me-2 text-muted"></i>
+                                            }
+                                            @option.OptionText
+                                        </span>
+                                        @if(option.IsCorrect)
+                                        {
+                                            <span class="badge bg-success">Correct Answer</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            No questions have been added to this quiz yet.
+        </div>
+    }
+
+    <!-- Student Attempts -->
+    @if (Model.QuizAttempts != null && Model.QuizAttempts.Any())
+    {
+        <h3 class="mt-5 mb-3">Recent Student Attempts</h3>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Started At</th>
+                                <th>Submitted At</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var attempt in Model.QuizAttempts.OrderByDescending(a => a.StartedAt).Take(10))
+                            {
+                                <tr>
+                                    <td>@attempt.User.FirstName @attempt.User.LastName</td>
+                                    <td>@attempt.StartedAt.ToString("MMM dd, yyyy h:mm tt")</td>
+                                    <td>
+                                        @if (attempt.SubmittedAt.HasValue)
+                                        {
+                                            @attempt.SubmittedAt.Value.ToString("MMM dd, yyyy h:mm tt")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Not submitted</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (attempt.Score.HasValue)
+                                        {
+                                            <span class="fw-bold">@attempt.Score.Value.ToString("F1")%</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (attempt.SubmittedAt.HasValue)
+                                        {
+                                            <span class="badge bg-success">Completed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">In Progress</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

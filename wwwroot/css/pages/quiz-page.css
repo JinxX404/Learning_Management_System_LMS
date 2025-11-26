@@ -1,27 +1,135 @@
-body {
-  font-family: 'Inter', sans-serif;
+/* Quiz Page Styles */
+
+/* Sticky Timer */
+.quiz-timer-sticky {
+    position: fixed;
+    top: 5rem; /* Adjust based on header height */
+    right: 2rem;
+    z-index: 1000;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid #dee2e6;
+    width: 200px;
+    transition: all 0.3s ease;
 }
 
-.brand-icon {
-  color: #133b90;
+.quiz-timer-sticky.timer-warning {
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+    color: #856404;
+    animation: pulse 1s infinite;
 }
 
-.timer-box {
-  width: 80px;
-  height: 80px;
+.quiz-timer-sticky.timer-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+    animation: pulse 0.5s infinite;
 }
 
-/* Custom styling for radio button labels to match the design */
-.answer-option .form-check-input:checked + .form-check-label {
-  border-color: var(--bs-primary);
-  background-color: var(--bs-primary-bg-subtle);
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-.answer-option .form-check-label {
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+/* Question Styles */
+.quiz-question {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
 }
 
-/* Dark Theme Overrides */
-[data-bs-theme="dark"] .brand-icon {
-  color: #3a5a8a;
+/* Option Styles */
+.answer-option label {
+    transition: all 0.2s ease;
+    border: 2px solid #dee2e6;
+    cursor: pointer;
+    position: relative;
+    background-color: #ffffff;
+    padding-left: 1rem !important;
+}
+
+.answer-option label:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
+/* Support both :checked pseudo-class and .selected class for robustness */
+.answer-option input:checked + label,
+.answer-option label.selected {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    border-width: 3px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* Add a checkmark indicator for selected options */
+.answer-option label.selected::before,
+.answer-option input:checked + label::before {
+    content: "✓";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    animation: checkmark-appear 0.3s ease;
+}
+
+@keyframes checkmark-appear {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .quiz-timer-sticky {
+        /* Keep it fixed but move to bottom or top-right compact */
+        top: auto;
+        bottom: 1rem;
+        right: 1rem;
+        width: auto;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .quiz-timer-sticky .text-muted {
+        display: none; /* Hide "Time Remaining" label on small screens */
+    }
+    
+    .quiz-timer-sticky .h4 {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* Selected option visible highlight */
+.answer-option label.selected {
+    background-color: var(--bs-primary-light);
+    border-color: var(--bs-primary);
+    color: var(--bs-body-color);
+    box-shadow: 0 0 0 3px rgba(17, 115, 212, 0.25);
+    transition: 0.15s ease-in-out;
+}
+
+/* Make pointer feel clickable */
+.answer-option label {
+    cursor: pointer;
 }

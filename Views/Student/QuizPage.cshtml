@@ -3,6 +3,8 @@
     ViewData["Title"] = "Take Quiz";
     Layout = "_Layout";
     var quiz = ViewBag.Quiz as Quiz;
+    var timeLimit = quiz?.TimeLimitMinutes ?? 0;
+    var dueDate = quiz?.DueDate;
 }
 
 @section Styles {
@@ -20,54 +22,63 @@
             </div>
             <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">LMS Student</h1>
         </div>
-        <!-- ... باقي الـ Navbar زي باقي الصفحات ... -->
     </div>
 </header>
 
-<main class="container-lg my-4 my-md-5">
+<main class="container-lg my-4 my-md-5 position-relative">
+    
+    <!-- Sticky Timer -->
+    <div id="quizTimer" class="quiz-timer-sticky">
+        <div class="text-center">
+            <p class="text-muted small mb-1">Time Remaining</p>
+            <div id="timerCountdown" class="d-flex justify-content-center gap-1 align-items-center sticky-top">
+                <span id="timerHours" class="h4 fw-bold mb-0">00</span>
+                <span class="h6 mb-0">:</span>
+                <span id="timerMinutes" class="h4 fw-bold mb-0">00</span>
+                <span class="h6 mb-0">:</span>
+                <span id="timerSeconds" class="h4 fw-bold mb-0">00</span>
+            </div>
+            <div id="timerNoLimit" class="d-none">
+                <span class="h5 fw-bold text-success">No Time Limit</span>
+            </div>
+        </div>
+    </div>
+
     <div class="mx-auto" style="max-width: 48rem;">
         <div class="card shadow-lg rounded-4">
             <div class="card-body p-4 p-md-5">
+
+                <!-- Header -->
+                <div class="mb-5">
+                    <h1 class="display-6 fw-bold mb-3">@quiz?.Title</h1>
+                    <p class="text-secondary">@quiz?.Description</p>
+                    <div class="d-flex gap-3 text-secondary small">
+                        @if (timeLimit > 0)
+                        {
+                            <span><i class="bi bi-clock me-1"></i> Time Limit: @timeLimit mins</span>
+                        }
+                        @if (dueDate.HasValue)
+                        {
+                            <span><i class="bi bi-calendar me-1"></i> Due: @dueDate.Value.ToString("MMM dd, yyyy h:mm tt")</span>
+                        }
+                    </div>
+                </div>
 
                 <!-- Progress -->
                 <div class="mb-5">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h2 class="fs-6 fw-semibold text-body-secondary">Quiz Progress</h2>
-                        <p class="fs-6 text-muted mb-0">1/@quiz?.QuizQuestions.Count() Questions</p>
+                        <p class="fs-6 text-muted mb-0"><span id="answeredCount">0</span>/@quiz?.QuizQuestions.Count() Answered</p>
                     </div>
                     <div class="progress" role="progressbar" style="height: 8px;">
-                        <div class="progress-bar" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <!-- Timer -->
-                <div class="d-flex justify-content-center align-items-center gap-3 gap-sm-4 text-center mb-5">
-                    <div>
-                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                            <span class="display-5 fw-bold">00</span>
-                        </div>
-                        <p class="text-muted small mt-2">Hours</p>
-                    </div>
-                    <span class="display-5 fw-bold text-primary">:</span>
-                    <div>
-                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                            <span class="display-5 fw-bold">15</span>
-                        </div>
-                        <p class="text-muted small mt-2">Minutes</p>
-                    </div>
-                    <span class="display-5 fw-bold text-primary">:</span>
-                    <div>
-                        <div class="timer-box bg-body-tertiary rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                            <span class="display-5 fw-bold">00</span>
-                        </div>
-                        <p class="text-muted small mt-2">Seconds</p>
+                        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <hr class="my-5" />
 
                 <!-- Form -->
-                <form asp-action="SubmitQuiz" asp-controller="Student" method="post">
+                <form id="quizForm" asp-action="SubmitQuiz" asp-controller="Student" method="post">
                     <input type="hidden" name="quizId" value="@quiz?.QuizId" />
 
                     @if (quiz?.QuizQuestions != null)
@@ -77,23 +88,39 @@
                         {
                             var question = questions[i];
                             <div class="quiz-question mb-5">
-                                <h3 class="fs-5 fw-semibold">
-                                    <span class="text-primary fw-bold">Question @(i + 1):</span>
+                                <h3 class="fs-5 fw-semibold mb-3">
+                                    <span class="text-primary fw-bold">Question @(i + 1)</span>
+                                    <span class="float-end badge bg-light text-dark border">@question.Points Points</span>
                                 </h3>
-                                <p class="mt-2 fs-5">@question.QuestionText</p>
-                                <div class="d-grid gap-3 mt-4">
-                                    @foreach (var option in question.QuestionOptions)
+                                <p class="mb-4 fs-5">@question.QuestionText</p>
+                                <div>
+                                    @if (question.QuestionType == "ShortAnswer")
                                     {
-                                        <div class="answer-option form-check p-0">
-                                            <input class="form-check-input visually-hidden"
-                                                   type="radio"
-                                                   name="answers[@question.QuestionId]"
-                                                   id="option-@option.OptionId"
-                                                   value="@option.OptionId">
-                                            <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer"
-                                                   for="option-@option.OptionId">
-                                                @option.OptionText
-                                            </label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-lg" 
+                                                   name="answers[@question.QuestionId]" 
+                                                   placeholder="Type your answer here..." 
+                                                   autocomplete="off">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-grid gap-3">
+                                            @foreach (var option in question.QuestionOptions)
+                                            {
+                                                <div class="answer-option form-check p-0">
+                                                    <input class="form-check-input visually-hidden"
+                                                           type="radio"
+                                                           name="answers[@question.QuestionId]"
+                                                           id="option-@option.OptionId"
+                                                           value="@option.OptionId">
+                                                    <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer"
+                                                           for="option-@option.OptionId"
+                                                           onclick="selectOption(this)">
+                                                        @option.OptionText
+                                                    </label>
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 </div>
@@ -101,8 +128,8 @@
                         }
                     }
 
-                    <div class="text-end pt-5 mt-3">
-                        <button type="submit" class="btn btn-primary w-100 w-sm-auto px-5 py-2 fw-semibold">Submit Quiz</button>
+                    <div class="text-end pt-4 mt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg px-5 fw-semibold">Submit Quiz</button>
                     </div>
                 </form>
             </div>
@@ -112,6 +139,137 @@
 
 @section Scripts {
     <script>
-        // Timer code here if needed
+        // Global function for direct onclick handling
+        function selectOption(labelElement) {
+            // Remove selected class from all labels in the same question group
+            const questionContainer = labelElement.closest('.d-grid');
+            if (questionContainer) {
+                questionContainer.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+            }
+
+            if (radio) {
+        radio.checked = true; // ⭐ FORCE CHECK THE RADIO
+    }
+            // Add to clicked
+            labelElement.classList.add('selected');
+            
+            // Trigger progress update slightly delayed to allow radio update
+            setTimeout(updateProgress, 50);
+        }
+
+        function updateProgress() {
+            const form = document.getElementById('quizForm');
+            const formData = new FormData(form);
+            const totalQuestions = @(quiz?.QuizQuestions.Count() ?? 0);
+            
+            // Count unique question IDs that have a value
+            const answeredQuestions = new Set();
+            for (let [key, value] of formData.entries()) {
+                if (key.startsWith('answers[') && value.trim() !== '') {
+                    const match = key.match(/answers\[(\d+)\]/);
+                    if (match) answeredQuestions.add(match[1]);
+                }
+            }
+            
+            const answered = answeredQuestions.size;
+            const percentage = (totalQuestions > 0) ? (answered / totalQuestions) * 100 : 0;
+            
+            const progressBar = document.getElementById('progressBar');
+            const answeredCount = document.getElementById('answeredCount');
+            
+            if(progressBar) progressBar.style.width = percentage + '%';
+            if(answeredCount) answeredCount.innerText = answered;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Quiz Configuration
+            const timeLimitMinutes = @timeLimit;
+            const dueDateStr = '@(dueDate?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
+            
+            // --- Timer Logic ---
+            function startTimer() {
+                const timerCountdown = document.getElementById('timerCountdown');
+                const timerNoLimit = document.getElementById('timerNoLimit');
+                
+                if (timeLimitMinutes <= 0 && !dueDateStr) {
+                    // No limit mode
+                    timerCountdown.classList.add('d-none');
+                    timerNoLimit.classList.remove('d-none');
+                    return;
+                }
+                
+                // Calculate end time
+                const now = new Date();
+                let endTime = new Date();
+                
+                if (timeLimitMinutes > 0) {
+                    endTime.setMinutes(endTime.getMinutes() + timeLimitMinutes);
+                } else {
+                    endTime.setFullYear(endTime.getFullYear() + 100); 
+                }
+
+                if (dueDateStr) {
+                    const dueDate = new Date(dueDateStr);
+                    if (dueDate < endTime) {
+                        endTime = dueDate;
+                    }
+                }
+                
+                function updateTimer() {
+                    const currentTime = new Date();
+                    const timeDiff = endTime - currentTime;
+                    
+                    if (timeDiff <= 0) {
+                        document.getElementById('timerHours').innerText = "00";
+                        document.getElementById('timerMinutes').innerText = "00";
+                        document.getElementById('timerSeconds').innerText = "00";
+                        // Only submit if we actually had a limit
+                        if (timeLimitMinutes > 0 || dueDateStr) {
+                            alert("Time is up! Submitting quiz...");
+                            document.getElementById('quizForm').submit();
+                        }
+                        return;
+                    }
+                    
+                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('timerHours').innerText = hours.toString().padStart(2, '0');
+                    document.getElementById('timerMinutes').innerText = minutes.toString().padStart(2, '0');
+                    document.getElementById('timerSeconds').innerText = seconds.toString().padStart(2, '0');
+                    
+                    // Warning styles
+                    const timerElement = document.getElementById('quizTimer');
+                    if (timeDiff < 5 * 60 * 1000) { 
+                        timerElement.classList.add('timer-warning');
+                    }
+                    if (timeDiff < 1 * 60 * 1000) { 
+                        timerElement.classList.remove('timer-warning');
+                        timerElement.classList.add('timer-danger');
+                    }
+                }
+                
+                updateTimer(); // Initial call
+                setInterval(updateTimer, 1000);
+            }
+
+            // --- Initialization ---
+            startTimer();
+            updateProgress();
+            
+            // Re-apply selection classes on load (for browser back button etc)
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                if (label) label.classList.add('selected');
+            });
+            
+            // Input listener for text fields
+            document.getElementById('quizForm').addEventListener('input', function(e) {
+                if (e.target.type === 'text') {
+                    updateProgress();
+                }
+            });
+        });
     </script>
 }

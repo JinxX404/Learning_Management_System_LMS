@@ -1,0 +1,73 @@
+@using Learning_Management_System.Models
+@{
+    ViewData["Title"] = "Assignments";
+    Layout = "_Layout";
+    var assignments = ViewBag.Assignments as IEnumerable<dynamic>;
+    var selectedCourseId = ViewBag.SelectedCourseId as int?;
+    var enrolledCourses = ViewBag.EnrolledCourses as IEnumerable<CourseEnrollment>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/course-details.css">
+}
+
+<header class="sticky-top border-bottom header-sticky">
+    <div class="d-flex align-items-center px-4" style="height: 4rem;">
+        <div class="d-flex align-items-center gap-2">
+            <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3" style="width: 2rem; height: 2rem;">
+                <svg class="brand-icon" style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+            </div>
+            <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">LMS Student</h1>
+        </div>
+        <!-- Navbar content same as other pages -->
+    </div>
+</header>
+
+<main class="container-lg my-4 my-md-5">
+    <div class="mx-auto" style="max-width: 56rem;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5 fw-bold">Assignments</h1>
+            
+            @if (enrolledCourses != null)
+            {
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @(selectedCourseId.HasValue ? enrolledCourses.FirstOrDefault(c => c.CourseId == selectedCourseId)?.Course?.Title : "All Courses")
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-action="Assignments" asp-route-courseId="">All Courses</a></li>
+                        @foreach (var enrollment in enrolledCourses)
+                        {
+                            <li><a class="dropdown-item" asp-action="Assignments" asp-route-courseId="@enrollment.CourseId">@enrollment.Course?.Title</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-body p-4 p-md-5">
+                @if (assignments != null && assignments.Any())
+                {
+                    <div class="d-grid gap-4">
+                        <!-- Future assignment rendering logic will go here -->
+                        <p>Assignments will be listed here.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <div class="bg-body-tertiary rounded-circle d-inline-flex p-3 mb-3">
+                            <span class="material-symbols-outlined fs-1 text-secondary">assignment</span>
+                        </div>
+                        <p class="text-secondary fs-5">No assignments found.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</main>

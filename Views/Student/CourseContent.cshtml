@@ -74,7 +74,13 @@
 
 <div class="d-flex flex-grow-1 overflow-hidden">
     <aside class="sidebar position-sticky overflow-y-auto border-end bg-sidebar">
-        <div class="p-4"><h2 class="fs-5 fw-bold">Course Modules</h2></div>
+        <div class="p-4 border-bottom">
+            <a asp-action="CourseDetails" asp-controller="Student" asp-route-id="@course?.CourseId" class="d-flex align-items-center gap-2 text-decoration-none text-secondary mb-3">
+                <span class="material-symbols-outlined fs-5">arrow_back</span>
+                <span class="fw-medium">Back to Course</span>
+            </a>
+            <h2 class="fs-5 fw-bold mb-0">Course Modules</h2>
+        </div>
         <nav class="d-flex flex-column">
 
             @if (course?.Lectures != null)
