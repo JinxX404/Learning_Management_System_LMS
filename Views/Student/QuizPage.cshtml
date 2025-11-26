@@ -5,6 +5,7 @@
     var quiz = ViewBag.Quiz as Quiz;
     var timeLimit = quiz?.TimeLimitMinutes ?? 0;
     var dueDate = quiz?.DueDate;
+    var existingResponses = ViewBag.ExistingResponses as Dictionary<int, string>;
 }
 
 @section Styles {
@@ -68,7 +69,10 @@
                 <div class="mb-5">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h2 class="fs-6 fw-semibold text-body-secondary">Quiz Progress</h2>
-                        <p class="fs-6 text-muted mb-0"><span id="answeredCount">0</span>/@quiz?.QuizQuestions.Count() Answered</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <span id="saveStatus" class="badge bg-light text-secondary border transition-opacity" style="opacity: 0; transition: opacity 0.5s;">Saved</span>
+                            <p class="fs-6 text-muted mb-0"><span id="answeredCount">0</span>/@quiz?.QuizQuestions.Count() Answered</p>
+                        </div>
                     </div>
                     <div class="progress" role="progressbar" style="height: 8px;">
                         <div id="progressBar" class="progress-bar" style="width: 0%"></div>
@@ -80,6 +84,7 @@
                 <!-- Form -->
                 <form id="quizForm" asp-action="SubmitQuiz" asp-controller="Student" method="post">
                     <input type="hidden" name="quizId" value="@quiz?.QuizId" />
+                    <input type="hidden" name="attemptId" value="@ViewBag.AttemptId" />
 
                     @if (quiz?.QuizQuestions != null)
                     {
@@ -96,11 +101,13 @@
                                 <div>
                                     @if (question.QuestionType == "ShortAnswer")
                                     {
+                                        var existingText = existingResponses != null && existingResponses.ContainsKey(question.QuestionId) ? existingResponses[question.QuestionId] : "";
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-lg" 
                                                    name="answers[@question.QuestionId]" 
                                                    placeholder="Type your answer here..." 
-                                                   autocomplete="off">
+                                                   autocomplete="off"
+                                                   value="@existingText">
                                         </div>
                                     }
                                     else
@@ -108,14 +115,17 @@
                                         <div class="d-grid gap-3">
                                             @foreach (var option in question.QuestionOptions)
                                             {
-                                                <div class="answer-option form-check p-0">
-                                                    <input class="form-check-input visually-hidden"
-                                                           type="radio"
-                                                           name="answers[@question.QuestionId]"
-                                                           id="option-@option.OptionId"
-                                                           value="@option.OptionId">
-                                                    <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer"
-                                                           for="option-@option.OptionId">
+                                                var isChecked = existingResponses != null && existingResponses.ContainsKey(question.QuestionId) && existingResponses[question.QuestionId] == option.OptionId.ToString();
+                                                <div class="position-relative">
+                                                    <input type="radio" 
+                                                           class="btn-check" 
+                                                           name="answers[@question.QuestionId]" 
+                                                           id="option_@option.OptionId" 
+                                                           value="@option.OptionId" 
+                                                           autocomplete="off"
+                                                           @(isChecked ? "checked" : "")>
+                                                    <label class="quiz-option-label w-100" 
+                                                           for="option_@option.OptionId">
                                                         @option.OptionText
                                                     </label>
                                                 </div>
@@ -138,28 +148,7 @@
 
 @section Scripts {
     <script>
-        // Global event listener for radio button changes
-        document.addEventListener('change', function(e) {
-            if (e.target && e.target.matches('input[type="radio"]')) {
-                const radio = e.target;
-                const questionContainer = radio.closest('.d-grid');
-                
-                if (questionContainer) {
-                    // Remove selected class from all labels in this group
-                    questionContainer.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
-                    
-                    // Add selected class to the label corresponding to the checked radio
-                    const label = questionContainer.querySelector(`label[for="${radio.id}"]`);
-                    if (label) {
-                        label.classList.add('selected');
-                    }
-                }
-                
-                // Trigger progress update
-                updateProgress();
-            }
-        });
-
+        // Update progress when any input changes
         function updateProgress() {
             const form = document.getElementById('quizForm');
             const formData = new FormData(form);
@@ -184,10 +173,45 @@
             if(answeredCount) answeredCount.innerText = answered;
         }
 
+        // Auto-Save Function
+        async function saveAnswer(questionId, value) {
+            const attemptId = document.querySelector('input[name="attemptId"]').value;
+            const formData = new FormData();
+            formData.append('attemptId', attemptId);
+            formData.append('questionId', questionId);
+            formData.append('answer', value);
+
+            const statusEl = document.getElementById('saveStatus');
+            if(statusEl) {
+                statusEl.innerText = "Saving...";
+                statusEl.style.opacity = 1;
+            }
+
+            try {
+                const response = await fetch('/Student/SaveQuizProgress', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    if(statusEl) {
+                        statusEl.innerText = "Saved";
+                        setTimeout(() => { statusEl.style.opacity = 0; }, 2000);
+                    }
+                } else {
+                    if(statusEl) statusEl.innerText = "Error saving";
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                if(statusEl) statusEl.innerText = "Error saving";
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             // Quiz Configuration
             const timeLimitMinutes = @timeLimit;
             const dueDateStr = '@(dueDate?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
+            const startedAtStr = '@(ViewBag.StartedAt?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
             
             // --- Timer Logic ---
             function startTimer() {
@@ -202,11 +226,17 @@
                 }
                 
                 // Calculate end time
-                const now = new Date();
                 let endTime = new Date();
                 
                 if (timeLimitMinutes > 0) {
-                    endTime.setMinutes(endTime.getMinutes() + timeLimitMinutes);
+                    if (startedAtStr) {
+                        const startedAt = new Date(startedAtStr);
+                        // Add minutes to start time
+                        endTime = new Date(startedAt.getTime() + timeLimitMinutes * 60000);
+                    } else {
+                        // Fallback
+                        endTime.setMinutes(endTime.getMinutes() + timeLimitMinutes);
+                    }
                 } else {
                     endTime.setFullYear(endTime.getFullYear() + 100); 
                 }
@@ -226,10 +256,15 @@
                         document.getElementById('timerHours').innerText = "00";
                         document.getElementById('timerMinutes').innerText = "00";
                         document.getElementById('timerSeconds').innerText = "00";
-                        // Only submit if we actually had a limit
+                        
+                        // Only auto-submit if we actually had a limit
                         if (timeLimitMinutes > 0 || dueDateStr) {
-                            alert("Time is up! Submitting quiz...");
-                            document.getElementById('quizForm').submit();
+                            // Avoid double submission loops
+                            if (!window.hasSubmitted) {
+                                window.hasSubmitted = true;
+                                alert("Time is up! Submitting quiz...");
+                                document.getElementById('quizForm').submit();
+                            }
                         }
                         return;
                     }
@@ -261,18 +296,22 @@
             startTimer();
             updateProgress();
             
-            // Re-apply selection classes on load (for browser back button etc)
-            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
-                const label = document.querySelector(`label[for="${input.id}"]`);
-                if (label) label.classList.add('selected');
-            });
-            
-            // Input listener for text fields
-            document.getElementById('quizForm').addEventListener('input', function(e) {
-                if (e.target.type === 'text') {
-                    updateProgress();
+            // Listen for changes on the form to update progress & Auto-Save
+            document.getElementById('quizForm').addEventListener('change', function(e) {
+                updateProgress();
+                
+                // Auto-Save
+                if (e.target.name && e.target.name.startsWith('answers[')) {
+                    const match = e.target.name.match(/answers\[(\d+)\]/);
+                    if (match) {
+                        const questionId = match[1];
+                        const value = e.target.value;
+                        saveAnswer(questionId, value);
+                    }
                 }
             });
+            
+            document.getElementById('quizForm').addEventListener('input', updateProgress);
         });
     </script>
 }

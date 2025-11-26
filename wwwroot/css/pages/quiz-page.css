@@ -43,63 +43,53 @@
     border: 1px solid #e9ecef;
 }
 
-/* Option Styles */
-.answer-option label {
-    transition: all 0.2s ease;
+/* Option Styles - Standard Radio Button Implementation */
+.quiz-option-label {
+    display: block;
+    padding: 1rem;
     border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
     position: relative;
-    background-color: #ffffff;
-    padding-left: 1rem !important;
+    font-weight: 500;
 }
 
-.answer-option label:hover {
+.quiz-option-label:hover {
     background-color: #f8f9fa;
     border-color: #adb5bd;
-    transform: translateY(-1px);
 }
 
-/* Support both :checked pseudo-class and .selected class for robustness */
-.answer-option input:checked + label,
-.answer-option label.selected {
-    background-color: #0d6efd !important;
-    border-color: #0d6efd !important;
-    border-width: 3px !important;
-    color: #ffffff !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4) !important;
-    transform: translateY(-2px);
+/* Hide the actual radio input visually but keep it accessible */
+.btn-check {
+    position: absolute;
+    clip: rect(0,0,0,0);
+    pointer-events: none;
 }
 
-/* Add a checkmark indicator for selected options */
-.answer-option label.selected::before,
-.answer-option input:checked + label::before {
+/* Selected State - Pure CSS */
+.btn-check:checked + .quiz-option-label {
+    background-color: #e7f1ff;
+    border-color: #0d6efd;
+    color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Checkmark Indicator */
+.btn-check:checked + .quiz-option-label::after {
     content: "✓";
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.5rem;
     font-weight: bold;
-    color: #ffffff;
-    animation: checkmark-appear 0.3s ease;
-}
-
-@keyframes checkmark-appear {
-    0% {
-        opacity: 0;
-        transform: translateY(-50%) scale(0.5);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(-50%) scale(1);
-    }
+    font-size: 1.2rem;
 }
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
     .quiz-timer-sticky {
-        /* Keep it fixed but move to bottom or top-right compact */
         top: auto;
         bottom: 1rem;
         right: 1rem;
@@ -111,15 +101,10 @@
     }
     
     .quiz-timer-sticky .text-muted {
-        display: none; /* Hide "Time Remaining" label on small screens */
+        display: none;
     }
     
     .quiz-timer-sticky .h4 {
         font-size: 1.1rem;
     }
-}
-
-/* Make pointer feel clickable */
-.answer-option label {
-    cursor: pointer;
 }
