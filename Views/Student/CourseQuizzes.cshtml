@@ -47,11 +47,12 @@
                             <a class="nav-link fw-semibold" asp-controller="Student" asp-action="CourseContent" asp-route-id="@course?.CourseId">Content</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active fw-semibold" asp-controller="Student" asp-action="CourseQuizzes" asp-route-id="@course?.CourseId">Quizzes</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link fw-semibold" asp-controller="Student" asp-action="Assignments" asp-route-courseId="@course?.CourseId">Assignments</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link active fw-semibold" asp-controller="Student" asp-action="CourseQuizzes" asp-route-id="@course?.CourseId">Quizzes</a>
+                        </li>
+                        
                     </ul>
                 </div>
             </div>
@@ -93,7 +94,11 @@
                                                 }
                                             </p>
                                         </div>
-                                        @if (quiz.HasSubmitted)
+                                        @if (quiz.Status == "InProgress")
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-2">In Progress</span>
+                                        }
+                                        else if (quiz.Status == "Completed")
                                         {
                                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">Completed</span>
                                         }
@@ -106,7 +111,11 @@
                                     <p class="text-secondary mb-4">@quiz.Description</p>
 
                                     <div class="d-flex gap-2">
-                                        @if (quiz.HasSubmitted)
+                                        @if (quiz.Status == "InProgress")
+                                        {
+                                            <a asp-action="QuizPage" asp-controller="Student" asp-route-id="@quiz.QuizId" class="btn btn-warning text-dark fw-medium px-4">Resume Quiz</a>
+                                        }
+                                        else if (quiz.Status == "Completed")
                                         {
                                             <a asp-action="QuizResult" asp-controller="Student" asp-route-id="@quiz.LastAttemptId" class="btn btn-outline-primary fw-medium">View Results</a>
                                         }

@@ -18,6 +18,8 @@ namespace Learning_Management_System
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
 
             // Register DbContext

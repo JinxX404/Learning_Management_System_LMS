@@ -59,30 +59,6 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
-        public async Task<IActionResult> MyCourses()
-        {
-            if (!IsLoggedIn())
-                return RedirectToAction("Login", "Auth");
-
-            var userId = GetCurrentUserId() ?? 0;
-            if (userId <= 0) return RedirectToAction("Login", "Auth");
-
-            // Get enrollments with course details
-            var enrollments = await _context.CourseEnrollments
-                .AsNoTracking()
-                .Where(e => e.UserId == userId)
-                .Include(e => e.Course)
-                    .ThenInclude(c => c.Instructor)
-                .Include(e => e.Course)
-                    .ThenInclude(c => c.AcademicTerm)
-                .ToListAsync();
-
-            ViewBag.Enrollments = enrollments;
-            ViewData["Title"] = "My Courses";
-
-            return View();
-        }
-
 
 
 
@@ -418,19 +394,34 @@ namespace Learning_Management_System.Controllers
                     TimeLimitMinutes = q.TimeLimitMinutes,
                     QuestionCount = q.QuizQuestions.Count(),
                     IsDeleted = q.IsDeleted,
-                    HasSubmitted = _context.QuizAttempts
-                        .Any(a => a.UserId == userId && a.QuizId == q.QuizId),
-                    LastAttemptId = _context.QuizAttempts
+                    // Get the LATEST attempt for this user and quiz
+                    LatestAttempt = _context.QuizAttempts
                         .Where(a => a.UserId == userId && a.QuizId == q.QuizId)
                         .OrderByDescending(a => a.StartedAt)
-                        .Select(a => (int?)a.AttemptId)
+                        .Select(a => new { a.AttemptId, a.SubmittedAt })
                         .FirstOrDefault()
                 })
                 .ToListAsync();
 
-            // Filter: Show quiz if NOT deleted OR student has already submitted
-            var visibleQuizzes = quizzes
-                .Where(q => !q.IsDeleted || q.HasSubmitted)
+            // Process status in memory (easier than complex LINQ translation)
+            var quizViewModels = quizzes.Select(q => new
+            {
+                q.QuizId,
+                q.Title,
+                q.Description,
+                q.DueDate,
+                q.TimeLimitMinutes,
+                q.QuestionCount,
+                q.IsDeleted,
+                // Determine Status based on Latest Attempt
+                Status = q.LatestAttempt == null ? "Available" :
+                         q.LatestAttempt.SubmittedAt == null ? "InProgress" : "Completed",
+                LastAttemptId = q.LatestAttempt?.AttemptId
+            });
+
+            // Filter: Show quiz if NOT deleted OR student has already submitted/started
+            var visibleQuizzes = quizViewModels
+                .Where(q => !q.IsDeleted || q.Status != "Available")
                 .ToList();
 
             ViewBag.Course = course;
@@ -439,6 +430,48 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveQuizProgress(int attemptId, int questionId, string answer)
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null) return Unauthorized();
+
+            var attempt = await _context.QuizAttempts
+                .FirstOrDefaultAsync(a => a.AttemptId == attemptId && a.UserId == userId);
+
+            if (attempt == null || attempt.SubmittedAt != null)
+                return BadRequest("Invalid attempt or already submitted.");
+
+            // Find existing response or create new
+            var response = await _context.QuizResponses
+                .FirstOrDefaultAsync(r => r.AttemptId == attemptId && r.QuestionId == questionId);
+
+            if (response == null)
+            {
+                response = new QuizResponse
+                {
+                    AttemptId = attemptId,
+                    QuestionId = questionId
+                };
+                _context.QuizResponses.Add(response);
+            }
+
+            // Determine if it's an OptionID (int) or Text
+            if (int.TryParse(answer, out int optionId))
+            {
+                response.SelectedOptionId = optionId;
+                response.ResponseText = null;
+            }
+            else
+            {
+                response.SelectedOptionId = null;
+                response.ResponseText = answer;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         public async Task<IActionResult> QuizPage(int id)
         {
             if (!IsLoggedIn())
@@ -446,7 +479,7 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // جب الكويز مع الأسئلة والاختيارات
+            // Get quiz with questions and options
             var quiz = await _context.Quizzes
                 .Include(q => q.Course)
                 .Include(q => q.QuizQuestions)
@@ -456,7 +489,7 @@ namespace Learning_Management_System.Controllers
             if (quiz == null)
                 return NotFound();
 
-            // تأكد إن الطالب مسجل في الكورس
+            // Verify enrollment
             var isEnrolled = await _context.CourseEnrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == quiz.CourseId);
 
@@ -466,28 +499,65 @@ namespace Learning_Management_System.Controllers
             ViewBag.Quiz = quiz;
             ViewData["Title"] = quiz.Title;
 
-            // Validation: Check Due Date
+            // Check Due Date
             if (quiz.DueDate.HasValue && quiz.DueDate.Value < DateTime.Now)
             {
                 TempData["ErrorMessage"] = "This quiz is past its due date and can no longer be taken.";
                 return RedirectToAction("CourseQuizzes", new { id = quiz.CourseId });
             }
 
-            // Validation: Check Previous Attempts
-            var existingAttempt = await _context.QuizAttempts
-                .AnyAsync(a => a.UserId == userId && a.QuizId == id);
-            
-            if (existingAttempt)
+            // 1. Check for ACTIVE (Incomplete) attempt first
+            var activeAttempt = await _context.QuizAttempts
+                .Include(qa => qa.QuizResponses)
+                .Where(a => a.UserId == userId && a.QuizId == id && a.SubmittedAt == null)
+                .OrderByDescending(a => a.StartedAt)
+                .FirstOrDefaultAsync();
+
+            if (activeAttempt != null)
             {
-                TempData["InfoMessage"] = "You have already submitted this quiz.";
-                // Redirect to results of the last attempt if possible, or just back to list
-                var lastAttemptId = await _context.QuizAttempts
-                    .Where(a => a.UserId == userId && a.QuizId == id)
+                // RESUME active session
+                ViewBag.AttemptId = activeAttempt.AttemptId;
+                ViewBag.StartedAt = activeAttempt.StartedAt;
+                
+                // Prepare existing responses
+                var existingResponses = new Dictionary<int, string>();
+                foreach(var r in activeAttempt.QuizResponses)
+                {
+                    if (r.SelectedOptionId.HasValue)
+                        existingResponses[r.QuestionId] = r.SelectedOptionId.Value.ToString();
+                    else if (!string.IsNullOrEmpty(r.ResponseText))
+                        existingResponses[r.QuestionId] = r.ResponseText;
+                }
+                ViewBag.ExistingResponses = existingResponses;
+            }
+            else
+            {
+                // 2. Check for COMPLETED attempts
+                var completedAttempt = await _context.QuizAttempts
+                    .Where(a => a.UserId == userId && a.QuizId == id && a.SubmittedAt != null)
                     .OrderByDescending(a => a.StartedAt)
-                    .Select(a => a.AttemptId)
                     .FirstOrDefaultAsync();
 
-                return RedirectToAction("QuizResult", new { id = lastAttemptId });
+                if (completedAttempt != null)
+                {
+                    // Already taken -> Show result
+                    TempData["InfoMessage"] = "You have already submitted this quiz.";
+                    return RedirectToAction("QuizResult", new { id = completedAttempt.AttemptId });
+                }
+
+                // 3. Create NEW attempt
+                var newAttempt = new QuizAttempt
+                {
+                    UserId = userId,
+                    QuizId = id,
+                    StartedAt = DateTime.Now
+                };
+                _context.QuizAttempts.Add(newAttempt);
+                await _context.SaveChangesAsync();
+                
+                ViewBag.AttemptId = newAttempt.AttemptId;
+                ViewBag.StartedAt = newAttempt.StartedAt;
+                ViewBag.ExistingResponses = new Dictionary<int, string>();
             }
 
             return View();
@@ -562,33 +632,35 @@ namespace Learning_Management_System.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> SubmitQuiz(int quizId, Dictionary<int, string> answers)
+        public async Task<IActionResult> SubmitQuiz(int quizId, int attemptId, Dictionary<int, string> answers)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get quiz questions to determine type
+            // Get the existing attempt
+            var attempt = await _context.QuizAttempts
+                .Include(a => a.QuizResponses)
+                .FirstOrDefaultAsync(a => a.AttemptId == attemptId);
+
+            if (attempt == null || attempt.UserId != userId || attempt.QuizId != quizId)
+                return NotFound();
+
+            if (attempt.SubmittedAt != null)
+                return BadRequest("Quiz already submitted.");
+
+            // Get quiz questions to calculate score
             var quiz = await _context.Quizzes
                 .Include(q => q.QuizQuestions)
                 .FirstOrDefaultAsync(q => q.QuizId == quizId);
 
             if (quiz == null) return NotFound();
 
-            // Create new attempt
-            var attempt = new QuizAttempt
-            {
-                UserId = userId,
-                QuizId = quizId,
-                StartedAt = DateTime.Now,
-                Score = 0
-            };
+            // Clear previous responses (if any) to avoid duplicates on re-submission/update
+            _context.QuizResponses.RemoveRange(attempt.QuizResponses);
 
-            _context.QuizAttempts.Add(attempt);
-            await _context.SaveChangesAsync();
-
-            // Save responses
+            // Save new responses
             foreach (var answer in answers)
             {
                 var questionId = answer.Key;
@@ -609,7 +681,6 @@ namespace Learning_Management_System.Controllers
                 }
                 else
                 {
-                    // Expecting OptionId
                     if (int.TryParse(answerValue, out int optionId))
                     {
                         response.SelectedOptionId = optionId;
@@ -618,6 +689,9 @@ namespace Learning_Management_System.Controllers
 
                 _context.QuizResponses.Add(response);
             }
+
+            // Mark as submitted
+            attempt.SubmittedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
