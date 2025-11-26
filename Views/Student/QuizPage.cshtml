@@ -115,8 +115,7 @@
                                                            id="option-@option.OptionId"
                                                            value="@option.OptionId">
                                                     <label class="form-check-label d-block border rounded-3 p-3 cursor-pointer"
-                                                           for="option-@option.OptionId"
-                                                           onclick="selectOption(this)">
+                                                           for="option-@option.OptionId">
                                                         @option.OptionText
                                                     </label>
                                                 </div>
@@ -139,23 +138,27 @@
 
 @section Scripts {
     <script>
-        // Global function for direct onclick handling
-        function selectOption(labelElement) {
-            // Remove selected class from all labels in the same question group
-            const questionContainer = labelElement.closest('.d-grid');
-            if (questionContainer) {
-                questionContainer.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+        // Global event listener for radio button changes
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.matches('input[type="radio"]')) {
+                const radio = e.target;
+                const questionContainer = radio.closest('.d-grid');
+                
+                if (questionContainer) {
+                    // Remove selected class from all labels in this group
+                    questionContainer.querySelectorAll('label').forEach(l => l.classList.remove('selected'));
+                    
+                    // Add selected class to the label corresponding to the checked radio
+                    const label = questionContainer.querySelector(`label[for="${radio.id}"]`);
+                    if (label) {
+                        label.classList.add('selected');
+                    }
+                }
+                
+                // Trigger progress update
+                updateProgress();
             }
-
-            if (radio) {
-        radio.checked = true; // ⭐ FORCE CHECK THE RADIO
-    }
-            // Add to clicked
-            labelElement.classList.add('selected');
-            
-            // Trigger progress update slightly delayed to allow radio update
-            setTimeout(updateProgress, 50);
-        }
+        });
 
         function updateProgress() {
             const form = document.getElementById('quizForm');

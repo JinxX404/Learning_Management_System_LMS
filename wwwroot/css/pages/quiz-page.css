@@ -119,16 +119,6 @@
     }
 }
 
-
-/* Selected option visible highlight */
-.answer-option label.selected {
-    background-color: var(--bs-primary-light);
-    border-color: var(--bs-primary);
-    color: var(--bs-body-color);
-    box-shadow: 0 0 0 3px rgba(17, 115, 212, 0.25);
-    transition: 0.15s ease-in-out;
-}
-
 /* Make pointer feel clickable */
 .answer-option label {
     cursor: pointer;
