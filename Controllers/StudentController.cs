@@ -65,9 +65,11 @@ namespace Learning_Management_System.Controllers
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
+            if (userId <= 0) return RedirectToAction("Login", "Auth");
 
             // Get enrollments with course details
             var enrollments = await _context.CourseEnrollments
+                .AsNoTracking()
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Course)
                     .ThenInclude(c => c.Instructor)
@@ -131,36 +133,11 @@ namespace Learning_Management_System.Controllers
                 .ToListAsync();
 
             ViewBag.EnrolledCourses = enrollments;
-
-            // Get quizzes for enrolled courses
-            var enrolledCourseIds = enrollments.Select(e => e.CourseId).ToList();
-
-            // لو مفيش courseId محدد، نعرض كل الكويزات
-            var query = _context.Quizzes
-                .Where(q => enrolledCourseIds.Contains(q.CourseId));
-
-            // لو في courseId محدد، نعرض الكويزات بتاع الكورس ده بس
-            if (courseId.HasValue)
-            {
-                query = query.Where(q => q.CourseId == courseId.Value);
-            }
-
-            var quizzes = await query
-                .Include(q => q.Course)
-                .Select(q => new
-                {
-                    QuizId = q.QuizId,
-                    Title = q.Title,
-                    CourseTitle = q.Course.Title,
-                    CourseId = q.CourseId,
-                    DueDate = q.DueDate,
-                    HasSubmitted = _context.QuizAttempts
-                        .Any(a => a.UserId == userId && a.QuizId == q.QuizId)
-                })
-                .ToListAsync();
-
-            ViewBag.Quizzes = quizzes;
             ViewBag.SelectedCourseId = courseId;
+
+            // Future: Fetch actual assignments here
+            // For now, we return empty to separate from Quizzes
+            ViewBag.Assignments = new List<dynamic>(); 
 
             ViewData["Title"] = "Course Assignments";
 
@@ -406,6 +383,62 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
+
+        public async Task<IActionResult> CourseQuizzes(int id)
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Verify student is enrolled
+            var isEnrolled = await _context.CourseEnrollments
+                .AnyAsync(e => e.UserId == userId && e.CourseId == id);
+
+            if (!isEnrolled)
+                return RedirectToAction("MyCourses");
+
+            // Get course details for header
+            var course = await _context.Courses
+                .Include(c => c.Instructor)
+                .FirstOrDefaultAsync(c => c.CourseId == id);
+
+            if (course == null)
+                return NotFound();
+
+            // Get quizzes for this course
+            var quizzes = await _context.Quizzes
+                .Where(q => q.CourseId == id)
+                .Select(q => new
+                {
+                    QuizId = q.QuizId,
+                    Title = q.Title,
+                    Description = q.Description,
+                    DueDate = q.DueDate,
+                    TimeLimitMinutes = q.TimeLimitMinutes,
+                    QuestionCount = q.QuizQuestions.Count(),
+                    IsDeleted = q.IsDeleted,
+                    HasSubmitted = _context.QuizAttempts
+                        .Any(a => a.UserId == userId && a.QuizId == q.QuizId),
+                    LastAttemptId = _context.QuizAttempts
+                        .Where(a => a.UserId == userId && a.QuizId == q.QuizId)
+                        .OrderByDescending(a => a.StartedAt)
+                        .Select(a => (int?)a.AttemptId)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
+            // Filter: Show quiz if NOT deleted OR student has already submitted
+            var visibleQuizzes = quizzes
+                .Where(q => !q.IsDeleted || q.HasSubmitted)
+                .ToList();
+
+            ViewBag.Course = course;
+            ViewBag.Quizzes = visibleQuizzes;
+            ViewData["Title"] = $"{course.Title} - Quizzes";
+
+            return View();
+        }
         public async Task<IActionResult> QuizPage(int id)
         {
             if (!IsLoggedIn())
@@ -433,6 +466,30 @@ namespace Learning_Management_System.Controllers
             ViewBag.Quiz = quiz;
             ViewData["Title"] = quiz.Title;
 
+            // Validation: Check Due Date
+            if (quiz.DueDate.HasValue && quiz.DueDate.Value < DateTime.Now)
+            {
+                TempData["ErrorMessage"] = "This quiz is past its due date and can no longer be taken.";
+                return RedirectToAction("CourseQuizzes", new { id = quiz.CourseId });
+            }
+
+            // Validation: Check Previous Attempts
+            var existingAttempt = await _context.QuizAttempts
+                .AnyAsync(a => a.UserId == userId && a.QuizId == id);
+            
+            if (existingAttempt)
+            {
+                TempData["InfoMessage"] = "You have already submitted this quiz.";
+                // Redirect to results of the last attempt if possible, or just back to list
+                var lastAttemptId = await _context.QuizAttempts
+                    .Where(a => a.UserId == userId && a.QuizId == id)
+                    .OrderByDescending(a => a.StartedAt)
+                    .Select(a => a.AttemptId)
+                    .FirstOrDefaultAsync();
+
+                return RedirectToAction("QuizResult", new { id = lastAttemptId });
+            }
+
             return View();
         }
         public async Task<IActionResult> QuizResult(int id)
@@ -455,60 +512,116 @@ namespace Learning_Management_System.Controllers
                 return NotFound();
 
             // Calculate correct answers
-            int correctAnswers = 0;
-            int totalQuestions = quizAttempt.Quiz.QuizQuestions.Count(); // ← هنا التعديل
+            decimal totalScore = 0;
+            decimal maxScore = 0;
+            
             foreach (var question in quizAttempt.Quiz.QuizQuestions)
             {
+                maxScore += question.Points;
                 var response = quizAttempt.QuizResponses.FirstOrDefault(qr => qr.QuestionId == question.QuestionId);
-                if (response != null && response.SelectedOption?.IsCorrect == true)
+                
+                if (response != null)
                 {
-                    correctAnswers++;
+                    bool isCorrect = false;
+                    
+                    if (question.QuestionType == "ShortAnswer")
+                    {
+                        // Compare text with the correct option text
+                        var correctOption = question.QuestionOptions.FirstOrDefault(o => o.IsCorrect);
+                        if (correctOption != null && string.Equals(response.ResponseText?.Trim(), correctOption.OptionText?.Trim(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            isCorrect = true;
+                        }
+                    }
+                    else
+                    {
+                        // Check selected option
+                        if (response.SelectedOption?.IsCorrect == true)
+                        {
+                            isCorrect = true;
+                        }
+                    }
+
+                    if (isCorrect)
+                    {
+                        totalScore += question.Points;
+                    }
                 }
             }
+            
+            // Update the attempt score in DB if needed (optional, but good practice)
+            quizAttempt.Score = totalScore;
+            await _context.SaveChangesAsync();
 
             ViewBag.QuizAttempt = quizAttempt;
-            ViewBag.CorrectAnswers = correctAnswers;
-            ViewBag.TotalQuestions = totalQuestions;
-            ViewBag.Percentage = totalQuestions > 0 ? Math.Round((double)correctAnswers / totalQuestions * 100, 2) : 0;
+            ViewBag.TotalScore = totalScore;
+            ViewBag.MaxScore = maxScore;
+            ViewBag.Percentage = maxScore > 0 ? Math.Round(totalScore / maxScore * 100, 2) : 0;
             ViewData["Title"] = "Quiz Results";
 
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> SubmitQuiz(int quizId, Dictionary<int, int> answers)
+        public async Task<IActionResult> SubmitQuiz(int quizId, Dictionary<int, string> answers)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // إنشاء محاولة جديدة
+            // Get quiz questions to determine type
+            var quiz = await _context.Quizzes
+                .Include(q => q.QuizQuestions)
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+
+            if (quiz == null) return NotFound();
+
+            // Create new attempt
             var attempt = new QuizAttempt
             {
                 UserId = userId,
                 QuizId = quizId,
                 StartedAt = DateTime.Now,
-                Score= 0
+                Score = 0
             };
 
             _context.QuizAttempts.Add(attempt);
             await _context.SaveChangesAsync();
 
-            // حفظ الإجابات
+            // Save responses
             foreach (var answer in answers)
             {
+                var questionId = answer.Key;
+                var answerValue = answer.Value;
+                
+                var question = quiz.QuizQuestions.FirstOrDefault(q => q.QuestionId == questionId);
+                if (question == null) continue;
+
                 var response = new QuizResponse
                 {
                     AttemptId = attempt.AttemptId,
-                    QuestionId = answer.Key,
-                    SelectedOptionId = answer.Value
+                    QuestionId = questionId
                 };
+
+                if (question.QuestionType == "ShortAnswer")
+                {
+                    response.ResponseText = answerValue;
+                }
+                else
+                {
+                    // Expecting OptionId
+                    if (int.TryParse(answerValue, out int optionId))
+                    {
+                        response.SelectedOptionId = optionId;
+                    }
+                }
+
                 _context.QuizResponses.Add(response);
             }
 
             await _context.SaveChangesAsync();
 
-            // توجه لصفحة النتائج
+            // Redirect to results
             return RedirectToAction("QuizResult", new { id = attempt.AttemptId });
         }
         [HttpPost]

@@ -1,6 +1,7 @@
-@model Learning_Management_System.Models.Quiz
+@model Learning_Management_System.Models.ViewModels.CreateQuizViewModel
 @{
-    ViewData["Title"] = "Create Quiz";
+    var isEditing = ViewBag.IsEditing as bool? ?? false;
+    ViewData["Title"] = isEditing ? "Edit Quiz" : "Create Quiz";
     Layout = "_Layout";
     var courses = ViewBag.Courses as List<Learning_Management_System.Models.Course>;
 }
@@ -18,17 +19,21 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a></li>
                     <li class="breadcrumb-item"><a asp-controller="Instructor" asp-action="MyCourses">My Courses</a></li>
-                    <li class="breadcrumb-item active">Create Quiz</li>
+                    <li class="breadcrumb-item active">@(isEditing ? "Edit Quiz" : "Create Quiz")</li>
                 </ol>
             </nav>
-            <h1 class="h2 fw-bold">Create New Quiz</h1>
-            <p class="text-muted">Design an assessment to test student knowledge</p>
+            <h1 class="h2 fw-bold">@(isEditing ? "Edit Quiz" : "Create New Quiz")</h1>
+            <p class="text-muted">@(isEditing ? "Update the quiz details and questions" : "Design an assessment to test student knowledge")</p>
         </div>
     </div>
 
     <div class="row">
         <div class="col-lg-8">
-            <form asp-controller="Instructor" asp-action="CreateQuiz" method="post">
+            <form asp-controller="Instructor" asp-action="@(isEditing ? "EditQuiz" : "CreateQuiz")" method="post" id="createQuizForm">
+                @if (isEditing)
+                {
+                    @Html.HiddenFor(m => m.QuizId)
+                }
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-bottom">
                         <h5 class="mb-0">Quiz Information</h5>
@@ -46,11 +51,13 @@
                                     }
                                 }
                             </select>
+                            <span asp-validation-for="CourseId" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Quiz Title <span class="text-danger">*</span></label>
                             <input asp-for="Title" class="form-control" placeholder="e.g., Chapter 3 Quiz" required />
+                            <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
@@ -82,53 +89,10 @@
                     <div class="card-body">
                         <div id="questionsContainer">
                             <!-- Question template will be added here via JavaScript -->
-                            <div class="alert alert-info text-center">
+                            <div class="alert alert-info text-center" id="emptyQuestionsMsg">
                                 <span class="material-symbols-outlined fs-1">quiz</span>
                                 <p class="mb-0 mt-2">Click "Add Question" to start building your quiz</p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">Quiz Settings</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" name="shuffleQuestions" class="form-check-input" id="shuffle" />
-                                <label class="form-check-label" for="shuffle">
-                                    Shuffle questions for each student
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" name="showCorrectAnswers" class="form-check-input" id="showAnswers" />
-                                <label class="form-check-label" for="showAnswers">
-                                    Show correct answers after submission
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input type="checkbox" name="allowReview" class="form-check-input" id="allowReview" checked />
-                                <label class="form-check-label" for="allowReview">
-                                    Allow students to review their submissions
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Quiz Type</label>
-                            <select name="quizType" class="form-select">
-                                <option value="Graded">Graded Quiz</option>
-                                <option value="Practice">Practice Quiz</option>
-                                <option value="Survey">Survey</option>
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -139,7 +103,7 @@
                     </a>
                     <button type="submit" class="btn btn-primary">
                         <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">publish</span>
-                        Publish Quiz
+                        @(isEditing ? "Update Quiz" : "Publish Quiz")
                     </button>
                 </div>
             </form>
@@ -158,35 +122,15 @@
                             <p class="small text-muted mb-0">Single correct answer from options</p>
                         </li>
                         <li class="mb-2">
-                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">check_box</span>
-                            <strong>Multiple Select</strong>
-                            <p class="small text-muted mb-0">Multiple correct answers</p>
+                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">check_circle</span>
+                            <strong>True/False</strong>
+                            <p class="small text-muted mb-0">Binary choice question</p>
                         </li>
                         <li class="mb-2">
                             <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">edit</span>
                             <strong>Short Answer</strong>
                             <p class="small text-muted mb-0">Text-based response</p>
                         </li>
-                        <li>
-                            <span class="material-symbols-outlined text-primary" style="font-size: 1rem; vertical-align: middle;">check_circle</span>
-                            <strong>True/False</strong>
-                            <p class="small text-muted mb-0">Binary choice question</p>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom">
-                    <h6 class="mb-0">Tips</h6>
-                </div>
-                <div class="card-body">
-                    <ul class="small mb-0">
-                        <li class="mb-2">Write clear, unambiguous questions</li>
-                        <li class="mb-2">Avoid "trick" questions</li>
-                        <li class="mb-2">Test understanding, not memorization</li>
-                        <li class="mb-2">Provide immediate feedback when possible</li>
-                        <li>Review quiz before publishing</li>
                     </ul>
                 </div>
             </div>
@@ -196,68 +140,347 @@
 
 @section Scripts {
 <script>
-let questionCount = 0;
+    let questionCount = 0;
 
-function addQuestion() {
-    questionCount++;
-    const container = document.getElementById('questionsContainer');
-    
-    // Remove info message if this is the first question
-    if (questionCount === 1) {
-        container.innerHTML = '';
-    }
-    
-    const questionHtml = `
-        <div class="card mb-3 question-card" id="question-${questionCount}">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">Question ${questionCount}</h6>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(${questionCount})">
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">delete</span>
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label">Question Type</label>
-                    <select name="questions[${questionCount}].type" class="form-select">
-                        <option value="MultipleChoice">Multiple Choice</option>
-                        <option value="TrueFalse">True/False</option>
-                        <option value="ShortAnswer">Short Answer</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Question Text <span class="text-danger">*</span></label>
-                    <textarea name="questions[${questionCount}].text" class="form-control" rows="2" required></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Points</label>
-                    <input type="number" name="questions[${questionCount}].points" class="form-control" min="1" value="1" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Correct Answer</label>
-                    <input type="text" name="questions[${questionCount}].answer" class="form-control" placeholder="Enter the correct answer" />
-                </div>
-            </div>
-        </div>
-    `;
-    
-    container.insertAdjacentHTML('beforeend', questionHtml);
-}
+    function addQuestion() {
+        const container = document.getElementById('questionsContainer');
+        const emptyMsg = document.getElementById('emptyQuestionsMsg');
+        if (emptyMsg) emptyMsg.style.display = 'none';
 
-function removeQuestion(id) {
-    const question = document.getElementById(`question-${id}`);
-    if (question) {
-        question.remove();
-        questionCount--;
+        const qIndex = questionCount;
         
-        if (questionCount === 0) {
-            document.getElementById('questionsContainer').innerHTML = `
-                <div class="alert alert-info text-center">
-                    <span class="material-symbols-outlined fs-1">quiz</span>
-                    <p class="mb-0 mt-2">Click "Add Question" to start building your quiz</p>
+        const questionHtml = `
+            <div class="card mb-3 question-card" id="question-${qIndex}">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Question ${qIndex + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeQuestion(${qIndex})">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">delete</span>
+                    </button>
                 </div>
-            `;
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Question Type</label>
+                        <select name="Questions[${qIndex}].QuestionType" class="form-select" onchange="changeQuestionType(${qIndex}, this.value)">
+                            <option value="MultipleChoice">Multiple Choice</option>
+                            <option value="TrueFalse">True/False</option>
+                            <option value="ShortAnswer">Short Answer</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Question Text <span class="text-danger">*</span></label>
+                        <textarea name="Questions[${qIndex}].QuestionText" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Points</label>
+                        <input type="number" name="Questions[${qIndex}].Points" class="form-control" min="1" value="1" />
+                    </div>
+                    
+                    <div id="answers-container-${qIndex}" class="mb-3">
+                        <!-- Dynamic answer inputs based on type -->
+                        ${getMultipleChoiceTemplate(qIndex)}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', questionHtml);
+        questionCount++;
+    }
+
+    function removeQuestion(index) {
+        const question = document.getElementById(`question-${index}`);
+        if (question) {
+            question.remove();
+            reindexQuestions();
         }
     }
-}
+
+    function reindexQuestions() {
+        const questions = document.querySelectorAll('.question-card');
+        const emptyMsg = document.getElementById('emptyQuestionsMsg');
+        
+        if (questions.length === 0) {
+            if (emptyMsg) emptyMsg.style.display = 'block';
+            questionCount = 0;
+            return;
+        }
+
+        questions.forEach((q, index) => {
+            // Update header
+            q.querySelector('.card-header h6').textContent = `Question ${index + 1}`;
+            q.id = `question-${index}`;
+            q.querySelector('.btn-outline-danger').setAttribute('onclick', `removeQuestion(${index})`);
+
+            // Update inputs
+            updateInputNames(q, index);
+        });
+        
+        questionCount = questions.length;
+    }
+
+    function updateInputNames(element, newIndex) {
+        // Update all inputs with name starting with Questions[...]
+        const inputs = element.querySelectorAll('[name^="Questions["]');
+        inputs.forEach(input => {
+            const name = input.name;
+            const newName = name.replace(/Questions\[\d+\]/, `Questions[${newIndex}]`);
+            input.name = newName;
+            
+            // Also update onchange for select
+            if (input.tagName === 'SELECT' && input.hasAttribute('onchange')) {
+                input.setAttribute('onchange', `changeQuestionType(${newIndex}, this.value)`);
+            }
+        });
+
+        // Update container ID
+        const answerContainer = element.querySelector('[id^="answers-container-"]');
+        if (answerContainer) {
+            answerContainer.id = `answers-container-${newIndex}`;
+        }
+        
+        // Update function calls inside the container (like addOption)
+        const addOptionBtn = element.querySelector('[onclick^="addOption"]');
+        if (addOptionBtn) {
+            addOptionBtn.setAttribute('onclick', `addOption(${newIndex})`);
+        }
+        
+        const removeOptionBtns = element.querySelectorAll('[onclick^="removeOption"]');
+        removeOptionBtns.forEach(btn => {
+            // We use 'this' now, so no need to update index in onclick
+        });
+    }
+
+    function changeQuestionType(qIndex, type) {
+        const container = document.getElementById(`answers-container-${qIndex}`);
+        if (!container) return;
+
+        if (type === 'MultipleChoice') {
+            container.innerHTML = getMultipleChoiceTemplate(qIndex);
+        } else if (type === 'TrueFalse') {
+            container.innerHTML = getTrueFalseTemplate(qIndex);
+        } else if (type === 'ShortAnswer') {
+            container.innerHTML = getShortAnswerTemplate(qIndex);
+        }
+    }
+
+    function getMultipleChoiceTemplate(qIndex) {
+        return `
+            <label class="form-label">Options</label>
+            <div id="options-list-${qIndex}">
+                <div class="input-group mb-2 option-row">
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="radio" name="Questions[${qIndex}].CorrectAnswerIndex" value="0" checked aria-label="Correct answer">
+                        <input type="hidden" name="Questions[${qIndex}].Options[0].IsCorrect" value="true" class="is-correct-input">
+                    </div>
+                    <input type="text" name="Questions[${qIndex}].Options[0].OptionText" class="form-control" placeholder="Option 1" required>
+                    <button class="btn btn-outline-secondary" type="button" disabled>
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+                    </button>
+                </div>
+                <div class="input-group mb-2 option-row">
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="radio" name="Questions[${qIndex}].CorrectAnswerIndex" value="1" aria-label="Correct answer">
+                        <input type="hidden" name="Questions[${qIndex}].Options[1].IsCorrect" value="false" class="is-correct-input">
+                    </div>
+                    <input type="text" name="Questions[${qIndex}].Options[1].OptionText" class="form-control" placeholder="Option 2" required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="removeOption(this)">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addOption(${qIndex})">
+                <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
+                Add Option
+            </button>
+            <small class="d-block text-muted mt-1">Select the radio button next to the correct answer.</small>
+        `;
+    }
+
+    function getTrueFalseTemplate(qIndex) {
+        return `
+            <label class="form-label">Correct Answer</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="Questions[${qIndex}].CorrectAnswerText" id="tf-true-${qIndex}" value="True" checked>
+                <label class="form-check-label" for="tf-true-${qIndex}">True</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="Questions[${qIndex}].CorrectAnswerText" id="tf-false-${qIndex}" value="False">
+                <label class="form-check-label" for="tf-false-${qIndex}">False</label>
+            </div>
+        `;
+    }
+
+    function getShortAnswerTemplate(qIndex) {
+        return `
+            <label class="form-label">Correct Answer</label>
+            <input type="text" name="Questions[${qIndex}].CorrectAnswerText" class="form-control" placeholder="Enter the correct answer text" required>
+            <small class="text-muted">Students must type this exact text (case-insensitive).</small>
+        `;
+    }
+
+    function addOption(qIndex) {
+        const list = document.getElementById(`options-list-${qIndex}`);
+        const optionCount = list.querySelectorAll('.option-row').length;
+        
+        const optionHtml = `
+            <div class="input-group mb-2 option-row">
+                <div class="input-group-text">
+                    <input class="form-check-input mt-0" type="radio" name="Questions[${qIndex}].CorrectAnswerIndex" value="${optionCount}" aria-label="Correct answer">
+                    <input type="hidden" name="Questions[${qIndex}].Options[${optionCount}].IsCorrect" value="false" class="is-correct-input">
+                </div>
+                <input type="text" name="Questions[${qIndex}].Options[${optionCount}].OptionText" class="form-control" placeholder="Option ${optionCount + 1}" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="removeOption(this)">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+                </button>
+            </div>
+        `;
+        
+        list.insertAdjacentHTML('beforeend', optionHtml);
+    }
+
+    function removeOption(btn) {
+        const row = btn.closest('.option-row');
+        const list = row.parentElement;
+        if (list.querySelectorAll('.option-row').length <= 2) {
+            alert("Minimum 2 options required.");
+            return;
+        }
+        row.remove();
+        reindexOptions(list);
+    }
+    
+    function reindexOptions(list) {
+        const qIndex = list.id.split('-')[2]; // options-list-{qIndex}
+        const rows = list.querySelectorAll('.option-row');
+        
+        rows.forEach((row, index) => {
+            // Update radio value
+            const radio = row.querySelector('input[type="radio"]');
+            radio.value = index;
+            
+            // Update hidden input name
+            const hidden = row.querySelector('.is-correct-input');
+            hidden.name = `Questions[${qIndex}].Options[${index}].IsCorrect`;
+            
+            // Update text input name
+            const text = row.querySelector('input[type="text"]');
+            text.name = `Questions[${qIndex}].Options[${index}].OptionText`;
+            text.placeholder = `Option ${index + 1}`;
+        });
+    }
+
+    // Form submission handler to set IsCorrect based on radio selection
+    document.getElementById('createQuizForm').addEventListener('submit', function(e) {
+        // For each question
+        const questions = document.querySelectorAll('.question-card');
+        questions.forEach((q, qIndex) => {
+            const typeSelect = q.querySelector('select[name$=".QuestionType"]');
+            if (typeSelect && typeSelect.value === 'MultipleChoice') {
+                // Find selected radio
+                const radios = q.querySelectorAll('input[type="radio"][name$=".CorrectAnswerIndex"]');
+                let selectedIndex = 0;
+                radios.forEach(r => {
+                    if (r.checked) selectedIndex = parseInt(r.value);
+                });
+                
+                // Set IsCorrect hidden inputs
+                const hiddenInputs = q.querySelectorAll('.is-correct-input');
+                hiddenInputs.forEach((input, index) => {
+                    input.value = (index === selectedIndex) ? 'true' : 'false';
+                });
+            }
+        });
+    });
+
+    // Populate existing questions when editing
+    @if (isEditing && Model.Questions != null && Model.Questions.Any())
+    {
+        <text>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add existing questions
+            @foreach (var question in Model.Questions)
+            {
+                var qIdx = Model.Questions.IndexOf(question);
+                <text>
+                addQuestion();
+                
+                // Set question data
+                const qCard = document.getElementById('question-@qIdx');
+                if (qCard) {
+                    // Set question type
+                    qCard.querySelector('select[name$=".QuestionType"]').value = '@question.QuestionType';
+                    // Set question text
+                    qCard.querySelector('textarea[name$=".QuestionText"]').value = '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(question.QuestionText).Trim('"'))';
+                    // Set points
+                    qCard.querySelector('input[name$=".Points"]').value = '@question.Points';
+                    // Set QuestionId hidden field
+                    const questionIdInput = document.createElement('input');
+                    questionIdInput.type = 'hidden';
+                    questionIdInput.name = 'Questions[@qIdx].QuestionId';
+                    questionIdInput.value = '@question.QuestionId';
+                    qCard.appendChild(questionIdInput);
+                    
+                    // Change question type to populate correct template
+                    changeQuestionType(@qIdx, '@question.QuestionType');
+                    
+                    @if (question.QuestionType == "MultipleChoice" && question.Options != null)
+                    {
+                        <text>
+                        setTimeout(() => {
+                            const optionsList = document.getElementById('options-list-@qIdx');
+                            if (optionsList) {
+                                optionsList.innerHTML = ''; // Clear default options
+                                @foreach (var option in question.Options)
+                                {
+                                    var optIdx = question.Options.IndexOf(option);
+                                    <text>
+                                    const optionHtml = `
+                                        <div class="input-group mb-2 option-row">
+                                            <div class="input-group-text">
+                                                <input class="form-check-input mt-0" type="radio" name="Questions[@qIdx].CorrectAnswerIndex" value="@optIdx" @(option.IsCorrect ? "checked" : "") aria-label="Correct answer">
+                                                <input type="hidden" name="Questions[@qIdx].Options[@optIdx].IsCorrect" value="@(option.IsCorrect ? "true" : "false")" class="is-correct-input">
+                                                <input type="hidden" name="Questions[@qIdx].Options[@optIdx].OptionId" value="@option.OptionId">
+                                            </div>
+                                            <input type="text" name="Questions[@qIdx].Options[@optIdx].OptionText" class="form-control" placeholder="Option @(optIdx + 1)" value="@Html.Raw(System.Text.Json.JsonSerializer.Serialize(option.OptionText).Trim('"'))" required>
+                                            <button class="btn btn-outline-secondary" type="button" onclick="removeOption(this)" @(optIdx < 2 ? "disabled" : "")>
+                                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">close</span>
+                                            </button>
+                                        </div>`;
+                                    optionsList.insertAdjacentHTML('beforeend', optionHtml);
+                                    </text>
+                                }
+                            }
+                        }, 100);
+                        </text>
+                    }
+                    else if (question.QuestionType == "TrueFalse")
+                    {
+                        <text>
+                        setTimeout(() => {
+                            const correctAnswer = '@question.CorrectAnswerText';
+                            if (correctAnswer) {
+                                document.getElementById('tf-true-@qIdx')?.setAttribute('checked', correctAnswer.toLowerCase() === 'true');
+                                document.getElementById('tf-false-@qIdx')?.setAttribute('checked', correctAnswer.toLowerCase() === 'false');
+                            }
+                        }, 100);
+                        </text>
+                    }
+                    else if (question.QuestionType == "ShortAnswer")
+                    {
+                        <text>
+                        setTimeout(() => {
+                            const input = qCard.querySelector('input[name$=".CorrectAnswerText"]');
+                            if (input) {
+                                input.value = '@Html.Raw(System.Text.Json.JsonSerializer.Serialize(question.CorrectAnswerText ?? "").Trim('"'))';
+                            }
+                        }, 100);
+                        </text>
+                    }
+                }
+                </text>
+            }
+        });
+        </text>
+    }
 </script>
 }

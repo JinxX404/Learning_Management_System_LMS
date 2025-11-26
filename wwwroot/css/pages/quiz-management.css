@@ -1,0 +1,67 @@
+/* Quiz Management Styles */
+
+/* Quiz Cards */
+.quiz-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.quiz-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.quiz-card .card-title {
+    color: #212529;
+    min-height: 3rem;
+}
+
+.quiz-meta .small {
+    color: #6c757d;
+}
+
+/* Quiz Details */
+.stat-card {
+    transition: background-color 0.2s ease;
+}
+
+.stat-card:hover {
+    background-color: #e7f1ff !important;
+}
+
+/* Question Cards */
+.list-group-item-success {
+    background-color: #d1e7dd;
+    border-color: #badbcc;
+}
+
+.question-type .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Options List */
+.options-list .list-group-item {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.options-list .list-group-item.list-group-item-success {
+    border-left-color: #198754;
+}
+
+.options-list .bi-check-circle-fill {
+    font-size: 1.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quiz-card .card-title {
+        font-size: 1rem;
+        min-height: auto;
+    }
+    
+    .stat-card h4 {
+        font-size: 1.5rem;
+    }
+}

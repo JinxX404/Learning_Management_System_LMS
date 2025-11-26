@@ -1,0 +1,135 @@
+@using Learning_Management_System.Models
+@{
+    ViewData["Title"] = $"{ViewBag.Course?.Title} - Quizzes";
+    Layout = "_Layout";
+    var course = ViewBag.Course as Course;
+    var quizzes = ViewBag.Quizzes as IEnumerable<dynamic>;
+    var instructorName = course?.Instructor != null ? $"{course.Instructor.FirstName} {course.Instructor.LastName}" : "Instructor unavailable";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/course-details.css">
+}
+
+<header class="sticky-top border-bottom header-sticky">
+    <div class="d-flex align-items-center px-4" style="height: 4rem;">
+        <div class="d-flex align-items-center gap-2">
+            <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3" style="width: 2rem; height: 2rem;">
+                <svg class="brand-icon" style="width: 1.25rem; height: 1.25rem;" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                </svg>
+            </div>
+            <h1 class="brand-name font-display fs-5 fw-bold text-primary m-0">LMS Student</h1>
+        </div>
+        <!-- Navbar content same as other pages -->
+    </div>
+</header>
+
+<main class="container-lg my-4 my-md-5">
+    <div class="mx-auto" style="max-width: 56rem;">
+        <div class="course-header position-relative rounded-4 overflow-hidden shadow-sm mb-4">
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient" style="--bs-gradient: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.1));"></div>
+            <div class="position-relative text-white p-4 p-md-5 d-flex flex-column justify-content-end hero-bg-image">
+                <h1 class="course-title display-5 fw-bold">@course?.Title</h1>
+                <p class="course-instructor fs-5 mt-1" style="color: rgba(255,255,255,0.9)">with @instructorName</p>
+            </div>
+        </div>
+
+        <div class="rounded-4 shadow-sm">
+            <div class="border-bottom">
+                <div class="d-flex align-items-center px-3">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" asp-controller="Student" asp-action="CourseDetails" asp-route-id="@course?.CourseId">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" asp-controller="Student" asp-action="CourseContent" asp-route-id="@course?.CourseId">Content</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active fw-semibold" asp-controller="Student" asp-action="CourseQuizzes" asp-route-id="@course?.CourseId">Quizzes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold" asp-controller="Student" asp-action="Assignments" asp-route-courseId="@course?.CourseId">Assignments</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="p-4 p-md-5">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["InfoMessage"] != null)
+                {
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i> @TempData["InfoMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <h2 class="section-title fs-2 fw-bold mb-4">Quizzes</h2>
+
+                @if (quizzes != null && quizzes.Any())
+                {
+                    <div class="d-grid gap-4">
+                        @foreach (var quiz in quizzes)
+                        {
+                            <div class="card shadow-sm border rounded-3 overflow-hidden">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h3 class="h5 fw-bold mb-1">@quiz.Title</h3>
+                                            <p class="text-secondary small mb-0">
+                                                Due: @(quiz.DueDate != null ? quiz.DueDate.ToString("MMM dd, yyyy h:mm tt") : "No due date")
+                                                @if (quiz.TimeLimitMinutes != null)
+                                                {
+                                                    <span class="mx-2">•</span>
+                                                    <span>@quiz.TimeLimitMinutes mins</span>
+                                                }
+                                            </p>
+                                        </div>
+                                        @if (quiz.HasSubmitted)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">Completed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">Available</span>
+                                        }
+                                    </div>
+                                    
+                                    <p class="text-secondary mb-4">@quiz.Description</p>
+
+                                    <div class="d-flex gap-2">
+                                        @if (quiz.HasSubmitted)
+                                        {
+                                            <a asp-action="QuizResult" asp-controller="Student" asp-route-id="@quiz.LastAttemptId" class="btn btn-outline-primary fw-medium">View Results</a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-action="QuizPage" asp-controller="Student" asp-route-id="@quiz.QuizId" class="btn btn-primary fw-medium px-4">Take Quiz</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <div class="bg-body-tertiary rounded-circle d-inline-flex p-3 mb-3">
+                            <span class="material-symbols-outlined fs-1 text-secondary">quiz</span>
+                        </div>
+                        <p class="text-secondary fs-5">No quizzes available for this course yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</main>

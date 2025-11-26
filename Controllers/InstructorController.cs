@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Learning_Management_System.Controllers
 {
+    using Learning_Management_System.Models.ViewModels;
+
     public class InstructorController : Controller
     {
         private readonly LmsContext _context;
@@ -43,10 +45,17 @@ namespace Learning_Management_System.Controllers
                 .Where(c => c.InstructorId == userId)
                 .CountAsync();
 
+            // Count quizzes (non-deleted)
+            var quizzesCount = await _context.Quizzes
+                .Include(q => q.Course)
+                .Where(q => q.Course.InstructorId == userId && !q.IsDeleted)
+                .CountAsync();
+
             // Count pending grades (simplified)
             var pendingGradesCount = 0;
 
             ViewBag.CoursesCount = coursesCount;
+            ViewBag.QuizzesCount = quizzesCount;
             ViewBag.PendingGradesCount = pendingGradesCount;
             ViewData["Title"] = "Instructor Dashboard";
 
@@ -582,6 +591,10 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/CreateQuiz
+        // FUTURE: To integrate AI-powered quiz generation:
+        // 1. Create a new action, e.g., GenerateQuizFromAI(int courseId, string topic)
+        // 2. Call your AI service to generate a CreateQuizViewModel
+        // 3. Return View("CreateQuiz", generatedViewModel) to pre-fill this form.
         public async Task<IActionResult> CreateQuiz(int? courseId)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -597,9 +610,10 @@ namespace Learning_Management_System.Controllers
         }
 
         // POST: Instructor/CreateQuiz
+        // POST: Instructor/CreateQuiz
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateQuiz(Quiz quiz)
+        public async Task<IActionResult> CreateQuiz(CreateQuizViewModel model)
         {
             if (!IsLoggedIn() || !await IsInstructor())
                 return RedirectToAction("Login", "Auth");
@@ -608,14 +622,92 @@ namespace Learning_Management_System.Controllers
             {
                 var userId = GetCurrentUserId() ?? 0;
                 ViewBag.Courses = await _context.Courses.Where(c => c.InstructorId == userId).ToListAsync();
-                return View(quiz);
+                return View(model);
             }
 
-            _context.Quizzes.Add(quiz);
-            await _context.SaveChangesAsync();
+            try 
+            {
+                // Map ViewModel to Entity
+                var quiz = new Quiz
+                {
+                    CourseId = model.CourseId,
+                    Title = model.Title,
+                    Description = model.Description,
+                    DueDate = model.DueDate,
+                    TimeLimitMinutes = model.TimeLimitMinutes
+                };
 
-            TempData["Success"] = "Quiz created successfully.";
-            return RedirectToAction("MyCourses");
+                _context.Quizzes.Add(quiz);
+                await _context.SaveChangesAsync(); // Save to get QuizId
+
+                foreach (var qVm in model.Questions)
+                {
+                    var question = new QuizQuestion
+                    {
+                        QuizId = quiz.QuizId,
+                        QuestionText = qVm.QuestionText,
+                        QuestionType = qVm.QuestionType,
+                        Points = qVm.Points
+                    };
+
+                    _context.QuizQuestions.Add(question);
+                    await _context.SaveChangesAsync(); // Save to get QuestionId
+
+                    var options = new List<QuestionOption>();
+
+                    if (qVm.QuestionType == "MultipleChoice")
+                    {
+                        foreach (var optVm in qVm.Options)
+                        {
+                            if (!string.IsNullOrWhiteSpace(optVm.OptionText))
+                            {
+                                options.Add(new QuestionOption
+                                {
+                                    QuestionId = question.QuestionId,
+                                    OptionText = optVm.OptionText,
+                                    IsCorrect = optVm.IsCorrect
+                                });
+                            }
+                        }
+                    }
+                    else if (qVm.QuestionType == "TrueFalse")
+                    {
+                        bool isTrueCorrect = qVm.CorrectAnswerText?.ToLower() == "true";
+                        options.Add(new QuestionOption { QuestionId = question.QuestionId, OptionText = "True", IsCorrect = isTrueCorrect });
+                        options.Add(new QuestionOption { QuestionId = question.QuestionId, OptionText = "False", IsCorrect = !isTrueCorrect });
+                    }
+                    else if (qVm.QuestionType == "ShortAnswer")
+                    {
+                        // Save the correct answer as an option for reference/grading
+                        if (!string.IsNullOrWhiteSpace(qVm.CorrectAnswerText))
+                        {
+                            options.Add(new QuestionOption
+                            {
+                                QuestionId = question.QuestionId,
+                                OptionText = qVm.CorrectAnswerText,
+                                IsCorrect = true
+                            });
+                        }
+                    }
+
+                    if (options.Any())
+                    {
+                        _context.QuestionOptions.AddRange(options);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = $"Quiz '{quiz.Title}' created successfully!";
+                return RedirectToAction("MyQuizzes");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error creating quiz: " + ex.Message);
+                var userId = GetCurrentUserId() ?? 0;
+                ViewBag.Courses = await _context.Courses.Where(c => c.InstructorId == userId).ToListAsync();
+                return View(model);
+            }
         }
 
         // GET: Instructor/UploadMaterials
@@ -747,6 +839,295 @@ namespace Learning_Management_System.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
+        }
+
+        // =======================================================================
+        // QUIZ MANAGEMENT CRUD
+        // =======================================================================
+
+        // GET: Instructor/MyQuizzes - List all quizzes
+        public async Task<IActionResult> MyQuizzes()
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Get all quizzes for instructor's courses (excluding deleted)
+            var quizzes = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.QuizQuestions)
+                .Include(q => q.QuizAttempts)
+                .Where(q => q.Course.InstructorId == userId && !q.IsDeleted)
+                .OrderByDescending(q => q.QuizId)
+                .ToListAsync();
+
+            ViewData["Title"] = "My Quizzes";
+            return View(quizzes);
+        }
+
+        // GET: Instructor/QuizDetails/5 - View quiz details with statistics
+        public async Task<IActionResult> QuizDetails(int id)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Get quiz with all related data
+            var quiz = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuestionOptions)
+                .Include(q => q.QuizAttempts)
+                    .ThenInclude(qa => qa.User)
+                .FirstOrDefaultAsync(q => q.QuizId == id && q.Course.InstructorId == userId && !q.IsDeleted);
+
+            if (quiz == null)
+                return NotFound();
+
+            // Calculate statistics
+            var attempts = quiz.QuizAttempts.ToList();
+            ViewBag.TotalAttempts = attempts.Count;
+            ViewBag.AverageScore = attempts.Any() ? attempts.Average(a => a.Score ?? 0) : 0;
+            ViewBag.CompletionRate = attempts.Any() ? 
+                attempts.Count(a => a.SubmittedAt.HasValue) * 100.0 / attempts.Count : 0;
+
+            ViewData["Title"] = $"Quiz Details - {quiz.Title}";
+            return View(quiz);
+        }
+
+        // GET: Instructor/EditQuiz/5 - Show edit form
+        public async Task<IActionResult> EditQuiz(int id)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            // Get quiz with all questions and options
+            var quiz = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuestionOptions)
+                .FirstOrDefaultAsync(q => q.QuizId == id && q.Course.InstructorId == userId && !q.IsDeleted);
+
+            if (quiz == null)
+                return NotFound();
+
+            // Map to CreateQuizViewModel for editing
+            var model = new CreateQuizViewModel
+            {
+                QuizId = quiz.QuizId,
+                CourseId = quiz.CourseId,
+                Title = quiz.Title,
+                Description = quiz.Description ?? "",
+                DueDate = quiz.DueDate,
+                TimeLimitMinutes = quiz.TimeLimitMinutes ?? 0,
+                Questions = quiz.QuizQuestions.Select(q => new QuestionViewModel
+                {
+                    QuestionId = q.QuestionId,
+                    QuestionText = q.QuestionText,
+                    QuestionType = q.QuestionType,
+                    Points = q.Points,
+                    CorrectAnswerText = q.QuestionOptions.FirstOrDefault(o => o.IsCorrect)?.OptionText ?? "",
+                    Options = q.QuestionOptions.Select(o => new OptionViewModel
+                    {
+                        OptionId = o.OptionId,
+                        OptionText = o.OptionText,
+                        IsCorrect = o.IsCorrect
+                    }).ToList()
+                }).ToList()
+            };
+
+            // Get instructor's courses for dropdown
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .ToListAsync();
+            ViewBag.Courses = courses;
+            ViewBag.IsEditing = true;
+
+            ViewData["Title"] = $"Edit Quiz - {quiz.Title}";
+            return View("CreateQuiz", model);
+        }
+
+        // POST: Instructor/EditQuiz - Update quiz
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditQuiz(CreateQuizViewModel model)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Courses = await _context.Courses.Where(c => c.InstructorId == userId).ToListAsync();
+                ViewBag.IsEditing = true;
+                return View("CreateQuiz", model);
+            }
+
+            try
+            {
+                // Get existing quiz and verify ownership
+                var quiz = await _context.Quizzes
+                    .Include(q => q.Course)
+                    .Include(q => q.QuizQuestions)
+                        .ThenInclude(qq => qq.QuestionOptions)
+                    .FirstOrDefaultAsync(q => q.QuizId == model.QuizId && q.Course.InstructorId == userId);
+
+                if (quiz == null)
+                    return NotFound();
+
+                // Update quiz metadata
+                quiz.Title = model.Title;
+                quiz.Description = model.Description;
+                quiz.DueDate = model.DueDate;
+                quiz.TimeLimitMinutes = model.TimeLimitMinutes;
+                quiz.CourseId = model.CourseId;
+
+                // Remove questions that are no longer in the model
+                var existingQuestionIds = quiz.QuizQuestions.Select(q => q.QuestionId).ToList();
+                var modelQuestionIds = model.Questions.Where(q => q.QuestionId > 0).Select(q => q.QuestionId).ToList();
+                var questionsToRemove = quiz.QuizQuestions.Where(q => !modelQuestionIds.Contains(q.QuestionId)).ToList();
+                
+                foreach (var questionToRemove in questionsToRemove)
+                {
+                    _context.QuestionOptions.RemoveRange(questionToRemove.QuestionOptions);
+                    _context.QuizQuestions.Remove(questionToRemove);
+                }
+
+                // Update existing questions and add new ones
+                foreach (var qVm in model.Questions)
+                {
+                    QuizQuestion question;
+                    
+                    if (qVm.QuestionId > 0)
+                    {
+                        // Update existing question
+                        question = quiz.QuizQuestions.FirstOrDefault(q => q.QuestionId == qVm.QuestionId);
+                        if (question != null)
+                        {
+                            question.QuestionText = qVm.QuestionText;
+                            question.QuestionType = qVm.QuestionType;
+                            question.Points = qVm.Points;
+
+                            // Remove old options
+                            _context.QuestionOptions.RemoveRange(question.QuestionOptions);
+                        }
+                        else
+                        {
+                            continue; // Question not found, skip
+                        }
+                    }
+                    else
+                    {
+                        // Add new question
+                        question = new QuizQuestion
+                        {
+                            QuizId = quiz.QuizId,
+                            QuestionText = qVm.QuestionText,
+                            QuestionType = qVm.QuestionType,
+                            Points = qVm.Points
+                        };
+                        _context.QuizQuestions.Add(question);
+                        await _context.SaveChangesAsync(); // Save to get QuestionId
+                    }
+
+                    // Add options for this question
+                    var options = new List<QuestionOption>();
+
+                    if (qVm.QuestionType == "MultipleChoice")
+                    {
+                        foreach (var optVm in qVm.Options)
+                        {
+                            if (!string.IsNullOrWhiteSpace(optVm.OptionText))
+                            {
+                                options.Add(new QuestionOption
+                                {
+                                    QuestionId = question.QuestionId,
+                                    OptionText = optVm.OptionText,
+                                    IsCorrect = optVm.IsCorrect
+                                });
+                            }
+                        }
+                    }
+                    else if (qVm.QuestionType == "TrueFalse")
+                    {
+                        bool isTrueCorrect = qVm.CorrectAnswerText?.ToLower() == "true";
+                        options.Add(new QuestionOption { QuestionId = question.QuestionId, OptionText = "True", IsCorrect = isTrueCorrect });
+                        options.Add(new QuestionOption { QuestionId = question.QuestionId, OptionText = "False", IsCorrect = !isTrueCorrect });
+                    }
+                    else if (qVm.QuestionType == "ShortAnswer")
+                    {
+                        if (!string.IsNullOrWhiteSpace(qVm.CorrectAnswerText))
+                        {
+                            options.Add(new QuestionOption
+                            {
+                                QuestionId = question.QuestionId,
+                                OptionText = qVm.CorrectAnswerText,
+                                IsCorrect = true
+                            });
+                        }
+                    }
+
+                    if (options.Any())
+                    {
+                        _context.QuestionOptions.AddRange(options);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Quiz updated successfully.";
+                return RedirectToAction("MyQuizzes");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error updating quiz: " + ex.Message);
+                ViewBag.Courses = await _context.Courses.Where(c => c.InstructorId == userId).ToListAsync();
+                ViewBag.IsEditing = true;
+                return View("CreateQuiz", model);
+            }
+        }
+
+        // POST: Instructor/DeleteQuiz/5 - Soft delete quiz
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteQuiz(int id)
+        {
+            try
+            {
+                if (!IsLoggedIn() || !await IsInstructor())
+                    return Json(new { success = false, message = "Not authorized" });
+
+                var userId = GetCurrentUserId() ?? 0;
+
+                // Get quiz and verify ownership
+                var quiz = await _context.Quizzes
+                    .Include(q => q.Course)
+                    .Include(q => q.QuizAttempts)
+                    .FirstOrDefaultAsync(q => q.QuizId == id && q.Course.InstructorId == userId);
+
+                if (quiz == null)
+                    return Json(new { success = false, message = "Quiz not found" });
+
+                // Soft delete
+                quiz.IsDeleted = true;
+                await _context.SaveChangesAsync();
+
+                var attemptCount = quiz.QuizAttempts.Count;
+                var message = attemptCount > 0 
+                    ? $"Quiz deleted successfully. {attemptCount} student attempt(s) preserved."
+                    : "Quiz deleted successfully.";
+
+                return Json(new { success = true, message = message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
         }
     }
 }

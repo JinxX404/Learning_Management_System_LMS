@@ -17,6 +17,8 @@ public partial class Quiz
 
     public int? TimeLimitMinutes { get; set; }
 
+    public bool IsDeleted { get; set; } = false;
+
     public virtual Course Course { get; set; } = null!;
 
     public virtual ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
