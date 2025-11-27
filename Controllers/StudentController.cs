@@ -26,36 +26,52 @@ namespace Learning_Management_System.Controllers
 
         public async Task<IActionResult> Dashboard()
         {
-            if (!IsLoggedIn())
-                return RedirectToAction("Login", "Auth");
+            var studentId = GetCurrentUserId();
+            if (studentId == null) return RedirectToAction("Login", "Auth");
 
-            var userId = GetCurrentUserId() ?? 0;
+            var student = await _context.Users
+                .Include(s => s.CourseEnrollments)
+                    .ThenInclude(e => e.Course)
+                        .ThenInclude(c => c.Instructor)
+                .FirstOrDefaultAsync(s => s.UserId == studentId);
+
+            if (student == null) return RedirectToAction("Login", "Auth");
+
+            // Fetch grades for GPA and Credits calculation
+            var grades = await _context.Grades
+                .Where(g => g.UserId == studentId)
+                .ToListAsync();
+
+            // Calculate GPA
+            ViewBag.GPA = CalculateGpa(grades);
+            
+            // Calculate Total Credits
+            ViewBag.TotalCredits = CalculateTotalCredits(grades);
+
+            // Get recent activities (last 5 enrollments for now)
+            var recentCourses = student.CourseEnrollments
+                .OrderByDescending(e => e.EnrolledAt)
+                .Take(5)
+                .Select(e => e.Course)
+                .ToList();
+
+            ViewData["StudentActive"] = "dashboard";
+            return View(recentCourses);
+        }
+
+        public async Task<IActionResult> MyCourses()
+        {
+            var studentId = GetCurrentUserId();
+            if (studentId == null) return RedirectToAction("Login", "Auth");
 
             var enrollments = await _context.CourseEnrollments
-                .Where(e => e.UserId == userId)
                 .Include(e => e.Course)
                     .ThenInclude(c => c.Instructor)
+                .Where(e => e.UserId == studentId)
                 .ToListAsync();
 
-            var enrollmentCount = enrollments.Count;
-
-            var grades = await _context.Grades
-                .Where(g => g.UserId == userId)
-                .ToListAsync();
-
-            var recentNotifications = await _context.Notifications
-                .Where(n => n.UserId == userId)
-                .OrderByDescending(n => n.CreatedAt)
-                .Take(3)
-                .ToListAsync();
-
-            ViewBag.EnrollmentCount = enrollmentCount;
-            ViewBag.AssignmentCount = grades.Count;
-            ViewBag.Gpa = CalculateGpa(grades);
             ViewBag.Enrollments = enrollments;
-            ViewBag.RecentNotifications = recentNotifications;
-            ViewData["Title"] = "Student Dashboard";
-
+            ViewData["StudentActive"] = "courses";
             return View();
         }
 
@@ -171,7 +187,6 @@ namespace Learning_Management_System.Controllers
 
             // Get notifications for this user
             var notifications = await _context.Notifications
-                .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
@@ -698,78 +713,7 @@ namespace Learning_Management_System.Controllers
             // Redirect to results
             return RedirectToAction("QuizResult", new { id = attempt.AttemptId });
         }
-        [HttpPost]
-        // public async Task<IActionResult> SubmitAssignment(int gradeId, string? submissionText, IFormFile? file)
-        // {
-        //     if (!IsLoggedIn())
-        //         return RedirectToAction("Login", "Auth");
-
-        //     var userId = GetCurrentUserId() ?? 0;
-
-        //     // تأكد إن الطالب مسموح له ي-submit
-        //     var grade = await _context.Grades
-        //         .Include(g => g.GradeBook)
-        //             .ThenInclude(gb => gb.Course)
-        //         .FirstOrDefaultAsync(g => g.GradeId == gradeId);
-
-        //     if (grade == null || grade.UserId != userId)
-        //         return NotFound();
-
-        //     // احفظ الملف لو موجود
-        //     string? filePath = null;
-        //     if (file != null && file.Length > 0)
-        //     {
-        //         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "assignments");
-        //         Directory.CreateDirectory(uploadsFolder);
-        //         var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-        //         var fullPath = Path.Combine(uploadsFolder, fileName);
-        //         using (var stream = new FileStream(fullPath, FileMode.Create))
-        //         {
-        //             await file.CopyToAsync(stream);
-        //         }
-        //         filePath = $"/uploads/assignments/{fileName}";
-        //     }
-
-        //     // أنشئ Submission جديد
-        //     var submission = new AssignmentSubmission
-        //     {
-        //         GradeId = gradeId,
-        //         UserId = userId,
-        //         SubmissionText = submissionText,
-        //         FilePath = filePath
-        //     };
-
-        //     _context.AssignmentSubmissions.Add(submission);
-        //     await _context.SaveChangesAsync();
-
-        //     return RedirectToAction("AssignmentSubmission", new { id = gradeId });
-        // }
-        // public async Task<IActionResult> AssignmentSubmission(int id)
-        // {
-        //     if (!IsLoggedIn())
-        //         return RedirectToAction("Login", "Auth");
-
-        //     var userId = GetCurrentUserId() ?? 0;
-
-        //     var assignment = await _context.Grades
-        //         .Include(g => g.GradeBook)
-        //             .ThenInclude(gb => gb.Course)
-        //         .FirstOrDefaultAsync(g => g.GradeId == id && g.UserId == userId);
-
-        //     if (assignment == null)
-        //         return NotFound();
-
-        //     var submissionHistory = await _context.AssignmentSubmissions
-        //         .Where(s => s.GradeId == id && s.UserId == userId)
-        //         .OrderByDescending(s => s.SubmittedAt)
-        //         .ToListAsync();
-
-        //     ViewBag.Assignment = assignment;
-        //     ViewBag.SubmissionHistory = submissionHistory;
-        //     ViewBag.LastSubmissionText = submissionHistory.FirstOrDefault()?.SubmissionText;
-
-        //     return View();
-        // }
+    
         [HttpPost]
         public async Task<IActionResult> ChangePassword(
     string firstName,

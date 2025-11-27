@@ -11,5 +11,5 @@ obj/
 *.pubxml
 *.publishproj
 
-*.md
-*.txt
+# *.md
+# *.txt
