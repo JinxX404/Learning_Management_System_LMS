@@ -841,10 +841,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
         }
 
-        // =======================================================================
-        // QUIZ MANAGEMENT CRUD
-        // =======================================================================
-
+        
         // GET: Instructor/MyQuizzes - List all quizzes
         public async Task<IActionResult> MyQuizzes()
         {
@@ -1131,4 +1128,4 @@ namespace Learning_Management_System.Controllers
         }
     }
 }
-//instractor/AddLearningAsset
+
