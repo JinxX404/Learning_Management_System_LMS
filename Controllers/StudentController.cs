@@ -48,15 +48,25 @@ namespace Learning_Management_System.Controllers
             // Calculate Total Credits
             ViewBag.TotalCredits = CalculateTotalCredits(grades);
 
-            // Get recent activities (last 5 enrollments for now)
-            var recentCourses = student.CourseEnrollments
-                .OrderByDescending(e => e.EnrolledAt)
+            // Populate ViewBag for View
+            ViewBag.Enrollments = student.CourseEnrollments;
+            ViewBag.EnrollmentCount = student.CourseEnrollments.Count;
+            
+            // Fetch Notifications
+            var notifications = await _context.Notifications
+                .Where(n => n.UserId == studentId)
+                .OrderByDescending(n => n.CreatedAt)
                 .Take(5)
-                .Select(e => e.Course)
-                .ToList();
+                .ToListAsync();
+            ViewBag.RecentNotifications = notifications;
+
+            // Count Completed Assignments/Quizzes
+            var assignmentCount = await _context.QuizAttempts
+                .CountAsync(qa => qa.UserId == studentId && qa.SubmittedAt != null);
+            ViewBag.AssignmentCount = assignmentCount;
 
             ViewData["StudentActive"] = "dashboard";
-            return View(recentCourses);
+            return View();
         }
 
         public async Task<IActionResult> MyCourses()
@@ -758,6 +768,56 @@ namespace Learning_Management_System.Controllers
             ViewBag.SuccessMessage = "Profile updated successfully.";
             ViewBag.User = user;
             return View("AccountSettings");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetDashboardUpdates()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null) return Unauthorized();
+
+            // 1. Unread Notifications
+            var unreadCount = await _context.Notifications
+                .CountAsync(n => n.UserId == userId && !n.IsRead);
+
+            // 2. Upcoming Deadlines (Quizzes due in next 48 hours)
+            var upcomingDeadlines = await _context.Quizzes
+                .Where(q => q.DueDate != null && q.DueDate > DateTime.Now && q.DueDate <= DateTime.Now.AddHours(48))
+                .Where(q => _context.CourseEnrollments.Any(e => e.UserId == userId && e.CourseId == q.CourseId)) // Enrolled only
+                .Where(q => !_context.QuizAttempts.Any(qa => qa.QuizId == q.QuizId && qa.UserId == userId && qa.SubmittedAt != null)) // Exclude completed
+                .Select(q => new
+                {
+                    title = q.Title,
+                    courseName = q.Course.Title,
+                    dueInMinutes = (int)EF.Functions.DateDiffMinute(DateTime.Now, q.DueDate),
+                    dueDate = q.DueDate
+                })
+                .OrderBy(q => q.dueDate)
+                .ToListAsync();
+
+            return Json(new { unreadCount, upcomingDeadlines });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGradeTrends()
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null) return Unauthorized();
+
+            var grades = await _context.Grades
+                .Where(g => g.UserId == userId && g.MaxPoints > 0)
+                .Include(g => g.GradeBook)
+                .OrderBy(g => g.GradedAt)
+                .ToListAsync();
+
+            var result = grades.Select(g => new
+            {
+                label = g.GradeBook?.Name ?? "Assessment",
+                score = Math.Round((g.Points / g.MaxPoints) * 100, 1)
+            });
+
+            return Json(new { labels = result.Select(r => r.label), data = result.Select(r => r.score) });
         }
     }
 }
