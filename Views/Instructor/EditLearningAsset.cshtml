@@ -1,0 +1,57 @@
+@model Learning_Management_System.Models.LearningAsset
+
+@{
+    ViewData["Title"] = "Edit Learning Asset";
+    var lectureId = ViewBag.LectureId as int?;
+    var lectureTitle = ViewBag.LectureTitle as string;
+    var courseId = ViewBag.CourseId as int? ?? 0;
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>
+                Edit Learning Asset
+                @if (!string.IsNullOrEmpty(lectureTitle))
+                {
+                    <small class="ms-2">? Lecture: <strong>@lectureTitle</strong></small>
+                }
+            </h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="EditLearningAsset" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="assetId" value="@Model.AssetId" />
+                <input type="hidden" name="lectureId" value="@lectureId" />
+                <input type="hidden" name="courseId" value="@courseId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" value="@Model.Title" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Asset Type</label>
+                    <select asp-for="AssetType" class="form-select">
+                        <option value="">-- Select Type --</option>
+                        <option value="Video">Video</option>
+                        <option value="PDF">PDF Document</option>
+                        <option value="PPT">PowerPoint</option>
+                        <option value="Link">External Link</option>
+                        <option value="Code">Code File</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">URL</label>
+                    <input type="url" name="fileUrl" value="@Model.FileUrl" class="form-control" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="CourseDetails" asp-controller="Instructor" asp-route-id="@courseId" class="btn btn-secondary">? Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

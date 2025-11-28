@@ -9,3 +9,15 @@ ELSE
 BEGIN
     PRINT 'IsDeleted column already exists';
 END
+
+
+
+
+--------------
+
+ALTER TABLE dbo.LearningAssets
+DROP CONSTRAINT CK__LearningA__Asset__55009F39;
+
+
+ALTER TABLE dbo.LearningAssets
+DROP CONSTRAINT CK__LearningA__Asset__59FA5E80;

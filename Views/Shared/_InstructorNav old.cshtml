@@ -23,12 +23,12 @@
           </svg>
           Dashboard
         </a>
-        @* <a class="nav-link @(currentAction == "MyCourses" ? "active" : "") d-flex align-items-center gap-2" asp-action="MyCourses" asp-controller="Instructor">
+        <a class="nav-link @(currentAction == "MyCourses" ? "active" : "") d-flex align-items-center gap-2" asp-action="MyCourses" asp-controller="Instructor">
           <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
           </svg>
           My Courses
-        </a> *@
+        </a>
         <a class="nav-link @(currentAction == "Announcements" ? "active" : "") d-flex align-items-center gap-2" asp-action="Announcements" asp-controller="Instructor">
           <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20">
             <path d="M8 2v4"></path>
@@ -78,10 +78,8 @@
             <img src="https://ui-avatars.com/api/?name=Instructor&background=0D6EFD&color=fff" alt="Instructor" class="rounded-circle" style="width: 2.5rem; height: 2.5rem;">
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
-          @* go to settings *@
-            @* <li><a class="dropdown-item" asp-action="Settings" asp-controller="Instructor">Settings</a></li> *@
-            @* <li><a class="dropdown-item" asp-action="Dashboard" asp-controller="Instructor">Dashboard</a></li> *@
-            @* <li><hr class="dropdown-divider"></li> *@
+            <li><a class="dropdown-item" asp-action="Dashboard" asp-controller="Instructor">Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" asp-action="Logout" asp-controller="Auth">Logout</a></li>
           </ul>
         </div>
