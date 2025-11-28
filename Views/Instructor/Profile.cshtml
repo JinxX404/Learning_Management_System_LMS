@@ -1,0 +1,99 @@
+@using Learning_Management_System.Models
+@{
+    ViewData["Title"] = "ESU - Profile";
+    Layout = "_Layout";
+    var user = ViewBag.User as User;
+    var courses = ViewBag.Courses as IEnumerable<Course> ?? Enumerable.Empty<Course>();
+    if (user == null)
+    {
+        <div class="container py-5">
+            <div class="alert alert-warning">Unable to load profile information.</div>
+        </div>
+        return;
+    }
+    var instructorProfile = user.InstructorProfile;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/profile.css">
+}
+
+@await Html.PartialAsync("_InstructorNav")
+
+<main class="container-lg my-4 my-md-5">
+  <div class="mx-auto" style="max-width: 56rem;">
+    <div class="profile-header card bg-tertiary border-custom shadow-sm rounded-4 p-3 p-md-4 mb-4">
+      <div class="card-body">
+          <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+              <div class="position-relative flex-shrink-0">
+                  <div class="profile-img profile-avatar rounded-circle" style="background-image: url('https://ui-avatars.com/api/?name=@user.FirstName+@user.LastName&background=0D6EFD&color=fff');"></div>
+                  <span class="online-indicator position-absolute bottom-0 end-0 bg-success rounded-circle" style="transform: translate(-25%, -25%);"></span>
+              </div>
+              <div class="text-center text-md-start">
+                  <h1 class="profile-name display-6 fw-bold">@user.FirstName @user.LastName</h1>
+                  <p class="profile-meta fs-5 text-secondary">@user.Institution?.Name</p>
+                  <p class="profile-meta text-muted small">Department: @instructorProfile?.Department</p>
+              </div>
+          </div>
+      </div>
+    </div>
+        <ul class="nav nav-tabs border-bottom-1 mb-5">
+            <li class="nav-item"><a class="nav-link active fw-medium" href="#">Overview</a></li>
+        </ul>
+    <div class="d-grid gap-5">
+      <section>
+        <h2 class="section-title fs-2 fw-bold text-body-emphasis">About</h2>
+        <div class="card bg-tertiary border-custom shadow-sm rounded-4 mt-3">
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">Email</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@user.Email</dd>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <dt class="text-secondary small">Bio</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@(instructorProfile?.Bio ?? "No bio available")</dd>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <dt class="text-secondary small">Status</dt>
+                        <dd class="fw-semibold text-body-emphasis m-0">@((user.IsActive ? "Active" : "Inactive"))</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+      </section>
+
+      <section>
+          <h2 class="section-title fs-2 fw-bold text-body-emphasis">Courses Taught</h2>
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mt-2">
+              @if (!courses.Any())
+              {
+                  <div class="col">
+                      <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
+                          <div class="card-body">
+                              <p class="card-text text-secondary small mb-0">No courses to display.</p>
+                          </div>
+                      </div>
+                  </div>
+              }
+              else
+              {
+                  foreach (var course in courses)
+                  {
+                      <div class="col course-item">
+                          <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
+                              <div class="card-body">
+                                  <h5 class="card-title fw-semibold">@course.Title</h5>
+                                  <p class="card-text text-secondary small">
+                                      @course.CourseCode
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  }
+              }
+          </div>
+      </section>
+    </div>
+  </div>
+</main>

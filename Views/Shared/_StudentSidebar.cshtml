@@ -16,24 +16,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a asp-action="MyCourses" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "courses" ? "active" : "")">
-                        <span class="material-symbols-outlined me-2">school</span>
-                        My Courses
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-action="Grades" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "grades" ? "active" : "")">
-                        <span class="material-symbols-outlined me-2">grading</span>
-                        My Grades
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-action="Announcements" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "announcements" ? "active" : "")">
-                        <span class="material-symbols-outlined me-2">notifications</span>
-                        Announcements
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a asp-action="Profile" asp-controller="Student" class="nav-link @(ViewData["StudentActive"]?.ToString() == "profile" ? "active" : "")">
                         <span class="material-symbols-outlined me-2">person</span>
                         Profile

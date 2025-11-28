@@ -44,10 +44,10 @@
           <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M3 10h18"></path></svg>
           Announcements
         </a>
-        <a class="nav-link d-flex align-items-center gap-2" asp-action="Grades" asp-controller="Student">
+        @* <a class="nav-link d-flex align-items-center gap-2" asp-action="Grades" asp-controller="Student">
           <svg class="h-5 w-5" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M18 13v-3.5A1.5 1.5 0 0 0 16.5 8H3"></path><path d="m10 16 4-4"></path><path d="m14 16-4-4"></path><path d="M10 12v10"></path><path d="M4 12v10"></path><path d="M18 22V10.5"></path></svg>
           Grades
-        </a>
+        </a> *@
       </div>
     </nav>
     <div class="d-flex align-items-center gap-3">
@@ -97,10 +97,10 @@
                         <dt class="text-secondary small">Email</dt>
                         <dd class="fw-semibold text-body-emphasis m-0">@user.Email</dd>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    @* <div class="col-md-6 mb-3">
                         <dt class="text-secondary small">GPA</dt>
                         <dd class="fw-semibold text-body-emphasis m-0">@gpa.ToString("0.00")</dd>
-                    </div>
+                    </div> *@
                     <div class="col-md-6 mb-3">
                         <dt class="text-secondary small">Admission Date</dt>
                         <dd class="fw-semibold text-body-emphasis m-0">@studentProfile?.AdmissionDate?.ToString("MMMM d, yyyy")</dd>
