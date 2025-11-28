@@ -38,7 +38,7 @@
             <span>Announcements</span>
         </a>
         
-        <a class="nav-link @(currentAction == "Grades" ? "active" : "") d-flex align-items-center gap-2" 
+         @* <a class="nav-link @(currentAction == "Grades" ? "active" : "") d-flex align-items-center gap-2" 
            asp-controller="Student" 
            asp-action="Grades"
            aria-current="@(currentAction == "Grades" ? "page" : "false")">
@@ -52,7 +52,7 @@
                 <path d="M18 22V10.5"></path>
             </svg>
             <span>Grades</span>
-        </a>
+        </a> *@
         
         <a class="nav-link @(currentAction == "Profile" ? "active" : "") d-flex align-items-center gap-2" 
            asp-controller="Student" 

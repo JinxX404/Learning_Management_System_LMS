@@ -89,7 +89,7 @@
                 for (int i = 0; i < lectures.Count; i++)
                 {
                     var lectureItem = lectures[i];
-                    <a class="sidebar-nav-link @(i == 0 ? "active" : "")" asp-action="CourseContent" asp-controller="Student" asp-route-id="@course.CourseId" asp-route-lectureId="@lectureItem.LectureId">
+                    <a class="sidebar-nav-link @(lectureItem.LectureId == lecture?.LectureId ? "active" : "")" asp-action="CourseContent" asp-controller="Student" asp-route-id="@course.CourseId" asp-route-lectureId="@lectureItem.LectureId">
                         <p class="mb-0">@(i + 1). @lectureItem.Title</p>
                         <p class="small text-secondary mb-0">@lectureItem.Description</p>
                     </a>

@@ -799,8 +799,57 @@ namespace Learning_Management_System.Controllers
             ViewBag.InstitutionSummary = institutionSummary;
 
             ViewData["Title"] = "Reports";
+            ViewData["AdminActive"] = "reports";
 
             return View();
+        }
+
+        public async Task<IActionResult> Settings()
+        {
+            ViewData["AdminActive"] = "settings";
+            
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return RedirectToAction("Login", "Auth");
+
+            ViewBag.User = user;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return RedirectToAction("Login", "Auth");
+
+            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            {
+                ViewBag.ErrorMessage = "Incorrect current password.";
+                ViewBag.User = user;
+                ViewData["AdminActive"] = "settings";
+                return View("Settings");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.ErrorMessage = "New password and confirmation do not match.";
+                ViewBag.User = user;
+                ViewData["AdminActive"] = "settings";
+                return View("Settings");
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _context.SaveChangesAsync();
+
+            ViewBag.SuccessMessage = "Password changed successfully.";
+            ViewBag.User = user;
+            ViewData["AdminActive"] = "settings";
+            return View("Settings");
         }
 
         // Course Management
@@ -818,6 +867,7 @@ namespace Learning_Management_System.Controllers
 
             ViewBag.Courses = courses;
             ViewData["Title"] = "Course Management";
+            ViewData["AdminActive"] = "courses";
 
             return View("CourseManagement");
         }

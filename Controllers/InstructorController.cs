@@ -213,6 +213,28 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Profile()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users
+                .Include(u => u.InstructorProfile)
+                .Include(u => u.Institution)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null) return RedirectToAction("Login", "Auth");
+
+            var courses = await _context.Courses
+                .Where(c => c.InstructorId == userId)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.User = user;
+            ViewBag.Courses = courses;
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddLecture(int courseId, string title, string description)
         {
@@ -1276,6 +1298,48 @@ namespace Learning_Management_System.Controllers
             {
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
+        }
+        public async Task<IActionResult> Settings()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return RedirectToAction("Login", "Auth");
+
+            ViewBag.User = user;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Auth");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return RedirectToAction("Login", "Auth");
+
+            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            {
+                ViewBag.ErrorMessage = "Incorrect current password.";
+                ViewBag.User = user;
+                return View("Settings");
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.ErrorMessage = "New password and confirmation do not match.";
+                ViewBag.User = user;
+                return View("Settings");
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            await _context.SaveChangesAsync();
+
+            ViewBag.SuccessMessage = "Password changed successfully.";
+            ViewBag.User = user;
+            return View("Settings");
         }
     }
 }

@@ -46,10 +46,14 @@
                     <span class="material-symbols-outlined">assessment</span>
                     <span class="fs-sm fw-medium">Reports</span>
                 </a>
-                <!-- <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "settings" ? "active" : string.Empty)" href="#">
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3 @(active == "settings" ? "active" : string.Empty)" asp-controller="Admin" asp-action="Settings">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="fs-sm fw-medium">Settings</span>
-                </a> -->
+                </a>
+                <a class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-3" asp-controller="Auth" asp-action="Logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="fs-sm fw-medium">Logout</span>
+                </a>
             </nav>
         </div>
 
