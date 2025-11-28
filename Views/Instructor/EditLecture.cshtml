@@ -1,0 +1,40 @@
+@model Learning_Management_System.Models.Lecture
+
+@{
+    ViewData["Title"] = "Edit Lecture";
+    Layout = "_Layout";
+}
+
+<div class="container-xxl py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Edit Lecture</h5>
+                    <a asp-controller="Instructor" asp-action="CourseDetails" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary btn-sm">Back</a>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditLecture" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="lectureId" value="@Model.LectureId" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Lecture Title</label>
+                            <input type="text" name="title" class="form-control" value="@Model.Title" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="4">@Model.Description</textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a asp-controller="Instructor" asp-action="CourseDetails" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

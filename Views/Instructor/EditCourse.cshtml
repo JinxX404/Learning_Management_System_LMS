@@ -1,0 +1,76 @@
+@model Learning_Management_System.Models.Course
+
+@{
+    ViewData["Title"] = "Edit Course";
+    Layout = "_Layout";
+    var terms = ViewBag.AcademicTerms as List<Learning_Management_System.Models.AcademicTerm>;
+}
+
+<div class="container-xxl py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Edit Course</h5>
+                    <a asp-action="MyCourses" class="btn btn-outline-secondary btn-sm">Back</a>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditCourse" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="courseId" value="@Model.CourseId" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Code</label>
+                            <input type="text" name="courseCode" class="form-control" value="@Model.CourseCode" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control" value="@Model.Title" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="4">@Model.Description</textarea>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Credit Hours</label>
+                                <input type="number" name="creditHours" class="form-control" value="@Model.CreditHours" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Max Enrollment</label>
+                                <input type="number" name="maxEnrollment" class="form-control" value="@Model.MaxEnrollment" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Active">Active</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Archived">Archived</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label class="form-label">Academic Term</label>
+                            <select asp-for="AcademicTermId" class="form-select">
+                                <option value="0">-- Select Term --</option>
+                                @foreach (var t in terms ?? new List<Learning_Management_System.Models.AcademicTerm>())
+                                {
+                                    <option value="@t.AcademicTermId">@t.TermName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a asp-action="MyCourses" class="btn btn-outline-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Course</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -36,10 +36,10 @@
                     <select asp-for="AssetType" class="form-select">
                         <option value="">-- Select Type --</option>
                         <option value="Video">Video</option>
-                        <option value="PDF">PDF Document</option>
-                        <option value="PPT">PowerPoint</option>
-                        <option value="Link">External Link</option>
-                        <option value="Code">Code File</option>
+                        <option value="PDF">Document(PDF | DOCX | PowerPoint)</option>
+                        @* <option value="PPT">PowerPoint</option> *@
+                        <option value="Link">Link</option>
+                        @* <option value="Code">Code File</option> *@
                     </select>
                     <span asp-validation-for="AssetType" class="text-danger"></span>
                 </div>

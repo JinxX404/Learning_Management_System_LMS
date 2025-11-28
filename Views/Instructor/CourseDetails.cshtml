@@ -2,7 +2,7 @@
     ViewData["Title"] = "Course Details";
     Layout = "_Layout";
     var course = ViewBag.Course as Learning_Management_System.Models.Course;
-    var lectures = ViewBag.Lectures as List<Learning_Management_System.Models.Lecture>;
+    var lectures = course?.Lectures;
 }
 
 @section Styles {
@@ -33,14 +33,14 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <a asp-controller="Instructor" asp-action="EditCourse" asp-route-id="@course.CourseId" class="btn btn-outline-primary">
+                        @* <a asp-controller="Instructor" asp-action="EditCourse" asp-route-id="@course.CourseId" class="btn btn-outline-primary">
                             <span class="material-symbols-outlined me-1" style="font-size: 1.2rem; vertical-align: middle;">edit</span>
                             Edit
-                        </a>
-                        <a asp-controller="Instructor" asp-action="CourseRoster" asp-route-id="course.CourseId" class="btn btn-outline-primary">
+                        </a> *@
+                        @* <a asp-controller="Instructor" asp-action="CourseRoster" asp-route-id="course.CourseId" class="btn btn-outline-primary">
                             <span class="material-symbols-outlined me-1" style="font-size: 1.2rem; vertical-align: middle;">people</span>
                             Roster
-                        </a>
+                        </a> *@
                     </div>
                 </div>
             </div>
@@ -70,42 +70,64 @@
         <div class="tab-content">
             <div class="tab-pane fade show active" id="lectures">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                    <div class="card-header border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Course Lectures</h5>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addLectureModal">
                             <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
                             Add Lecture
                         </button>
                     </div>
-                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Course Lectures</h5>
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAssetModal">
-                            <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
-                            Add Learning Asset
-                        </button>
-                    </div>
                     <div class="card-body">
                         @if (lectures != null && lectures.Any())
                         {
-                            <div class="list-group list-group-flush">
+                            <div class="row g-3">
                                 @foreach (var lecture in lectures)
                                 {
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-1">@lecture.Title</h6>
-                                            <p class="mb-0 text-muted small">@lecture.Description</p>
-                                        </div>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-outline-success me-1 open-add-asset-modal" data-bs-toggle="modal" data-bs-target="#addAssetModal" data-lecture-id="@lecture.LectureId">
-                                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">add</span>
-                                                Add Asset
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary">
-                                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger">
-                                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">delete</span>
-                                            </button>
+                                    <div class="col-md-6">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-header d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="mb-1">@lecture.Title</h6>
+                                                    <div class="small text-muted">@lecture.Description</div>
+                                                </div>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-outline-success open-add-asset-modal" data-bs-toggle="modal" data-bs-target="#addAssetModal" data-lecture-id="@lecture.LectureId">Add Asset</button>
+                                                    @* <a asp-controller="Instructor" asp-action="EditLecture" asp-route-id="@lecture.LectureId" class="btn btn-sm btn-outline-primary">Edit</a> *@
+                                                    @* <form asp-controller="Instructor" asp-action="DeleteLecture" method="post" class="d-inline ms-1">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="lectureId" value="@lecture.LectureId" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this lecture and its assets?');">Delete</button>
+                                                    </form> *@
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                @if (lecture.LearningAssets != null && lecture.LearningAssets.Any())
+                                                {
+                                                    <div class="d-flex flex-column gap-2">
+                                                        @foreach (var asset in lecture.LearningAssets)
+                                                        {
+                                                            <div class="d-flex justify-content-between align-items-center p-2 border rounded">
+                                                                <div>
+                                                                    <div class="fw-semibold">@asset.Title</div>
+                                                                    <div class="small text-muted">@asset.AssetType @if(!string.IsNullOrWhiteSpace(asset.FileUrl)){<span>� <a href="@asset.FileUrl" target="_blank">Open</a></span>}</div>
+                                                                </div>
+                                                                <div class="d-flex gap-2">
+                                                                    <a asp-controller="Instructor" asp-action="EditLearningAsset" asp-route-id="@asset.AssetId" class="btn btn-sm btn-outline-primary">Edit</a>
+                                                                    <form asp-controller="Instructor" asp-action="DeleteLearningAsset" method="post" class="d-inline">
+                                                                        @Html.AntiForgeryToken()
+                                                                        <input type="hidden" name="assetId" value="@asset.AssetId" />
+                                                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this asset?');">Delete</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-muted small">No assets for this lecture yet.</div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -124,7 +146,7 @@
 
             <div class="tab-pane fade" id="assignments">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                    <div class="card-header border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Assignments</h5>
                         <a asp-controller="Instructor" asp-action="CreateAssignment" asp-route-courseId="@course.CourseId" class="btn btn-primary btn-sm">
                             <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
@@ -142,7 +164,7 @@
 
             <div class="tab-pane fade" id="quizzes">
                 <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                    <div class="card-header  border-bottom d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Quizzes</h5>
                         <a asp-controller="Instructor" asp-action="CreateQuiz" asp-route-courseId="@course.CourseId" class="btn btn-primary btn-sm">
                             <span class="material-symbols-outlined me-1" style="font-size: 1rem; vertical-align: middle;">add</span>
@@ -185,6 +207,11 @@
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lecture Order (OrderIndex)</label>
+                        <input type="number" name="orderIndex" class="form-control" min="1" placeholder="Leave empty to assign automatically" />
+                        <div class="form-text">Enter a number to place the lecture at a specific position in the course, or leave empty to append to the end.</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -235,10 +262,6 @@
                         <div class="form-text">Provide a direct public URL or leave empty if you'll upload later.</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="3"></textarea>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
