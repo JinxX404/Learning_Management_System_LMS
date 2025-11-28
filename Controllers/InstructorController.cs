@@ -200,6 +200,8 @@ namespace Learning_Management_System.Controllers
             // Get course with lectures
             course = await _context.Courses
                 .Include(c => c.Lectures)
+                    .ThenInclude(l => l.LearningAssets)
+                .Include(c => c.Quizzes)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
 
             if (course == null)
@@ -839,6 +841,155 @@ namespace Learning_Management_System.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
+        }
+
+        // GET: Instructor/EditLecture/5
+        public async Task<IActionResult> EditLecture(int id)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var lecture = await _context.Lectures
+                .Include(l => l.Course)
+                .FirstOrDefaultAsync(l => l.LectureId == id);
+
+            if (lecture == null || lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            return View(lecture);
+        }
+
+        // POST: Instructor/EditLecture
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLecture(int lectureId, string title, string description)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var lecture = await _context.Lectures
+                .Include(l => l.Course)
+                .FirstOrDefaultAsync(l => l.LectureId == lectureId);
+
+            if (lecture == null || lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            lecture.Title = title;
+            lecture.Description = description;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Lecture updated successfully.";
+            return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
+        }
+
+        // POST: Instructor/DeleteLecture
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLecture(int lectureId)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var lecture = await _context.Lectures
+                .Include(l => l.Course)
+                .Include(l => l.LearningAssets)
+                .FirstOrDefaultAsync(l => l.LectureId == lectureId);
+
+            if (lecture == null || lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            // Hard delete for now as requested
+            _context.LearningAssets.RemoveRange(lecture.LearningAssets);
+            _context.Lectures.Remove(lecture);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Lecture deleted successfully.";
+            return RedirectToAction("CourseDetails", new { id = lecture.CourseId });
+        }
+
+        // GET: Instructor/EditLearningAsset/5
+        public async Task<IActionResult> EditLearningAsset(int id)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var asset = await _context.LearningAssets
+                .Include(a => a.Lecture)
+                .ThenInclude(l => l.Course)
+                .FirstOrDefaultAsync(a => a.AssetId == id);
+
+            if (asset == null || asset.Lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            ViewBag.LectureTitle = asset.Lecture.Title;
+            ViewBag.LectureId = asset.LectureId;
+            ViewBag.CourseId = asset.Lecture.CourseId;
+
+            return View(asset);
+        }
+
+        // POST: Instructor/EditLearningAsset
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLearningAsset(int assetId, string title, string assetType, string fileUrl)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var asset = await _context.LearningAssets
+                .Include(a => a.Lecture)
+                .ThenInclude(l => l.Course)
+                .FirstOrDefaultAsync(a => a.AssetId == assetId);
+
+            if (asset == null || asset.Lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            asset.Title = title;
+            asset.AssetType = assetType;
+            asset.FileUrl = fileUrl;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Learning asset updated successfully.";
+            return RedirectToAction("CourseDetails", new { id = asset.Lecture.CourseId });
+        }
+
+        // POST: Instructor/DeleteLearningAsset
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLearningAsset(int assetId)
+        {
+            if (!IsLoggedIn() || !await IsInstructor())
+                return RedirectToAction("Login", "Auth");
+
+            var userId = GetCurrentUserId() ?? 0;
+
+            var asset = await _context.LearningAssets
+                .Include(a => a.Lecture)
+                .ThenInclude(l => l.Course)
+                .FirstOrDefaultAsync(a => a.AssetId == assetId);
+
+            if (asset == null || asset.Lecture.Course.InstructorId != userId)
+                return NotFound();
+
+            var courseId = asset.Lecture.CourseId;
+
+            _context.LearningAssets.Remove(asset);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Learning asset deleted successfully.";
+            return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
         
