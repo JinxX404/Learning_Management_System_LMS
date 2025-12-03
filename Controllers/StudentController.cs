@@ -37,17 +37,6 @@ namespace Learning_Management_System.Controllers
 
             if (student == null) return RedirectToAction("Login", "Auth");
 
-            // Fetch grades for GPA and Credits calculation
-            var grades = await _context.Grades
-                .Where(g => g.UserId == studentId)
-                .ToListAsync();
-
-            // Calculate GPA
-            ViewBag.GPA = CalculateGpa(grades);
-            
-            // Calculate Total Credits
-            ViewBag.TotalCredits = CalculateTotalCredits(grades);
-
             // Populate ViewBag for View
             ViewBag.Enrollments = student.CourseEnrollments;
             ViewBag.EnrollmentCount = student.CourseEnrollments.Count;
@@ -145,47 +134,25 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }     
-        public async Task<IActionResult> Grades(int? courseId = null)
+        public async Task<IActionResult> Grades()
         {
-            if (!IsLoggedIn())
-                return RedirectToAction("Login", "Auth");
+            
+                if (!IsLoggedIn())
+                    return RedirectToAction("Login", "Auth");
 
-            var userId = GetCurrentUserId() ?? 0;
+                var userId = GetCurrentUserId() ?? 0;
 
-            // Get all grades for this student
-            var grades = await _context.Grades
-                .Where(g => g.UserId == userId)
-                .Include(g => g.GradeBook)
-                    .ThenInclude(gb => gb.Course)
-                .OrderByDescending(g => g.GradedAt)
-                .ToListAsync();
+                // Get all grades for this student from the view
+                var grades = await _context.VwAllStudentGrades
+                    .Where(v => v.UserId == userId)
+                    .OrderByDescending(v => v.GradedAt)
+                    .ToListAsync();
 
-            ViewBag.Grades = grades;
+                ViewBag.Grades = grades;
+                ViewData["Title"] = "My Grades";
 
-            // Calculate GPA
-            decimal gpa = CalculateGpa(grades);
-            ViewBag.Gpa = gpa;
-
-            // Calculate total credits
-            var totalCredits = grades
-                .Where(g => g.GradeBook != null && g.GradeBook.Course != null)
-                .GroupBy(g => g.GradeBook.CourseId)
-                .Sum(group => group.First().GradeBook.Course.CreditHours);
-
-            ViewBag.TotalCredits = totalCredits;
-
-            // Academic standing
-            string academicStanding = "N/A";
-            if (gpa >= 3.5m) academicStanding = "Dean's List";
-            else if (gpa >= 3.0m) academicStanding = "Good";
-            else if (gpa >= 2.0m) academicStanding = "Satisfactory";
-            else academicStanding = "Needs Attention";
-
-            ViewBag.AcademicStanding = academicStanding;
-
-            ViewData["Title"] = "My Grades";
-
-            return View();
+                return View();
+            
         }
 
         public async Task<IActionResult> Announcements()
@@ -270,7 +237,6 @@ namespace Learning_Management_System.Controllers
                 .ToListAsync();
 
             ViewBag.Enrollments = enrollments;
-            ViewBag.Gpa = CalculateGpa(profileGrades);
             ViewBag.User = user;
             ViewData["Title"] = "Profile";
 
@@ -324,35 +290,6 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
-        private decimal CalculateGpa(IEnumerable<Grade> grades)
-        {
-            // احسب من كل الدرجات اللي عندك
-            var scoreRatios = grades
-                .Where(g => g.MaxPoints > 0)
-                .Select(g => g.Points / g.MaxPoints)
-                .ToList();
-
-            if (!scoreRatios.Any())
-                return 0m;
-
-            var average = scoreRatios.Average(r => (double)r);
-            return Math.Round((decimal)(average * 4), 2);
-        }
-        private int CalculateTotalCredits(IEnumerable<Grade> grades)
-        {
-            return grades
-                .Where(g => g.GradeBook?.Course != null)
-                .GroupBy(g => g.GradeBook!.CourseId)
-                .Sum(group => group.First().GradeBook!.Course.CreditHours);
-        }
-
-        private string GetAcademicStanding(decimal gpa)
-        {
-            if (gpa >= 3.5m) return "Dean's List";
-            if (gpa >= 3.0m) return "Good";
-            if (gpa >= 2.0m) return "Satisfactory";
-            return "Needs Attention";
-        }
         
         public async Task<IActionResult> CourseDetails(int id)
         {
@@ -718,7 +655,13 @@ namespace Learning_Management_System.Controllers
             // Mark as submitted
             attempt.SubmittedAt = DateTime.Now;
 
+
             await _context.SaveChangesAsync();
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC sp_SubmitQuizAttempt @p0",
+                attempt.AttemptId
+            );
+
 
             // Redirect to results
             return RedirectToAction("QuizResult", new { id = attempt.AttemptId });
@@ -769,7 +712,6 @@ namespace Learning_Management_System.Controllers
             ViewBag.User = user;
             return View("AccountSettings");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetDashboardUpdates()

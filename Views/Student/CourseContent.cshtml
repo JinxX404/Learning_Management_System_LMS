@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="~/css/pages/course-content.css">
 }
 
-<header class="sticky-top border-bottom header-sticky">
+@await Html.PartialAsync("_StudentNav")
+
     <div class="d-flex align-items-center px-4" style="height: 4rem;">
         <div class="d-flex align-items-center gap-2">
             <div class="brand-icon-wrapper d-flex align-items-center justify-content-center rounded-3" style="width: 2rem; height: 2rem;">
