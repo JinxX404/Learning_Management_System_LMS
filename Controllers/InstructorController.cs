@@ -33,6 +33,7 @@ namespace Learning_Management_System.Controllers
             return user?.Role == "Instructor";
         }
 
+        [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -62,6 +63,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> MyCourses()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -87,6 +89,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> CreateCourse()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -183,6 +186,7 @@ namespace Learning_Management_System.Controllers
             }
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -213,6 +217,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Profile()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -264,6 +269,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("CourseDetails", new { id = courseId });
         }
 
+        [HttpGet]
         public async Task<IActionResult> GradeSubmissions()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -311,6 +317,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("GradeSubmissions");
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseRoster(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -376,6 +383,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // صفحة عرض الإعلانات للمدرس - GET
+        [HttpGet]
         public async Task<IActionResult> Announcements()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -516,6 +524,7 @@ namespace Learning_Management_System.Controllers
 
         //=======================================================================
         // صفحة عرض الدورات المتاحة للمستخدم
+        [HttpGet]
         public async Task<IActionResult> MyEnrolledCourses()
         {
             if (!IsLoggedIn())
@@ -533,6 +542,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: عرض نموذج تسجيل في كورس
+        [HttpGet]
         public async Task<IActionResult> Enroll(int courseId)
         {
             if (!IsLoggedIn())
@@ -585,6 +595,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/CreateAssignment
+        [HttpGet]
         public async Task<IActionResult> CreateAssignment(int? courseId)
         {
             // Only allow logged-in instructors
@@ -619,6 +630,7 @@ namespace Learning_Management_System.Controllers
         // 1. Create a new action, e.g., GenerateQuizFromAI(int courseId, string topic)
         // 2. Call your AI service to generate a CreateQuizViewModel
         // 3. Return View("CreateQuiz", generatedViewModel) to pre-fill this form.
+        [HttpGet]
         public async Task<IActionResult> CreateQuiz(int? courseId)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -735,6 +747,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/UploadMaterials
+        [HttpGet]
         public async Task<IActionResult> UploadMaterials(int? courseId)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -762,6 +775,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Dashboard");
         }
         // GET: Instructor/AddLearningAsset
+        [HttpGet]
         public async Task<IActionResult> AddLearningAsset(int? lectureId, int? courseId)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -866,6 +880,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/EditLecture/5
+        [HttpGet]
         public async Task<IActionResult> EditLecture(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -937,6 +952,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/EditLearningAsset/5
+        [HttpGet]
         public async Task<IActionResult> EditLearningAsset(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -1016,6 +1032,7 @@ namespace Learning_Management_System.Controllers
 
         
         // GET: Instructor/MyQuizzes - List all quizzes
+        [HttpGet]
         public async Task<IActionResult> MyQuizzes()
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -1037,6 +1054,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/QuizDetails/5 - View quiz details with statistics
+        [HttpGet]
         public async Task<IActionResult> QuizDetails(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -1068,6 +1086,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // GET: Instructor/EditQuiz/5 - Show edit form
+        [HttpGet]
         public async Task<IActionResult> EditQuiz(int id)
         {
             if (!IsLoggedIn() || !await IsInstructor())
@@ -1299,6 +1318,7 @@ namespace Learning_Management_System.Controllers
                 return Json(new { success = false, message = $"Error: {ex.Message}" });
             }
         }
+        [HttpGet]
         public async Task<IActionResult> Settings()
         {
             var userId = HttpContext.Session.GetInt32("UserId");

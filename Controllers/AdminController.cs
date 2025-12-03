@@ -41,26 +41,24 @@ namespace Learning_Management_System.Controllers
         }
 
         [Route("Admin/Dashboard")]
+        [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
 
-            // 1. Statistics
             var totalUsers = await _context.Users.CountAsync();
             var totalCourses = await _context.Courses.CountAsync();
             var activeCourses = await _context.Courses.Where(c => c.Status == "Active").CountAsync();
             var courseEnrollments = await _context.CourseEnrollments.CountAsync();
             var aiGenerations = await _context.AigeneratedContents.CountAsync();
 
-            // Calculate trends (mock logic for now as we don't have historical snapshots, 
-            // but we could compare with created_at < 30 days ago)
             var lastMonth = DateTime.Now.AddDays(-30);
             var newUsersLastMonth = await _context.Users.CountAsync(u => u.CreatedAt >= lastMonth);
             var newEnrollmentsLastMonth = await _context.CourseEnrollments.CountAsync(e => e.EnrolledAt >= lastMonth);
 
             ViewBag.TotalUsers = totalUsers;
-            ViewBag.TotalCourses = totalCourses; // Used in view?
+            ViewBag.TotalCourses = totalCourses;
             ViewBag.ActiveCourses = activeCourses;
             ViewBag.CourseEnrollments = courseEnrollments;
             ViewBag.AiGenerations = aiGenerations;
@@ -68,7 +66,7 @@ namespace Learning_Management_System.Controllers
             ViewBag.NewUsersLastMonth = newUsersLastMonth;
             ViewBag.NewEnrollmentsLastMonth = newEnrollmentsLastMonth;
 
-            // 2. Recent Activity (Combine New Users and New Courses)
+
             var recentUsers = await _context.Users
                 .OrderByDescending(u => u.CreatedAt)
                 .Take(5)
@@ -118,6 +116,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Users(string searchString)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -146,6 +145,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Students()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -163,6 +163,7 @@ namespace Learning_Management_System.Controllers
             return View("StudentManagement");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Instructors()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -180,6 +181,7 @@ namespace Learning_Management_System.Controllers
             return View("InstructorManagement");
         }
 
+        [HttpGet]
         public async Task<IActionResult> CreateStudent()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -203,7 +205,6 @@ namespace Learning_Management_System.Controllers
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
 
-            // Basic validation
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(fullName))
             {
                 ViewBag.Error = "Full Name, Email and Password are required.";
@@ -211,12 +212,10 @@ namespace Learning_Management_System.Controllers
                 return View("AddStudent");
             }
 
-            // Split name
             var names = fullName.Trim().Split(' ');
             var firstName = names[0];
             var lastName = names.Length > 1 ? names[names.Length - 1] : "";
 
-            // Check email
             if (await _context.Users.AnyAsync(u => u.Email == email))
             {
                 ViewBag.Error = "Email already exists.";
@@ -255,6 +254,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Students");
         }
 
+        [HttpGet]
         public async Task<IActionResult> CreateInstructor()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -280,7 +280,6 @@ namespace Learning_Management_System.Controllers
             if (!IsLoggedIn() || !await IsAdmin())
                 return RedirectToAction("Login", "Auth");
 
-             // Basic validation
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(fullName))
             {
                 ViewBag.Error = "Full Name, Email and Password are required.";
@@ -288,12 +287,10 @@ namespace Learning_Management_System.Controllers
                 return View("AddInstructor");
             }
 
-            // Split name
             var names = fullName.Trim().Split(' ');
             var firstName = names[0];
             var lastName = names.Length > 1 ? names[names.Length - 1] : "";
 
-            // Check email
             if (await _context.Users.AnyAsync(u => u.Email == email))
             {
                 ViewBag.Error = "Email already exists.";
@@ -332,6 +329,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Instructors");
         }
 
+        [HttpGet]
         public async Task<IActionResult> EditUser(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -378,10 +376,9 @@ namespace Learning_Management_System.Controllers
             if (user == null)
                 return NotFound();
 
-            // Validate required fields
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
             {
-                // Return to edit page with error
+
                 var institutions = await _context.Institutions.ToListAsync();
                 ViewBag.Institutions = institutions;
                 ViewBag.User = user;
@@ -402,7 +399,6 @@ namespace Learning_Management_System.Controllers
                 return View();
             }
 
-            // Update properties
             user.Email = email.Trim();
             user.FirstName = firstName.Trim();
             user.LastName = lastName.Trim();
@@ -410,7 +406,6 @@ namespace Learning_Management_System.Controllers
             user.IsActive = isActive;
             user.UpdatedAt = DateTime.Now;
 
-            // If password provided, update it
             if (!string.IsNullOrEmpty(password))
             {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
@@ -419,7 +414,6 @@ namespace Learning_Management_System.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            // Redirect based on role
             if (role == "Student")
                 return RedirectToAction("Students");
             else if (role == "Instructor")
@@ -444,18 +438,16 @@ namespace Learning_Management_System.Controllers
 
             if (hasEnrollments)
             {
-                // Soft delete - set IsActive to false
-                user.IsActive = false;
-                user.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
+                // Student still has active enrollments → do NOT deactivate
+                TempData["Error"] = "This student cannot be deleted because they still have active enrollments.";
+                return RedirectToAction("Students"); 
             }
-            else
-            {
-                // Can safely soft delete
-                user.IsActive = false;
-                user.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
-            }
+            
+            // Can safely soft delete
+            user.IsActive = false;
+            user.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            
 
             return RedirectToAction("Students");
         }
@@ -474,25 +466,30 @@ namespace Learning_Management_System.Controllers
             var hasCourses = await _context.Courses
                 .AnyAsync(c => c.InstructorId == id && c.Status == "Active");
 
+            // if (hasCourses)
+            // {
+            //     // Cannot delete instructor with active courses
+            //     user.IsActive = false;
+            //     user.UpdatedAt = DateTime.Now;
+            //     await _context.SaveChangesAsync();
+            // }
+
             if (hasCourses)
             {
-                // Cannot delete instructor with active courses
-                // Just soft delete for now
-                user.IsActive = false;
-                user.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
+                // Instructor still has active courses → do NOT deactivate
+                TempData["Error"] = "This instructor cannot be deleted because they still have active courses.";
+                return RedirectToAction("Instructors"); 
             }
-            else
-            {
-                // Can safely soft delete
-                user.IsActive = false;
-                user.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
-            }
+            
+            // Can safely soft delete
+            user.IsActive = false;
+            user.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Instructors");
         }
 
+        [HttpGet]
         public async Task<IActionResult> StudentDetails(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -523,6 +520,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> InstructorDetails(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -550,6 +548,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> AcademicTerms()
 
         {
@@ -569,6 +568,7 @@ namespace Learning_Management_System.Controllers
             return View("TermManagement");
         }
 
+        [HttpGet]
         public async Task<IActionResult> CreateAcademicTerm()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -621,6 +621,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("AcademicTerms");
         }
 
+        [HttpGet]
         public async Task<IActionResult> EditAcademicTerm(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -701,9 +702,8 @@ namespace Learning_Management_System.Controllers
             var hasCourses = await _context.Courses.AnyAsync(c => c.AcademicTermId == id);
             if (hasCourses)
             {
-                // Cannot delete, maybe archive? For now just show error
-                // Since this is a POST redirect, we can't easily show error in view without TempData or similar
-                // For now, let's just not delete and redirect.
+                // Term still has courses → do NOT delete
+                TempData["Error"] = "This term cannot be deleted because it still has courses.";
                 return RedirectToAction("AcademicTerms");
             }
 
@@ -748,6 +748,7 @@ namespace Learning_Management_System.Controllers
                 return RedirectToAction("Dashboard");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Reports()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -804,6 +805,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Settings()
         {
             ViewData["AdminActive"] = "settings";
@@ -853,6 +855,7 @@ namespace Learning_Management_System.Controllers
         }
 
         // Course Management
+        [HttpGet]
         public async Task<IActionResult> Courses()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -874,6 +877,7 @@ namespace Learning_Management_System.Controllers
 
 
 
+        [HttpGet]
         public async Task<IActionResult> CreateCourse()
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -937,6 +941,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+        [HttpGet]
         public async Task<IActionResult> EditCourse(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -1027,6 +1032,7 @@ namespace Learning_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
             if (!IsLoggedIn() || !await IsAdmin())
@@ -1057,6 +1063,7 @@ namespace Learning_Management_System.Controllers
 
         // Enrollment Management
 
+        [HttpGet]
         public async Task<IActionResult> Enrollments(int? courseId)
         {
             if (!IsLoggedIn() || !await IsAdmin())

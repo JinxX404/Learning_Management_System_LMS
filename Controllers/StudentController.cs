@@ -24,6 +24,7 @@ namespace Learning_Management_System.Controllers
             return GetCurrentUserId() != null;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
             var studentId = GetCurrentUserId();
@@ -58,6 +59,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> MyCourses()
         {
             var studentId = GetCurrentUserId();
@@ -77,6 +79,7 @@ namespace Learning_Management_System.Controllers
 
 
 
+        [HttpGet]
         public async Task<IActionResult> CourseContent(int id, int? lectureId = null)
         {
             if (!IsLoggedIn())
@@ -109,6 +112,7 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
+        [HttpGet]
         public async Task<IActionResult> Assignments(int? courseId = null)
         {
             if (!IsLoggedIn())
@@ -134,6 +138,7 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }     
+        [HttpGet]
         public async Task<IActionResult> Grades()
         {
             
@@ -155,6 +160,7 @@ namespace Learning_Management_System.Controllers
             
         }
 
+        [HttpGet]
         public async Task<IActionResult> Announcements()
         {
             if (!IsLoggedIn())
@@ -211,6 +217,7 @@ namespace Learning_Management_System.Controllers
                 return Json(new { success = false, message = "An error occurred while marking lesson as complete." });
             }
         }
+        [HttpGet]
         public async Task<IActionResult> Profile()
         {
             if (!IsLoggedIn())
@@ -243,6 +250,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> AccountSettings()
         {
             if (!IsLoggedIn())
@@ -291,6 +299,7 @@ namespace Learning_Management_System.Controllers
         }
 
         
+        [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
             if (!IsLoggedIn())
@@ -322,6 +331,7 @@ namespace Learning_Management_System.Controllers
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseQuizzes(int id)
         {
             if (!IsLoggedIn())
@@ -434,6 +444,7 @@ namespace Learning_Management_System.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpGet]
         public async Task<IActionResult> QuizPage(int id)
         {
             if (!IsLoggedIn())
@@ -524,6 +535,7 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
+        [HttpGet]
         public async Task<IActionResult> QuizResult(int id)
         {
             if (!IsLoggedIn())
