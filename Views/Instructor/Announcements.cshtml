@@ -34,7 +34,8 @@
         </button>
       </div>
 
-
+      <!-- Success/Error Messages -->
+      <div id="messageContainer"></div>
 
       <div class="d-flex flex-column gap-5">
         @if (!courses.Any())
@@ -49,7 +50,7 @@
         }
         else
         {
-          @* <section id="courses">
+          <section id="courses">
             <h2 class="section-title fs-5 fw-bold mb-3">Your Courses (@courses.Count())</h2>
             <div class="d-flex flex-column gap-3">
               @foreach (var course in courses)
@@ -73,7 +74,7 @@
                 </div>
               }
             </div>
-          </section> *@
+          </section>
 
           @if (recentNotifications.Any())
           {
@@ -159,8 +160,6 @@
     </div>
   </div>
 </div>
-
-
 
 @section Scripts {
 <script>
@@ -257,11 +256,26 @@ function sendAnnouncement() {
     });
 }
 
-
-
-
 function showMessage(message, type) {
-    alert(message);
+    const container = document.getElementById('messageContainer');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    container.innerHTML = '';
+    container.appendChild(alert);
+    
+    // Scroll to message
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Auto-dismiss after 10 seconds
+    setTimeout(() => {
+        if (alert.parentElement) {
+            alert.remove();
+        }
+    }, 10000);
 }
 
 // Search functionality

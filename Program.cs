@@ -12,6 +12,7 @@ namespace Learning_Management_System
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSwaggerGen();
 
             // Add session
             builder.Services.AddSession(options =>
@@ -27,6 +28,12 @@ namespace Learning_Management_System
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             if (!app.Environment.IsDevelopment())
             {
