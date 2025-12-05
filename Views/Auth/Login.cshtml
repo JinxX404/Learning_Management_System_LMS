@@ -4,7 +4,10 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/pages/login.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 }
+
+
 
 <main class="d-flex flex-grow-1 align-items-center justify-content-center px-4 py-5">
   <div class="w-100" style="max-width: 28rem;">
@@ -27,17 +30,12 @@
           <label for="email" class="visually-hidden">Email address</label>
           <input type="email" class="form-control input-field p-3" id="email" name="email" placeholder="student@esu.edu" required>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
           <label for="password" class="visually-hidden">Password</label>
           <input type="password" class="form-control input-field p-3" id="password" name="password" placeholder="Password" required>
-        </div>
+          <span id="togglePassword"class="position-absolute"style="top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer;"><i class="bi bi-eye-slash" id="eyeIcon"></i>
+          </span>
 
-        <div class="d-flex justify-content-between align-items-center my-4">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
-            <label class="form-check-label small" for="rememberMe">Remember me</label>
-          </div>
-          <a asp-action="ResetPassword" asp-controller="Auth" class="text-primary small fw-medium text-decoration-none">Forgot your password?</a>
         </div>
 
         <button type="submit" class="btn btn-primary w-100 login-btn">Sign in to ESU Portal</button>
@@ -46,3 +44,16 @@
     </div>
   </div>
 </main>
+<script>
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    togglePassword.addEventListener("click", function () {
+        const isHidden = passwordInput.getAttribute("type") === "password";
+
+        passwordInput.setAttribute("type", isHidden ? "text" : "password");
+        eyeIcon.classList.toggle("bi-eye");
+        eyeIcon.classList.toggle("bi-eye-slash");
+    });
+</script>
