@@ -133,6 +133,7 @@
       </div>
       <div class="modal-body">
         <form id="announcementForm">
+          @Html.AntiForgeryToken()
           <div class="mb-3">
             <label for="courseSelect" class="form-label">Select Course</label>
             <select class="form-select" id="courseSelect" required>
@@ -202,10 +203,14 @@ function sendAnnouncement() {
     sendBtn.disabled = true;
     sendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending...';
 
+    // Get anti-forgery token
+    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
     fetch('@Url.Action("SendAnnouncement", "Instructor")', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
+            'RequestVerificationToken': token
         },
         body: `courseId=${courseId}&message=${encodeURIComponent(message)}`
     })
