@@ -897,7 +897,7 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
-
+    
         [HttpPost]
         public async Task<IActionResult> CreateCourse(
             string courseCode,
