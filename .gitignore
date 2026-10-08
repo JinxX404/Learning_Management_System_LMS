@@ -11,5 +11,11 @@ obj/
 *.pubxml
 *.publishproj
 
-# *.md
-# *.txt
+# Sensitive / local-only data (never commit)
+/private/
+*.mdf
+*.ldf
+
+# Static prototypes and superseded assets
+/Front/
+/LMS UI/
