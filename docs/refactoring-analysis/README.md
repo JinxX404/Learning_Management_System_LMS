@@ -2,7 +2,7 @@
 
 ## Architecture overview
 
-This is a single ASP.NET Core MVC application targeting .NET 8. `Program.cs` wires Razor MVC, SQL Server through EF Core, and ASP.NET session state. Authentication is custom: `AuthController` verifies BCrypt password hashes and stores a user ID in session; controllers then repeat role/session checks themselves. Admin, instructor, and student workflows live in three large controllers that query and mutate `LmsContext` directly, shape view data through a mix of view models and `ViewBag`, and render Razor views. `LmsContext` contains both table entities and keyless mappings to SQL views. The SQL Server schema, views, triggers, and stored procedures are also represented in `LMS Schema.sql`; the `LMS UI/` tree contains static screen designs separate from the MVC views served from `wwwroot`.
+This is a single ASP.NET Core MVC application targeting .NET 8. `Program.cs` wires Razor MVC, SQL Server through EF Core, and ASP.NET session state. Authentication is custom: `AuthController` verifies BCrypt password hashes and stores a user ID in session; controllers then repeat role/session checks themselves. Admin, instructor, and student workflows live in three large controllers that query and mutate `LmsContext` directly, shape view data through a mix of view models and `ViewBag`, and render Razor views. `LmsContext` contains both table entities and keyless mappings to SQL views. The SQL Server schema, views, triggers, and stored procedures are also represented in `LMS Schema.sql`; the `design/prototype/` tree contains static screen designs separate from the MVC views served from `wwwroot`.
 
 ## Main risks
 

@@ -49,13 +49,15 @@ cd Learning_Management_System_LMS
 ```
 
 ### 2. Configure the connection string
-Edit `appsettings.json`:
+The tracked `appsettings.json` ships a working default:
+
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True;"
+  "DefaultConnection": "Server=.;Database=LMS;Trusted_Connection=True;"
 }
 ```
-Adjust `Server=` for your instance (e.g. `(localdb)\MSSQLLocalDB`).
+
+Adjust `Server=` for your instance (e.g. `(localdb)\MSSQLLocalDB`). Environment-specific overrides — including `TrustServerCertificate=True` for a local instance with a self-signed certificate — belong in `appsettings.Development.json`, which is gitignored, so the certificate bypass never ships in tracked config.
 
 ### 3. Create the database
 Run [`docs/schema/LMS Schema.sql`](docs/schema/LMS%20Schema.sql) against your SQL Server (SSMS or `sqlcmd`).
@@ -98,8 +100,8 @@ On startup in the **Development** environment, the app provisions an admin accou
 ├── docs/
 │   ├── schema/           # LMS Schema.sql — schema source of truth
 │   └── refactoring-analysis/  # static code review: risks + refactoring sessions
-├── private/              # local-only, gitignored (DB files, archived docs)
-└── LMS UI/               # static HTML/CSS prototype, gitignored
+├── design/prototype/     # static screen designs + HTML prototype, gitignored
+└── private/              # local-only, gitignored (DB files, archived docs)
 ```
 
 ## Documentation
@@ -109,6 +111,7 @@ On startup in the **Development** environment, the app provisions an admin accou
 | This README | `README.md` | current |
 | Database schema (tables, views, triggers, procedures) | `docs/schema/LMS Schema.sql` | current |
 | Code review: security/data-integrity findings + refactoring plan | `docs/refactoring-analysis/` | current (Oct 2026 static review) |
+| Screen designs & static HTML prototype | `design/prototype/` (local only) | superseded by `Views/`, kept as design reference |
 | Original project documentation & presentation | `private/archive/` (local only) | historical — as-planned Oct/Dec 2025, superseded by this README |
 
 > The archived `.docx`/`.pptx` were written during planning. Their schema (Assignments/Submissions/Lessons/Roles tables), ".NET 6/7" requirement, and "apply database migrations" instructions do **not** match the implementation.
@@ -119,4 +122,4 @@ On startup in the **Development** environment, the app provisions an admin accou
 
 ## Local-only files (never commit)
 
-`private/` (gitignored) holds the local database files (`LMS.mdf`, `LMS_log.ldf`) and archived documents. `.gitignore` also excludes `appsettings.Development.json` (local credentials/overrides), `/Front/`, `/LMS UI/` (static prototypes), `*.mdf`, `*.ldf`, `bin/`, `obj/`, `.vs/`, and `*.user`.
+`private/` (gitignored) holds the local database files (`LMS.mdf`, `LMS_log.ldf`) and archived documents. `.gitignore` also excludes `appsettings.Development.json` (local credentials/overrides), `/design/prototype/` and `/Front/` (static prototypes and screen designs), `*.mdf`, `*.ldf`, `bin/`, `obj/`, `.vs/`, and `*.user`.
