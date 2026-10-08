@@ -70,14 +70,20 @@ dotnet restore
 dotnet run
 ```
 
-### 5. Seeded administrator account
-Startup seeds an admin account:
+### 5. Bootstrap admin (Development only)
+On startup in the **Development** environment, the app provisions an admin account from configuration:
 
-| Email | Password |
-|---|---|
-| `admin@lms.com` | `Admin123!` |
+```json
+"BootstrapAdmin": {
+  "Email": "admin@lms.com",
+  "Password": ""
+}
+```
 
-This credential is fixed in source (`Data/SeedData.cs`) for development convenience. **Change it before any shared or production deployment** — see finding F-01 in [`docs/refactoring-analysis/findings.md`](docs/refactoring-analysis/findings.md).
+- The tracked `appsettings.json` ships with an **empty password**, so nothing is seeded until you set one.
+- Put your local password in `appsettings.Development.json` (gitignored) — never in a tracked file.
+- Outside Development, or when the password is empty, no account is created.
+- **Change the password after first login.** See finding F-01 in [`docs/refactoring-analysis/findings.md`](docs/refactoring-analysis/findings.md).
 
 ## Project Structure
 
@@ -109,8 +115,8 @@ This credential is fixed in source (`Data/SeedData.cs`) for development convenie
 
 ## Known Issues
 
-`docs/refactoring-analysis/findings.md` documents 18 findings, including: a seeded admin credential, enrollment/authorization gaps, unscoped notification reads, quiz scoring that trusts client option IDs, client-only quiz timers, inconsistent anti-forgery validation, and the `EnsureCreated` vs. SQL-script schema lifecycle split. Read its README for the proposed refactoring sessions before touching those areas.
+`docs/refactoring-analysis/findings.md` documents 18 findings, including: admin bootstrap credentials (now config-driven and Development-only — see F-01), enrollment/authorization gaps, unscoped notification reads, quiz scoring that trusts client option IDs, client-only quiz timers, inconsistent anti-forgery validation, and the `EnsureCreated` vs. SQL-script schema lifecycle split. Read its README for the proposed refactoring sessions before touching those areas.
 
 ## Local-only files (never commit)
 
-`private/` (gitignored) holds the local database files (`LMS.mdf`, `LMS_log.ldf`) and archived documents. `.gitignore` also excludes `/Front/`, `/LMS UI/` (static prototypes), `*.mdf`, `*.ldf`, `bin/`, `obj/`, `.vs/`, and `*.user`.
+`private/` (gitignored) holds the local database files (`LMS.mdf`, `LMS_log.ldf`) and archived documents. `.gitignore` also excludes `appsettings.Development.json` (local credentials/overrides), `/Front/`, `/LMS UI/` (static prototypes), `*.mdf`, `*.ldf`, `bin/`, `obj/`, `.vs/`, and `*.user`.

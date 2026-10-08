@@ -54,12 +54,12 @@ namespace Learning_Management_System
                 name: "default",
                 pattern: "{controller=Auth}/{action=Login}/{id?}");
 
-            // Seed admin user
+            // Create the database and provision the bootstrap admin (Development only)
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<LmsContext>();
                 await context.Database.EnsureCreatedAsync();
-                await SeedData.SeedAdminUser(context);
+                await SeedData.SeedAdminUser(context, app.Configuration, app.Environment.IsDevelopment());
             }
 
             await app.RunAsync();

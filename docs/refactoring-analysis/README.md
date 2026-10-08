@@ -29,4 +29,4 @@ Keep each session reviewable and behavior-preserving where possible. Record curr
 
 ## Review and validation notes
 
-This is a static review of the checked-in source, SQL script, Razor views, and project documentation. The path scan found no test project or test source files; `TestController.cs` is an application controller, not a test suite. I did not run a build, test suite, or database integration check. A terminal inspection attempt could not start in the sandbox and was not approved to run outside it, so database/runtime behavior remains unverified where called out in the findings.
+This is a static review of the checked-in source, SQL script, Razor views, and project documentation. The path scan found no test project or test source files; the former `TestController.cs` (an application controller with a `Ping` action, not a test suite) has since been removed. I did not run a build, test suite, or database integration check. A terminal inspection attempt could not start in the sandbox and was not approved to run outside it, so database/runtime behavior remains unverified where called out in the findings.

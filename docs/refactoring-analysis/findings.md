@@ -6,8 +6,8 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-01 — [High] A predictable administrator credential is seeded
 
-1. **Location:** `Program.cs:57-63`; `Data/SeedData.cs:8-44`, especially line 30.
-2. **Evidence:** Application startup calls `SeedAdminUser` every time. If `admin@lms.com` does not exist, the method inserts an active Admin account with the literal password `Admin123!`, hashed with BCrypt. The credential is fixed in source and there is no forced-change or environment-specific guard in this path.
+1. **Location:** `Program.cs` (startup seeding block); `Data/SeedData.cs` (`SeedAdminUser`).
+2. **Evidence:** Application startup called `SeedAdminUser` every time, inserting an active Admin account whose literal password was hard-coded in source and hashed with BCrypt, with no environment guard and no forced change. **Update (secrets cleanup):** the hard-coded literal has been removed from the repository. Seeding now reads `BootstrapAdmin:Email` / `BootstrapAdmin:Password` from configuration, only runs in the Development environment, and is skipped when the password is empty; the local value lives in a gitignored `appsettings.Development.json`. The original literal password was reachable in git history and has been purged, but any database seeded with it should be treated as exposed — change that password.
 3. **Impact:** A deployment that uses this bootstrap path exposes a known privileged credential to anyone who learns the source or default. **Confidence: High** for the unsafe default; production deployment of this exact path was not verified.
 4. **Recommendation:** Do not create a usable production administrator with a source-controlled password. Use an explicit first-run provisioning flow with a one-time secret from a secure configuration source, require password rotation, and disable the bootstrap path after use. Keep development seeding isolated from production.
 5. **Learning opportunity:** Seeding sample data and provisioning privileged identities have different security lifecycles. Environment-controlled secrets and one-time bootstrap flows are appropriate when an application must create its first operator account.
@@ -114,7 +114,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-13 — [Medium] No automated regression test suite was found
 
-1. **Location:** Project-wide path scan; the only file matching a broad `*Test*` name was `Controllers/TestController.cs`, which defines an HTTP `Ping` action.
+1. **Location:** Project-wide path scan; the only file matching a broad `*Test*` name was `Controllers/TestController.cs`, which defined an HTTP `Ping` action (since removed — no test suite exists).
 2. **Evidence:** The project listing and path scan did not locate a test project or test source files. Critical behaviors identified above—role checks, course scoping, progress persistence, quiz scoring, and SQL integration—have no checked-in automated regression coverage visible in this repository.
 3. **Impact:** Security and data-integrity changes are difficult to make safely, and SQL-dependent behavior is not easily verified in CI. **Confidence: Medium-high**; this conclusion is based on repository path discovery, not a separate external test repository.
 4. **Recommendation:** Add a focused automated test project with controller/integration coverage for the authorization and grading invariants, plus an isolated SQL Server test database for views/procedures/triggers. Avoid trying to test every presentation detail before the high-risk invariants are covered.
@@ -159,10 +159,10 @@ Findings are ordered by expected severity and value. The first section contains 
 5. **Learning opportunity:** Reverse-engineered EF models can preserve stale or duplicated database metadata. Schema cleanup should compare the model, migration history, and live database rather than relying on a single generated artifact.
 6. **Refactoring steps:** Query `sys.indexes` for the affected tables in a safe environment; compare index definitions and names against the SQL export; generate and review a migration/script in a disposable database; then remove redundant metadata only if the final schema remains unique and unchanged in behavior.
 
-### F-18 — [Low] An unreferenced theme script duplicates part of the active theme utility
+### F-18 — [Low] An unreferenced theme script duplicates part of the active theme utility (resolved)
 
-1. **Location:** `wwwroot/js/themeToggle.js`; active MVC reference in `Views/Shared/_Layout.cshtml:38-39` and `Views/Shared/_LoginLayout.cshtml:26-27`.
-2. **Evidence:** The layouts load `theme_toggle.js`, while project-wide reference search found no MVC/layout reference to `wwwroot/js/themeToggle.js`. Both files handle theme persistence/toggling, but the active script also wires the layout’s theme button. Static designs under `LMS UI/` are separate artifacts and include their own script references.
+1. **Location:** `wwwroot/js/themeToggle.js` — **removed in the repo cleanup**; the active reference is `theme_toggle.js` in `Views/Shared/_Layout.cshtml` and `Views/Shared/_LoginLayout.cshtml`.
+2. **Evidence:** The layouts load `theme_toggle.js`, while project-wide reference search found no MVC/layout reference to `wwwroot/js/themeToggle.js`. Both files handle theme persistence/toggling, but the active script also wires the layout’s theme button. Static designs under `LMS UI/` are separate artifacts and include their own script references. The unreferenced copy has since been deleted.
 3. **Impact:** The unused file creates ambiguity over which implementation is supported and can drift from the active behavior. Runtime impact is low while it remains unreferenced. **Confidence: High** for no checked-in MVC reference; **Medium** that there is no external/manual consumer.
 4. **Recommendation:** Confirm the asset is not referenced by deployment tooling or an external page, then remove it or document its separate purpose. Keep the MVC-served asset and static prototype assets clearly separated.
 5. **Learning opportunity:** Dead-code cleanup is safest when reference scope is established first. Similar filenames with different casing/underscores can be especially easy to confuse across environments and tools.

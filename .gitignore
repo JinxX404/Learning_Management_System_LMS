@@ -16,6 +16,12 @@ obj/
 *.mdf
 *.ldf
 
+# Local environment overrides (may contain credentials)
+appsettings.Development.json
+
+# IDE
+.idea/
+
 # Static prototypes and superseded assets
 /Front/
 /LMS UI/
