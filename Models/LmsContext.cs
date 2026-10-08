@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Learning_Management_System.ViewModels.Admin.Response;
 using Learning_Management_System.ViewModels.Student.Response;

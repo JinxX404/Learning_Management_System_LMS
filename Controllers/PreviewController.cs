@@ -13,16 +13,16 @@ namespace Learning_Management_System.Controllers
     public class PreviewController : Controller
     {
 
-    [HttpGet("view")]
+        [HttpGet("view")]
         public IActionResult ViewPage([FromQuery] ViewPageRequestViewModel model)
         {
-if (string.IsNullOrWhiteSpace(model.Name))
-            return BadRequest("name query required, e.g. ?name=AddCourse");
+            if (string.IsNullOrWhiteSpace(model.Name))
+                return BadRequest("name query required, e.g. ?name=AddCourse");
 
-        // return the exact cshtml file from Views/Admin
-        var viewPath = $"~/Views/Admin/{model.Name}.cshtml";
+            // return the exact cshtml file from Views/Admin
+            var viewPath = $"~/Views/Admin/{model.Name}.cshtml";
             return View(viewPath);
-                }
+        }
 
         private readonly ILogger<PreviewController> _logger;
 

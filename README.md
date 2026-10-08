@@ -35,6 +35,9 @@ The schema also models AI features (`AIModels`, `AIGeneratedContent`, `AIInterac
 - **Database**: SQL Server (LocalDB or a full instance)
 - **Auth**: custom session-based authentication — BCrypt password hashes (`BCrypt.Net-Next`), user ID stored in `HttpContext.Session`. **ASP.NET Core Identity is not used.**
 - **Frontend**: Razor views, Bootstrap 5, jQuery, Chart.js, vanilla JS/CSS
+- **Tests**: xUnit — `tests/Lms.Tests` (unit, no database) and `tests/Lms.IntegrationTests` (real SQL Server via `LMS_TEST_CONNECTION`)
+- **CI**: GitHub Actions — `.github/workflows/verify.yml` (format/lint/build/unit → integration → smoke → verify-gate)
+- **Working agreement**: [`AGENTS.md`](AGENTS.md) defines the engineering rules and the exact inner-loop vs. exit-gate commands
 
 ## Getting Started
 
@@ -87,6 +90,21 @@ On startup in the **Development** environment, the app provisions an admin accou
 - Outside Development, or when the password is empty, no account is created.
 - **Change the password after first login.** See finding F-01 in [`docs/refactoring-analysis/findings.md`](docs/refactoring-analysis/findings.md).
 
+## Verification
+
+```bash
+dotnet restore --locked-mode
+dotnet format "Learning Management System.sln" --verify-no-changes    # format gate
+dotnet build "Learning Management System.sln" --no-restore             # typecheck
+dotnet test tests/Lms.Tests                                            # unit (no DB)
+$LMS_TEST_CONNECTION="Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True" \
+  dotnet test tests/Lms.IntegrationTests                               # real SQL Server
+```
+
+`AGENTS.md` §2 defines the fast inner loop (single-file filters, touched files only) and
+the full pre-flight exit gate; `.github/workflows/verify.yml` runs the exit gate on every
+push/PR (format → lint → build → unit → integration → smoke → verify-gate).
+
 ## Project Structure
 
 ```
@@ -97,9 +115,16 @@ On startup in the **Development** environment, the app provisions an admin accou
 ├── Data/                 # SeedData
 ├── Helpers/              # SessionHelper
 ├── wwwroot/              # static assets (Bootstrap, jQuery, JS, CSS)
+├── tests/                # xUnit projects: Lms.Tests (unit), Lms.IntegrationTests (real SQL Server)
+├── .github/workflows/    # verify.yml — format, lint, build, unit, integration, smoke
+├── .scratch/             # local issue tracker: specs, maps, 8-task tickets, templates (tracked in git)
 ├── docs/
+│   ├── README.md         # source authority + reading order
 │   ├── schema/           # LMS Schema.sql — schema source of truth
+│   ├── domain.md         # invariants · architecture.md · quality.md · open-decisions.md
 │   └── refactoring-analysis/  # static code review: risks + refactoring sessions
+├── AGENTS.md             # operating constitution for agents (rules + commands)
+├── CONTEXT.md            # ubiquitous glossary: business term → code symbol
 ├── design/prototype/     # static screen designs + HTML prototype, gitignored
 └── private/              # local-only, gitignored (DB files, archived docs)
 ```
@@ -109,8 +134,17 @@ On startup in the **Development** environment, the app provisions an admin accou
 | Document | Location | Status |
 |---|---|---|
 | This README | `README.md` | current |
+| Operating constitution (rules, inner-loop/exit-gate commands, approval gate) | `AGENTS.md` | current |
+| Ubiquitous glossary (term → code symbol) | `CONTEXT.md` | current |
+| Documentation map & reading order | `docs/README.md` | current |
+| Invariants | `docs/domain.md` | current |
+| Boundaries & data flows | `docs/architecture.md` | current |
+| Definition of Done & verification matrix | `docs/quality.md` | current |
+| Gated decisions + engineering defaults | `docs/open-decisions.md` | current |
 | Database schema (tables, views, triggers, procedures) | `docs/schema/LMS Schema.sql` | current |
+| CI pipeline (format, lint, build, unit, integration, smoke) | `.github/workflows/verify.yml` | current |
 | Code review: security/data-integrity findings + refactoring plan | `docs/refactoring-analysis/` | current (Oct 2026 static review) |
+| Active epics, task tickets, evidence | `.scratch/issue-NN-*/` | per feature |
 | Screen designs & static HTML prototype | `design/prototype/` (local only) | superseded by `Views/`, kept as design reference |
 | Original project documentation & presentation | `private/archive/` (local only) | historical — as-planned Oct/Dec 2025, superseded by this README |
 

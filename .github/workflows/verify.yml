@@ -1,0 +1,227 @@
+name: verify
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+  SOLUTION: Learning Management System.sln
+  MSSQL_IMAGE: mcr.microsoft.com/mssql/server:2022-latest
+  # Throwaway credential for the ephemeral CI database only. Never reuse it anywhere else.
+  MSSQL_SA_PASSWORD: "Verify!Passw0rd123"
+  LMS_TEST_CONNECTION: "Server=localhost,1433;Database=LMS;User Id=sa;Password=Verify!Passw0rd123;TrustServerCertificate=True"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Static checks + unit tests. No database required.
+  # ---------------------------------------------------------------------------
+  static-and-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore (locked mode)
+        run: dotnet restore "$SOLUTION" --locked-mode
+
+      - name: Format check
+        run: dotnet format "$SOLUTION" --verify-no-changes
+
+      - name: Lint (analyzers)
+        run: dotnet format analyzers "$SOLUTION" --verify-no-changes
+
+      - name: Build (Release)
+        run: dotnet build "$SOLUTION" --no-restore -c Release
+
+      - name: Unit tests
+        run: dotnet test tests/Lms.Tests/Lms.Tests.csproj --no-build --no-restore -c Release
+
+  # ---------------------------------------------------------------------------
+  # Integration tests against a real SQL Server provisioned from the schema script.
+  # This doubles as proof that a clean install works (docs/schema/LMS Schema.sql).
+  # Sharding is reserved until job duration justifies it (decision D7).
+  # ---------------------------------------------------------------------------
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Verify!Passw0rd123"
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Wait for SQL Server and locate sqlcmd
+        id: sql
+        run: |
+          set -euo pipefail
+          CID=$(docker ps -q --filter "ancestor=${MSSQL_IMAGE}")
+          if [ -z "$CID" ]; then
+            echo "SQL Server container not found"; docker ps -a; exit 1
+          fi
+          SQLCMD=$(docker exec "$CID" sh -c 'if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then echo /opt/mssql-tools18/bin/sqlcmd; elif [ -x /opt/mssql-tools/bin/sqlcmd ]; then echo /opt/mssql-tools/bin/sqlcmd; fi')
+          if [ -z "$SQLCMD" ]; then
+            echo "sqlcmd not found inside the SQL Server image"; exit 1
+          fi
+          EXTRA=""
+          case "$SQLCMD" in *tools18*) EXTRA="-C" ;; esac
+          for i in $(seq 1 30); do
+            if docker exec "$CID" "$SQLCMD" $EXTRA -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b >/dev/null 2>&1; then
+              echo "SQL Server ready (attempt $i)"
+              echo "cid=$CID" >> "$GITHUB_OUTPUT"
+              echo "sqlcmd=$SQLCMD" >> "$GITHUB_OUTPUT"
+              echo "extra=$EXTRA" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "waiting for SQL Server ($i/30)"
+            sleep 5
+          done
+          echo "SQL Server never became ready"; docker logs "$CID" | tail -n 50; exit 1
+
+      - name: Apply schema script (source of truth)
+        run: |
+          set -euo pipefail
+          docker cp "docs/schema/LMS Schema.sql" "${{ steps.sql.outputs.cid }}:/tmp/schema.sql"
+          docker exec "${{ steps.sql.outputs.cid }}" "${{ steps.sql.outputs.sqlcmd }}" ${{ steps.sql.outputs.extra }} \
+            -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -f 65001 -b -i /tmp/schema.sql
+
+      - name: Restore (locked mode)
+        run: dotnet restore "$SOLUTION" --locked-mode
+
+      - name: Build (Release)
+        run: dotnet build "$SOLUTION" --no-restore -c Release
+
+      - name: Integration tests
+        env:
+          LMS_TEST_CONNECTION: ${{ env.LMS_TEST_CONNECTION }}
+        run: dotnet test tests/Lms.IntegrationTests/Lms.IntegrationTests.csproj --no-build --no-restore -c Release
+
+  # ---------------------------------------------------------------------------
+  # Smoke: boot the packaged app against the provisioned database and probe it.
+  # ---------------------------------------------------------------------------
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Verify!Passw0rd123"
+        ports:
+          - 1433:1433
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Wait for SQL Server and apply schema
+        run: |
+          set -euo pipefail
+          CID=$(docker ps -q --filter "ancestor=${MSSQL_IMAGE}")
+          if [ -z "$CID" ]; then
+            echo "SQL Server container not found"; docker ps -a; exit 1
+          fi
+          SQLCMD=$(docker exec "$CID" sh -c 'if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then echo /opt/mssql-tools18/bin/sqlcmd; elif [ -x /opt/mssql-tools/bin/sqlcmd ]; then echo /opt/mssql-tools/bin/sqlcmd; fi')
+          EXTRA=""
+          case "$SQLCMD" in *tools18*) EXTRA="-C" ;; esac
+          for i in $(seq 1 30); do
+            if docker exec "$CID" "$SQLCMD" $EXTRA -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1" -b >/dev/null 2>&1; then
+              echo "SQL Server ready (attempt $i)"; break
+            fi
+            if [ "$i" -eq 30 ]; then echo "SQL Server never became ready"; docker logs "$CID" | tail -n 50; exit 1; fi
+            echo "waiting for SQL Server ($i/30)"
+            sleep 5
+          done
+          docker cp "docs/schema/LMS Schema.sql" "$CID:/tmp/schema.sql"
+          docker exec "$CID" "$SQLCMD" $EXTRA -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -f 65001 -b -i /tmp/schema.sql
+
+      - name: Restore (locked mode) and build (Release)
+        run: |
+          set -euo pipefail
+          dotnet restore "$SOLUTION" --locked-mode
+          dotnet build "$SOLUTION" --no-restore -c Release
+
+      - name: Start application
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ASPNETCORE_URLS: http://localhost:5088
+          ConnectionStrings__DefaultConnection: ${{ env.LMS_TEST_CONNECTION }}
+        run: |
+          set -euo pipefail
+          nohup dotnet run --project "Learning Management System.csproj" --no-build --no-restore -c Release --no-launch-profile \
+            > /tmp/lms-app.log 2>&1 &
+          echo "app started"
+
+      - name: Probe health, login, swagger and auth-gated route
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 45); do
+            if curl -fsS -o /dev/null "http://localhost:5088/Auth/Login"; then
+              echo "application up (attempt $i)"; break
+            fi
+            if [ "$i" -eq 45 ]; then echo "application never responded"; tail -n 100 /tmp/lms-app.log; exit 1; fi
+            sleep 4
+          done
+
+          login_code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:5088/Auth/Login")
+          echo "GET /Auth/Login -> $login_code"
+          [ "$login_code" = "200" ]
+
+          swagger_code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:5088/swagger/index.html")
+          echo "GET /swagger -> $swagger_code"
+          [ "$swagger_code" = "200" ]
+
+          final_url=$(curl -s -o /dev/null -w '%{url_effective}' -L "http://localhost:5088/Student/Dashboard")
+          echo "GET /Student/Dashboard (anonymous) -> $final_url"
+          case "$final_url" in
+            */Auth/Login*) : ;;
+            *) echo "anonymous request was not redirected to the login page"; tail -n 100 /tmp/lms-app.log; exit 1 ;;
+          esac
+
+      - name: Dump application log on failure
+        if: failure()
+        run: tail -n 200 /tmp/lms-app.log
+
+  # ---------------------------------------------------------------------------
+  # Aggregate merge gate: every job above must succeed.
+  # ---------------------------------------------------------------------------
+  verify-gate:
+    needs: [static-and-unit, integration, smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require all jobs to succeed
+        run: |
+          set -euo pipefail
+          echo "static-and-unit: ${{ needs.static-and-unit.result }}"
+          echo "integration:     ${{ needs.integration.result }}"
+          echo "smoke:           ${{ needs.smoke.result }}"
+          [ "${{ needs.static-and-unit.result }}" = "success" ]
+          [ "${{ needs.integration.result }}" = "success" ]
+          [ "${{ needs.smoke.result }}" = "success" ]

@@ -54,7 +54,7 @@ namespace Learning_Management_System.Controllers
             ViewBag.ActiveCourses = activeCourses;
             ViewBag.CourseEnrollments = courseEnrollments;
             ViewBag.AiGenerations = aiGenerations;
-            
+
             ViewBag.NewUsersLastMonth = newUsersLastMonth;
             ViewBag.NewEnrollmentsLastMonth = newEnrollmentsLastMonth;
 
@@ -100,7 +100,7 @@ namespace Learning_Management_System.Controllers
                 .GroupBy(c => c.Aimodel.ModelName)
                 .Select(g => new { Model = g.Key, Count = g.Count() })
                 .ToListAsync();
-            
+
             ViewBag.AiUsage = aiUsage;
 
             ViewData["Title"] = "Admin Dashboard";
@@ -120,9 +120,9 @@ namespace Learning_Management_System.Controllers
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                usersQuery = usersQuery.Where(u => 
-                    u.FirstName.Contains(searchString) || 
-                    u.LastName.Contains(searchString) || 
+                usersQuery = usersQuery.Where(u =>
+                    u.FirstName.Contains(searchString) ||
+                    u.LastName.Contains(searchString) ||
                     u.Email.Contains(searchString));
             }
 
@@ -375,7 +375,7 @@ namespace Learning_Management_System.Controllers
                 ViewBag.Institutions = institutions;
                 ViewBag.User = user;
                 ViewBag.Error = "Email, First Name, and Last Name are required.";
-                
+
                 if (role == "Student")
                 {
                     ViewData["Title"] = "Edit Student";
@@ -386,7 +386,7 @@ namespace Learning_Management_System.Controllers
                     ViewData["Title"] = "Edit Instructor";
                     return View("EditInstructor");
                 }
-                
+
                 ViewData["Title"] = "Edit User";
                 return View();
             }
@@ -432,14 +432,14 @@ namespace Learning_Management_System.Controllers
             {
                 // Student still has active enrollments → do NOT deactivate
                 TempData["Error"] = "This student cannot be deleted because they still have active enrollments.";
-                return RedirectToAction("Students"); 
+                return RedirectToAction("Students");
             }
-            
+
             // Can safely soft delete
             user.IsActive = false;
             user.UpdatedAt = DateTime.Now;
             await _context.SaveChangesAsync();
-            
+
 
             return RedirectToAction("Students");
         }
@@ -470,9 +470,9 @@ namespace Learning_Management_System.Controllers
             {
                 // Instructor still has active courses → do NOT deactivate
                 TempData["Error"] = "This instructor cannot be deleted because they still have active courses.";
-                return RedirectToAction("Instructors"); 
+                return RedirectToAction("Instructors");
             }
-            
+
             // Can safely soft delete
             user.IsActive = false;
             user.UpdatedAt = DateTime.Now;
@@ -773,7 +773,8 @@ namespace Learning_Management_System.Controllers
                 .Join(_context.Courses,
                     rate => rate.CourseId,
                     course => course.CourseId,
-                    (rate, course) => new {
+                    (rate, course) => new
+                    {
                         CourseTitle = course.Title,
                         CourseCode = course.CourseCode,
                         PassRate = rate.PassRate,
@@ -801,7 +802,7 @@ namespace Learning_Management_System.Controllers
         public async Task<IActionResult> Settings()
         {
             ViewData["AdminActive"] = "settings";
-            
+
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login", "Auth");
 
@@ -889,7 +890,7 @@ namespace Learning_Management_System.Controllers
 
             return View();
         }
-    
+
         [HttpPost]
         public async Task<IActionResult> CreateCourse(
             string courseCode,
@@ -1099,7 +1100,7 @@ namespace Learning_Management_System.Controllers
             // Check if already enrolled
             var exists = await _context.CourseEnrollments
                 .AnyAsync(e => e.CourseId == courseId && e.UserId == studentId);
-            
+
             if (!exists)
             {
                 var enrollment = new CourseEnrollment
@@ -1111,10 +1112,10 @@ namespace Learning_Management_System.Controllers
                 };
 
                 _context.CourseEnrollments.Add(enrollment);
-                
+
                 // Update course count
                 course.CurrentEnrollment++;
-                
+
                 await _context.SaveChangesAsync();
             }
 
@@ -1137,18 +1138,18 @@ namespace Learning_Management_System.Controllers
                 var course = enrollment.Course;
 
                 _context.CourseEnrollments.Remove(enrollment);
-                
+
                 // Update course count
                 if (course.CurrentEnrollment > 0)
                     course.CurrentEnrollment--;
 
                 await _context.SaveChangesAsync();
-                
+
                 return RedirectToAction("Enrollments", new { courseId = courseId });
             }
 
             return RedirectToAction("Enrollments");
         }
-}
+    }
 }
 

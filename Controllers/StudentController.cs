@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
 using Learning_Management_System.ViewModels.Student.Request;
@@ -137,26 +137,26 @@ namespace Learning_Management_System.Controllers
             ViewData["Title"] = "Course Assignments";
 
             return View(model);
-        }     
+        }
         [HttpGet]
         public async Task<IActionResult> Grades()
         {
-            
-                if (!IsLoggedIn())
-                    return RedirectToAction("Login", "Auth");
 
-                var userId = GetCurrentUserId() ?? 0;
+            if (!IsLoggedIn())
+                return RedirectToAction("Login", "Auth");
 
-                var grades = await _context.AllStudentGrades
-                    .Where(v => v.UserId == userId)
-                    .OrderByDescending(v => v.GradedAt)
-                    .ToListAsync();
+            var userId = GetCurrentUserId() ?? 0;
 
-                var model = new GradesResponseViewModel { Grades = grades };
-                ViewData["Title"] = "My Grades";
+            var grades = await _context.AllStudentGrades
+                .Where(v => v.UserId == userId)
+                .OrderByDescending(v => v.GradedAt)
+                .ToListAsync();
 
-                return View(model);
-            
+            var model = new GradesResponseViewModel { Grades = grades };
+            ViewData["Title"] = "My Grades";
+
+            return View(model);
+
         }
 
         [HttpGet]
@@ -301,7 +301,7 @@ namespace Learning_Management_System.Controllers
             return View(response);
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> CourseDetails(int id)
         {
@@ -481,7 +481,7 @@ namespace Learning_Management_System.Controllers
             if (activeAttempt != null)
             {
                 var existingResponses = new Dictionary<int, string>();
-                foreach(var r in activeAttempt.QuizResponses)
+                foreach (var r in activeAttempt.QuizResponses)
                 {
                     if (r.SelectedOptionId.HasValue)
                         existingResponses[r.QuestionId] = r.SelectedOptionId.Value.ToString();
@@ -551,16 +551,16 @@ namespace Learning_Management_System.Controllers
 
             decimal totalScore = 0;
             decimal maxScore = 0;
-            
+
             foreach (var question in quizAttempt.Quiz.QuizQuestions)
             {
                 maxScore += question.Points;
                 var response = quizAttempt.QuizResponses.FirstOrDefault(qr => qr.QuestionId == question.QuestionId);
-                
+
                 if (response != null)
                 {
                     bool isCorrect = false;
-                    
+
                     if (question.QuestionType == "ShortAnswer")
                     {
                         var correctOption = question.QuestionOptions.FirstOrDefault(o => o.IsCorrect);
@@ -583,7 +583,7 @@ namespace Learning_Management_System.Controllers
                     }
                 }
             }
-            
+
             quizAttempt.Score = totalScore;
             await _context.SaveChangesAsync();
 
@@ -633,7 +633,7 @@ namespace Learning_Management_System.Controllers
             {
                 var questionId = answer.Key;
                 var answerValue = answer.Value;
-                
+
                 var question = quiz.QuizQuestions.FirstOrDefault(q => q.QuestionId == questionId);
                 if (question == null) continue;
 
@@ -672,7 +672,7 @@ namespace Learning_Management_System.Controllers
             // Redirect to results
             return RedirectToAction("QuizResult", new { id = attempt.AttemptId });
         }
-    
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordRequestViewModel model)

@@ -1,4 +1,4 @@
-﻿using Learning_Management_System.Models;
+using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
 using Learning_Management_System.ViewModels.Instructor.Request;
 using Microsoft.AspNetCore.Mvc;
@@ -1009,33 +1009,33 @@ namespace Learning_Management_System.Controllers
         [HttpGet]
         public async Task<IActionResult> Announcements()
         {
-             if (!IsLoggedIn() || !await IsInstructor())
+            if (!IsLoggedIn() || !await IsInstructor())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-             var courses = await _context.Courses
-                .Where(c => c.InstructorId == userId)
-                .Include(c => c.CourseEnrollments)
-                .ToListAsync();
+            var courses = await _context.Courses
+               .Where(c => c.InstructorId == userId)
+               .Include(c => c.CourseEnrollments)
+               .ToListAsync();
 
             var courseIds = courses.Select(c => c.CourseId).ToList();
 
-             var enrolledStudentIds = await _context.CourseEnrollments
-                .Where(e => courseIds.Contains(e.CourseId))
-                .Select(e => e.UserId)
-                .Distinct()
-                .ToListAsync();
+            var enrolledStudentIds = await _context.CourseEnrollments
+               .Where(e => courseIds.Contains(e.CourseId))
+               .Select(e => e.UserId)
+               .Distinct()
+               .ToListAsync();
 
-             var recentNotifications = await _context.Notifications
-                .Where(n => enrolledStudentIds.Contains(n.UserId))
-                .OrderByDescending(n => n.CreatedAt)
-                .Take(10)
-                .ToListAsync();
+            var recentNotifications = await _context.Notifications
+               .Where(n => enrolledStudentIds.Contains(n.UserId))
+               .OrderByDescending(n => n.CreatedAt)
+               .Take(10)
+               .ToListAsync();
 
-            ViewBag.Courses = courses;                      
-            ViewBag.RecentNotifications = recentNotifications;   
-            ViewData["Title"] = "Manage Announcements";      
+            ViewBag.Courses = courses;
+            ViewBag.RecentNotifications = recentNotifications;
+            ViewData["Title"] = "Manage Announcements";
 
             return View();
         }
@@ -1043,13 +1043,13 @@ namespace Learning_Management_System.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAnnouncement(int courseId, string message, bool isImportant = false)
         {
-             if (!IsLoggedIn() || !await IsInstructor())
+            if (!IsLoggedIn() || !await IsInstructor())
                 return RedirectToAction("Login", "Auth");
 
             var userId = GetCurrentUserId() ?? 0;
 
-             var course = await _context.Courses
-                .FirstOrDefaultAsync(c => c.CourseId == courseId && c.InstructorId == userId);
+            var course = await _context.Courses
+               .FirstOrDefaultAsync(c => c.CourseId == courseId && c.InstructorId == userId);
 
             if (course == null)
                 return NotFound();
@@ -1059,7 +1059,7 @@ namespace Learning_Management_System.Controllers
                 .Select(e => e.UserId)
                 .ToListAsync();
 
-             var notifications = enrolledUserIds.Select(uid => new Notification
+            var notifications = enrolledUserIds.Select(uid => new Notification
             {
                 UserId = uid,
                 Message = $"[{course.Title}] {message}",
