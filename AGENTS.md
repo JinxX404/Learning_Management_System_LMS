@@ -24,7 +24,7 @@ with Admin, Instructor, and Student portals.
 | Database | SQL Server (LocalDB or full instance) |
 | Schema source of truth | `docs/schema/LMS Schema.sql` — **there are no EF migrations** (decision D1 in `docs/open-decisions.md`) |
 | Authentication | Custom session auth: BCrypt hashes (`BCrypt.Net-Next`), user id in `HttpContext.Session`. **ASP.NET Core Identity is NOT used.** |
-| Frontend | Razor, Bootstrap 5, jQuery, Chart.js, vanilla JS/CSS under `wwwroot/` |
+| Frontend | Razor, Bootstrap 5, jQuery, vanilla JS/CSS under `wwwroot/`; Chart.js is CDN-loaded (`Views/Student/Dashboard.cshtml`), not vendored |
 | Unit tests | xUnit — `tests/Lms.Tests` (no database) |
 | Integration tests | xUnit — `tests/Lms.IntegrationTests` (real SQL Server via `LMS_TEST_CONNECTION`) |
 | Format / lint | `.editorconfig` + `dotnet format` (whitespace, style, analyzers) |
@@ -60,15 +60,22 @@ command must name the solution explicitly** or it fails with a workspace error.
 6. **Secrets never enter tracked files.** `appsettings.json` ships with an empty
    `BootstrapAdmin:Password`. Local credentials belong in `appsettings.Development.json`
    (gitignored). Never echo connection strings with passwords into logs, commits, or docs.
+   Carve-out: the throwaway CI container credential tracked in
+   `.github/workflows/verify.yml` is the single documented exception (ephemeral
+   single-job container, never reused anywhere else).
 7. **Authorization is not optional.** Keep the existing session/role checks
    (`IsLoggedIn`, role gates) in every portal action you touch. Never weaken or bypass
    them to make a test or a flow pass.
 8. **No native browser dialogs.** `window.alert()`, `window.confirm()`, and native
    prompts are forbidden: they freeze threads, break headless CI, cannot be themed, and
-   destroy accessibility. Use custom in-app modals.
+   destroy accessibility. Use custom in-app modals. Existing occurrences in 6 views are
+   tracked debt (audit finding) — never add new ones; `wwwroot/js/toast.js` already ships
+   the confirm modal.
 9. **Strict scope isolation in CSS.** Prefix feature styles under an isolated container
-   root. Never modify global resets or shared shell utilities in `wwwroot/css/site.css`
-   to fix a feature-specific layout; verify unrelated screens still render identically.
+   root. Never modify global resets or shared shell utilities in the loaded shell
+   stylesheet (`wwwroot/css/main.css`; `site.css`/`themes.css` are legacy and
+   unreferenced) to fix a feature-specific layout; verify unrelated screens still render
+   identically.
 10. **Local host limits are not permission to weaken security.** If this Windows
     workstation lacks a capability (e.g. POSIX mode bits, raw sockets, LocalDB that will
     not start), scope that verification to CI. Never edit application code to bypass an
@@ -97,7 +104,7 @@ dotnet test tests/Lms.Tests --no-restore --filter "FullyQualifiedName~SessionHel
 dotnet test tests/Lms.Tests --no-restore --filter "FullyQualifiedName~SessionHelperTests.ClearSession_removes_the_stored_user"
 
 # Single integration test file against a real SQL Server
-$LMS_TEST_CONNECTION = "Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True"
+$env:LMS_TEST_CONNECTION = "Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True"
 dotnet test tests/Lms.IntegrationTests --no-restore --filter "FullyQualifiedName~SchemaExistenceTests"
 
 # Browser/E2E scenario: none yet (decision D2 in docs/open-decisions.md)
@@ -129,7 +136,7 @@ dotnet format "Learning Management System.sln" --verify-no-changes          # fo
 dotnet format analyzers "Learning Management System.sln" --verify-no-changes # lint
 dotnet build "Learning Management System.sln" --no-restore -c Release                                          # typecheck + build
 dotnet test tests/Lms.Tests --no-build --no-restore -c Release               # full unit suite
-$LMS_TEST_CONNECTION = "..." ; dotnet test tests/Lms.IntegrationTests --no-build --no-restore -c Release
+$env:LMS_TEST_CONNECTION = "..." ; dotnet test tests/Lms.IntegrationTests --no-build --no-restore -c Release
 ```
 
 The `smoke` proof (boot the packaged app against a provisioned SQL Server and probe
@@ -159,8 +166,10 @@ never ignored):
   01 schema/domain hook -> 02 contracts/API boundaries -> 03 primary UI -> 04 security &
   state machine -> 05 secondary workflows -> 06 atomic server operation ->
   07 review/history/a11y polish -> 08 integrated proof + exit gate.
-- Evidence for each subtask is recorded at
-  `evidence/issue-NN/task-NN-evidence.md` (test logs, exit codes, screenshots).
+- Evidence for each subtask is recorded in the repo-root `evidence/issue-NN/` folder
+  (`evidence/issue-NN/task-NN-evidence.md`: test logs, exit codes, screenshots). This is
+  **separate from** the `.scratch/issue-NN-*/` ticket folder above — one `evidence/`
+  folder per epic, created on demand.
 
 ---
 

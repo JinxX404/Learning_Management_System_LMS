@@ -61,7 +61,7 @@ dotnet test tests/Lms.Tests --no-restore --filter "FullyQualifiedName~<TestClass
 dotnet test tests/Lms.Tests --no-restore --filter "FullyQualifiedName~<TestClass>.<method>"
 
 # Single integration test file (real SQL Server)
-$LMS_TEST_CONNECTION = "Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True"
+$env:LMS_TEST_CONNECTION = "Server=.;Database=LMS;Trusted_Connection=True;TrustServerCertificate=True"
 dotnet test tests/Lms.IntegrationTests --no-restore --filter "FullyQualifiedName~<TestClass>"
 
 # Browser/E2E single scenario: none available (decision D2) — use manual protocol §8

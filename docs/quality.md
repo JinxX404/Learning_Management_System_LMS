@@ -13,7 +13,7 @@ exit-gate split.
 - [ ] Targeted unit test(s) for the changed logic, inside the inner loop.
 - [ ] Targeted integration test when persistence or database objects are touched.
 - [ ] New/changed terms added to `CONTEXT.md`; invariants reflected in `docs/domain.md`.
-- [ ] Evidence recorded in `evidence/issue-NN/task-NN-evidence.md` (commands, exit codes, output).
+- [ ] Evidence recorded in `evidence/issue-NN/task-NN-evidence.md` (commands, exit codes, output) — repo-root folder, one per epic, separate from `.scratch/issue-NN-*/`.
 - [ ] Human approval `PASS` obtained before any remote push.
 
 ## 2. Verification layers
@@ -23,8 +23,8 @@ exit-gate split.
 | Format | Touched files | `dotnet format` | `… --include <files>` | `static-and-unit` | Active |
 | Lint / analyzers | Whole solution | `dotnet format analyzers --verify-no-changes` | same, with `analyzers` | `static-and-unit` | Active |
 | Typecheck / build | Whole solution | Roslyn (`dotnet build <solution>`) | `dotnet build "Learning Management System.sln" --no-restore` | `static-and-unit` | Active (3 known nullable warnings, D4) |
-| Unit | Pure logic, no I/O | xUnit `tests/Lms.Tests` | `dotnet test tests/Lms.Tests --filter "FullyQualifiedName~<Class>"` | `static-and-unit` | Active (7 tests) |
-| Persistence / integration | Real SQL Server from the schema script | xUnit `tests/Lms.IntegrationTests` | `dotnet test tests/Lms.IntegrationTests --filter "FullyQualifiedName~<Class>"` with `LMS_TEST_CONNECTION` | `integration` | Active (schema existence, EF query) |
+| Unit | Pure logic, no I/O | xUnit `tests/Lms.Tests` | `dotnet test tests/Lms.Tests --filter "FullyQualifiedName~<Class>"` | `static-and-unit` | Active (7 tests: SessionHelper, PasswordHashing) |
+| Persistence / integration | Real SQL Server from the schema script | xUnit `tests/Lms.IntegrationTests` | `dotnet test tests/Lms.IntegrationTests --filter "FullyQualifiedName~<Class>"` with `$env:LMS_TEST_CONNECTION` | `integration` | Active (schema existence, EF query) |
 | Contract | External HTTP/JSON contracts | — | — | — | Not applicable (no external API consumers) |
 | Browser / E2E | Multi-viewport UI flows | *TBD* (decision D2) | TBD | `e2e` (reserved) | Pending — do not claim E2E coverage |
 | Smoke | App boots, serves, authenticates | `dotnet run` + HTTP probes in CI | CI job `smoke` | `smoke` | Active |
@@ -72,7 +72,9 @@ Every completed subtask records:
    the screen participates in theming).
 4. The human approval answer (`PASS`/`FAIL`) with date.
 
-Store evidence under `evidence/issue-NN/task-NN-evidence.md`.
+Store evidence under `evidence/issue-NN/task-NN-evidence.md` (repository root — the
+`evidence/` folder is created with the first epic; the ticket/spec material lives
+separately under `.scratch/issue-NN-*/`).
 
 ## 6. UI quality bar (applies to every view change)
 
@@ -81,7 +83,8 @@ Store evidence under `evidence/issue-NN/task-NN-evidence.md`.
 - Keyboard-operable: visible focus, logical tab order, no keyboard traps; dialogs trap
   focus and restore it on close.
 - Light and dark themes both legible; contrast meets WCAG AA for text and controls.
-- No native browser dialogs (`alert`/`confirm`/prompt) anywhere.
+- No native browser dialogs (`alert`/`confirm`/prompt) anywhere. Existing violations are
+  tracked debt (see `AGENTS.md` rule 8) — never add new ones.
 - Feature styles scoped under the feature root; unrelated screens must render unchanged
   after the change (screenshot-diff by inspection).
 

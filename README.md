@@ -15,7 +15,7 @@ Repository: https://github.com/JinxX404/Learning_Management_System_LMS
 ### Instructor Portal
 - **Course management**: create and edit courses, lectures, and learning assets.
 - **Roster**: view enrolled students per course.
-- **Quizzes**: create quizzes with multiple question types; question/option bank.
+- **Quizzes**: create quizzes with multiple question types (questions and options are authored inline per quiz).
 - **Grading**: grade book view and grading workflows.
 - **Announcements**: post announcements to students.
 
@@ -144,7 +144,8 @@ push/PR (format → lint → build → unit → integration → smoke → verify
 | Database schema (tables, views, triggers, procedures) | `docs/schema/LMS Schema.sql` | current |
 | CI pipeline (format, lint, build, unit, integration, smoke) | `.github/workflows/verify.yml` | current |
 | Code review: security/data-integrity findings + refactoring plan | `docs/refactoring-analysis/` | current (Oct 2026 static review) |
-| Active epics, task tickets, evidence | `.scratch/issue-NN-*/` | per feature |
+| Active epics, specs, task tickets | `.scratch/issue-NN-*/` | per feature |
+| Subtask evidence (test logs, exit codes, screenshots) | `evidence/issue-NN/` | per epic |
 | Screen designs & static HTML prototype | `design/prototype/` (local only) | superseded by `Views/`, kept as design reference |
 | Original project documentation & presentation | `private/archive/` (local only) | historical — as-planned Oct/Dec 2025, superseded by this README |
 

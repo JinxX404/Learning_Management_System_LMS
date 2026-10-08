@@ -12,7 +12,10 @@
     running this script is always required. See README.md,
     "3. Create the database".
 
-  Generated from a live database on 2025-10-15; schema-only, no data rows.
+  Generated from a live database on 2025-10-15; schema + demonstration seed rows
+  (90 INSERT statements, incl. 16 Users). The seeded Users.PasswordHash values are
+  PBKDF2-format placeholders (prefix AQAA), which BCrypt login rejects - those demo
+  accounts are inert until re-seeded with BCrypt hashes.
 */
 CREATE DATABASE [LMS];
 GO

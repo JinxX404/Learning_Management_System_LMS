@@ -6,7 +6,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-01 — [High] A predictable administrator credential is seeded
 
-1. **Location:** `Program.cs` (startup seeding block); `Data/SeedData.cs` (`SeedAdminUser`).
+1. **Location:** `Program.cs:57-63` (startup seeding block); `Data/SeedData.cs:9-61` (`SeedAdminUser`).
 2. **Evidence:** Application startup called `SeedAdminUser` every time, inserting an active Admin account whose literal password was hard-coded in source and hashed with BCrypt, with no environment guard and no forced change. **Update (secrets cleanup):** the hard-coded literal has been removed from the repository. Seeding now reads `BootstrapAdmin:Email` / `BootstrapAdmin:Password` from configuration, only runs in the Development environment, and is skipped when the password is empty; the local value lives in a gitignored `appsettings.Development.json`. The original literal password was reachable in git history and has been purged, but any database seeded with it should be treated as exposed — change that password.
 3. **Impact:** A deployment that uses this bootstrap path exposes a known privileged credential to anyone who learns the source or default. **Confidence: High** for the unsafe default; production deployment of this exact path was not verified.
 4. **Recommendation:** Do not create a usable production administrator with a source-controlled password. Use an explicit first-run provisioning flow with a one-time secret from a secure configuration source, require password rotation, and disable the bootstrap path after use. Keep development seeding isolated from production.
@@ -15,7 +15,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-02 — [High] Lesson completion can enroll a user and mark the whole course complete
 
-1. **Location:** `Controllers/StudentController.cs:184-214`; caller in `Views/Student/CourseContent.cshtml:103-119`.
+1. **Location:** `Controllers/StudentController.cs:184-221` (the `CourseEnrollment` write is at 202-208); caller in `Views/Student/CourseContent.cshtml:103-119`.
 2. **Evidence:** `MarkLessonComplete` checks only that the submitted `UserId` equals the session ID. It does not require an existing enrollment or validate a lesson ID. When no enrollment exists for the supplied `CourseId`, it creates a `CourseEnrollment` with `Status = "Completed"`; otherwise it changes that enrollment’s status to `Completed`. `CourseDetails` and `QuizPage` treat the existence of an enrollment row as sufficient enrollment (`StudentController.cs:313-317` and `461-465`). The client submits only course and user IDs, not a lesson identifier.
 3. **Impact:** Any signed-in account can create an enrollment in an arbitrary course through the completion endpoint and immediately represent the entire course as completed. Existing enrollment state is also overwritten by a lesson-level action. This bypasses the intended enrollment boundary and corrupts academic/progress data. **Confidence: High.**
 4. **Recommendation:** Model lesson completion separately from course enrollment. Require the caller to be enrolled in the course, verify the lesson belongs to that course, and update only that user/lesson completion record. Do not accept a user ID as authority when the identity is already available from the session/principal.
@@ -25,7 +25,7 @@ Findings are ordered by expected severity and value. The first section contains 
 ### F-03 — [High] Course content is served without checking enrollment or course existence
 
 1. **Location:** `Controllers/StudentController.cs:84-115`, particularly lines 87-101.
-2. **Evidence:** `CourseContent` checks only `IsLoggedIn()`, then loads a course by the caller-supplied ID. Unlike `CourseDetails`, `CourseQuizzes`, and `QuizPage`, it does not query `CourseEnrollments` before returning the course, lectures, and learning assets. It also dereferences `course.Lectures` at line 97 before checking whether `course` is null.
+2. **Evidence:** `CourseContent` checks only `IsLoggedIn()`, then loads a course by the caller-supplied ID. Unlike `CourseDetails`, `CourseQuizzes`, and `QuizPage`, it does not query `CourseEnrollments` before returning the course, lectures, and learning assets. It also dereferences `course.Lectures` at line 97 with no null check anywhere in the action.
 3. **Impact:** Any account with a session can request learning materials for a course it is not enrolled in; a logged-in non-student can use the same endpoint. An invalid course ID can cause a null-reference exception and a server error instead of a not-found response. **Confidence: High.**
 4. **Recommendation:** Centralize the student/active-account check and scope the course query to a current enrollment (or to an explicit preview policy if previews are intended). Return `NotFound()` before dereferencing a missing course.
 5. **Learning opportunity:** Object-level authorization belongs in the resource query, not only in a page link or a controller-level “logged in” check. Query scoping also reduces the chance that a later code path forgets an authorization check.
@@ -33,7 +33,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-04 — [High] The announcements page returns every user’s notifications
 
-1. **Location:** `Controllers/StudentController.cs:162-181`, especially lines 168-177.
+1. **Location:** `Controllers/StudentController.cs:162-182`, especially lines 170-177.
 2. **Evidence:** The action reads `_context.Notifications` ordered by date without a `Where(n => n.UserId == userId)` predicate. It then places the complete result in the current user’s `AnnouncementsResponseViewModel`. The dashboard action does correctly filter notifications by `UserId` at lines 43-47, showing that per-user scoping is available elsewhere.
 3. **Impact:** A signed-in user can see announcements or notification messages addressed to other accounts, and the unread count also includes other users’ records. Messages may contain private account or course information. **Confidence: High.**
 4. **Recommendation:** Filter the query by the current session user ID, as the dashboard does. If some messages are intentionally course-wide, represent that audience explicitly and authorize membership in the audience rather than making all notifications global.
@@ -42,7 +42,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-05 — [High] Quiz scoring accepts an option belonging to a different question
 
-1. **Location:** `Controllers/StudentController.cs:402-441` and `603-669`; `LMS Schema.sql:1431-1471`, especially lines 1444-1449; score display also checks `SelectedOption.IsCorrect` at `StudentController.cs:555-576`.
+1. **Location:** `Controllers/StudentController.cs:402-443` and `601-674`; `LMS Schema.sql:1443-1484`, especially the scoring join at lines 1457-1461; score display also checks `SelectedOption.IsCorrect` at `StudentController.cs:555-585` (unchecked at line 574).
 2. **Evidence:** `SaveQuizProgress` accepts an arbitrary `QuestionId` and parses an arbitrary answer into `SelectedOptionId`; it does not verify that the question belongs to the attempt’s quiz or that the option belongs to that question. `SubmitQuiz` does restrict submitted question IDs to the quiz’s question list, but still assigns a parsed option ID without checking its owning question. The stored procedure joins `QuizResponses` to `QuestionOptions` by option ID and to `QuizQuestions` by response question ID, then awards points when `qo.IsCorrect = 1`; it never requires `qo.QuestionId = q.QuestionId`. The result action likewise uses `SelectedOption.IsCorrect` without validating question ownership.
 3. **Impact:** A tampered request can associate a correct option from another question with an answer and be scored as correct. The client-rendered options are not a security boundary. This undermines quiz grades and any downstream transcript/reporting based on them. **Confidence: High.**
 4. **Recommendation:** On both autosave and final submission, validate the attempt owner, quiz/question relationship, and option/question relationship on the server. Make scoring join/compare the selected option’s `QuestionId` to the response question’s ID; consider a database constraint or normalized response design that makes invalid pairings impossible.
@@ -51,7 +51,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-06 — [High] Quiz time and due-date rules are enforced only in the browser/page-entry path
 
-1. **Location:** `Controllers/StudentController.cs:445-473` and `601-673`; timer logic in `Views/Student/QuizPage.cshtml:205-260`.
+1. **Location:** `Controllers/StudentController.cs:444-532` (due-date check at 469-473) and `601-674`; timer logic in `Views/Student/QuizPage.cshtml:205-288`.
 2. **Evidence:** `QuizPage` rejects a quiz whose due date is already past when the page is opened. The browser timer uses `StartedAt`, `TimeLimitMinutes`, and the due date to auto-submit, but `SaveQuizProgress` and `SubmitQuiz` do not compare the request time with the attempt start, quiz time limit, or due date. The final action checks ownership and whether `SubmittedAt` is already set, but no server-side deadline.
 3. **Impact:** A user can disable or alter the client timer, continue autosaving, and submit after the configured limit or due date. This creates inconsistent assessment policy and unfair grading. **Confidence: High.**
 4. **Recommendation:** Calculate the effective deadline on the server from the attempt start, quiz time limit, and due date; reject or consistently close saves/submissions after it. Treat client countdown as feedback only. Define timezone semantics before comparing persisted `DateTime` values.
@@ -60,8 +60,8 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-07 — [Medium] Several mutating actions do not validate anti-forgery tokens
 
-1. **Location:** Examples include `Controllers/AdminController.cs:189-195` (`CreateStudent`), `417-420` (`DeleteStudent`), `576-581` (`CreateAcademicTerm`), `708-710` (`DeleteUser`), `893-901` (`CreateCourse`), `996-998` (`DeleteCourse`), and `1090-1092` (`EnrollStudent`); `Controllers/InstructorController.cs:302-304` (`AddLecture`), `1043-1045` (`CreateAnnouncement`), `1076-1078` (`SendAnnouncement`), and `118-120` (`ChangePassword`).
-2. **Evidence:** These actions are marked `[HttpPost]` but do not have `[ValidateAntiForgeryToken]`; `Program.cs:14` does not register a global anti-forgery filter. Some corresponding Razor forms emit `@Html.AntiForgeryToken()` (for example `Views/Admin/AddStudent.cshtml:25-29`), but token generation alone does not make the action validate the token. Other mutations in the same controllers do carry the attribute, so the protection is inconsistent.
+1. **Location:** Examples include `Controllers/AdminController.cs:189-195` (`CreateStudent`), `417-419` (`DeleteStudent`), `576-581` (`CreateAcademicTerm`), `708-710` (`DeleteUser`), `894-902` (`CreateCourse`), `997-998` (`DeleteCourse`), and `1091-1092` (`EnrollStudent`); `Controllers/InstructorController.cs:302-303` (`AddLecture`), `1043-1044` (`CreateAnnouncement`), `1076-1077` (`SendAnnouncement`), and `118-119` (`ChangePassword`).
+2. **Evidence:** These actions are marked `[HttpPost]` but do not have `[ValidateAntiForgeryToken]`; `Program.cs:14` does not register a global anti-forgery filter. Some corresponding Razor forms emit `@Html.AntiForgeryToken()` (for example `Views/Admin/AddStudent.cshtml:26-27`), but token generation alone does not make the action validate the token. Other mutations in the same controllers do carry the attribute, so the protection is inconsistent. Re-count at documentation audit: 17 of the 35 `[HttpPost]` actions lack the attribute (13/15 in `AdminController`, 4/13 in `InstructorController`; `StudentController` and `AuthController` are fully covered).
 3. **Impact:** A forged browser request may be able to perform an authenticated mutation where the user’s session cookie is sent. The configured `SameSite=Lax` cookie reduces some conventional cross-site request paths, but is not a substitute for consistent server-side anti-forgery validation (for example, same-site/subdomain scenarios remain relevant). **Confidence: High** that validation is absent on the cited actions; exploitability depends partly on deployment/browser context.
 4. **Recommendation:** Enforce anti-forgery validation globally for browser MVC unsafe methods, or consistently on every mutation. Ensure AJAX requests send the configured request token and preserve explicit exceptions only for endpoints using a different authenticated protocol.
 5. **Learning opportunity:** Anti-forgery protection is a server-side request-origin check. Rendering a token without validating it leaves the security property unenforced; a global filter is useful when most endpoints share the same browser-cookie authentication model.
@@ -69,7 +69,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-08 — [Medium] Session authorization does not consistently re-check account state or role
 
-1. **Location:** `Controllers/AdminController.cs:18-33`; `Controllers/InstructorController.cs:20-35` and `42-51`; `Controllers/StudentController.cs:19-27`; `Program.cs:17-24`.
+1. **Location:** `Controllers/AdminController.cs:18-33`; `Controllers/InstructorController.cs:20-35` and `41-52`; `Controllers/StudentController.cs:19-27`; `Program.cs:17-24`.
 2. **Evidence:** Login checks `User.IsActive` before placing the ID in session (`AuthController.cs:36-43`), but Admin and Instructor guards subsequently check only the role. Student actions commonly check only whether a session ID exists. The session contains only `UserId`, and an administrator can set `IsActive = false` through the soft-delete actions without invalidating an already-issued session. `StudentController` has no role-specific helper at all.
 3. **Impact:** A deactivated account can continue to use existing sessions until they expire, and users of other roles can reach student endpoints that only require a session. The repeated checks also make authorization behavior vary by action. **Confidence: High.**
 4. **Recommendation:** Establish one authorization mechanism that consistently enforces authenticated identity, current active status, and role/policy. If retaining session-based authentication, centralize the lookup/check and define how deactivation revokes or invalidates existing sessions; use resource-specific policies for enrollment/ownership separately.
@@ -78,8 +78,8 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-09 — [High] Database creation and checked-in SQL objects have separate, undocumented lifecycles
 
-1. **Location:** `Program.cs:57-62`; `README.md:60-65`; `Models/LmsContext.cs:544-810` (keyless `ToView` mappings); `Controllers/StudentController.cs:666-670`; `LMS Schema.sql:1431-1471` (stored procedure).
-2. **Evidence:** Startup calls `Database.EnsureCreatedAsync()`. The context maps many query types to SQL views, and quiz submission explicitly calls `sp_SubmitQuizAttempt`. The checked-in SQL script defines those views, triggers, and procedures separately. No EF migration files were found in the project scan, so nothing in the application applies `LMS Schema.sql` — the README can only instruct running it manually, and `EnsureCreated` cannot create views, triggers, or procedures. `EnsureCreated` is not a schema-upgrade mechanism.
+1. **Location:** `Program.cs:57-63`; `README.md:65-71` (limitation callout at line 70); `Models/LmsContext.cs:539-805` (keyless `ToView` mappings); `Controllers/StudentController.cs:666-669`; `LMS Schema.sql:1443-1484` (stored procedure).
+2. **Evidence:** Startup calls `Database.EnsureCreatedAsync()`. The context maps many query types to SQL views, and quiz submission explicitly calls `sp_SubmitQuizAttempt`. The checked-in SQL script defines those views, triggers, and procedures separately. No EF migration files were found in the project scan, so nothing in the application applies `LMS Schema.sql` — the README instructs running it manually (and documents this `EnsureCreated` limitation at line 70), but `EnsureCreated` cannot create views, triggers, or procedures. `EnsureCreated` is not a schema-upgrade mechanism.
 3. **Impact:** A database created only through the documented/startup path can lack objects needed by reports, mapped view queries, triggers, and quiz submission. Existing databases also have no evident versioned upgrade path when the EF model changes. **Confidence: High** for the lifecycle mismatch; whether each deployment separately applies the SQL script was not verified.
 4. **Recommendation:** Choose one reproducible schema source of truth. Prefer versioned EF migrations that include explicit SQL for views/procedures/triggers where needed, or a versioned SQL deployment pipeline that the app’s setup documentation invokes. Avoid mixing `EnsureCreated` and migrations as competing schema managers.
 5. **Learning opportunity:** A relational schema includes more than EF tables: views, procedures, triggers, constraints, and seed data all need repeatable installation and upgrades. `EnsureCreated` is useful for simple disposable/test schemas, not long-lived production evolution.
@@ -87,7 +87,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-10 — [Medium] Multi-step create operations can leave partial records
 
-1. **Location:** `Controllers/AdminController.cs:189-246` and `262-321`; `Controllers/InstructorController.cs:606-675` and `789-891`.
+1. **Location:** `Controllers/AdminController.cs:189-247` and `262-322`; `Controllers/InstructorController.cs:590-688` (per-question save at 630-631) and `773-902` (in-loop save at 845-846).
 2. **Evidence:** Student and instructor creation save the `User` first, then save the profile in a second `SaveChangesAsync`. Quiz creation saves the quiz, saves each question individually inside a loop, then saves options. Quiz handlers catch exceptions and return an error view, but do not roll back prior saves. A failure during a later step can therefore leave an account without a profile or a quiz with only some questions/options.
 3. **Impact:** Users may be unable to use their intended role, quizzes may be incomplete, and retries can create duplicates or confusing partial state. Separate saves also add database round trips. **Confidence: High.**
 4. **Recommendation:** Build related entities as one tracked graph and save once where possible. Where generated IDs or the existing SQL design require multiple steps, use an explicit database transaction around the complete unit of work and return a safe error after rollback.
@@ -96,7 +96,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-11 — [Medium] Several actions bypass request validation and accept unchecked scalar input
 
-1. **Location:** `Controllers/AdminController.cs:189-220` (`CreateStudent`), `262-295` (`CreateInstructor`), `576-611` (`CreateAcademicTerm`), `893-933` (`CreateCourse`), and `962-994` (`EditCourse`); request types under `ViewModels/Admin/Request/`.
+1. **Location:** `Controllers/AdminController.cs:189-247` (`CreateStudent`), `262-322` (`CreateInstructor`), `576-614` (`CreateAcademicTerm`), `894-935` (`CreateCourse`), and `963-995` (`EditCourse`); request types under `ViewModels/Admin/Request/`.
 2. **Evidence:** These actions accept primitive parameters rather than the corresponding request view models. For example, student creation checks only that name/email/password are nonempty, then accepts the supplied institution ID (or substitutes `1`); course creation checks only code/title while accepting instructor, term, credit, and capacity values; the edit action assigns the submitted role/status-like fields directly. Request models with data annotations exist, but these action paths do not bind them or check `ModelState`. `CreateQuiz` is an example of a path that does check its view model’s `ModelState`.
 3. **Impact:** Invalid email/password values, out-of-range numeric values, nonexistent or mismatched IDs, and unsupported role/status values can reach persistence. Database constraints may turn some cases into unhandled errors; values not constrained in the schema may persist as bad data. **Confidence: High** for missing application validation; exact database constraints vary by field.
 4. **Recommendation:** Bind focused request view models, add appropriate format/length/range rules, check `ModelState`, and perform explicit business validation for related entities (active institution, instructor role, active term, capacity, and allowed roles/statuses). Do not rely on client-side form validation.
@@ -105,25 +105,25 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-12 — [Medium] Password reset currently reports success without resetting anything
 
-1. **Location:** `Controllers/AuthController.cs:60-70`; `Views/Auth/ResetPassword.cshtml:19-25`.
-2. **Evidence:** The POST `ResetPassword` action always returns a success message claiming a reset link was sent; it does not validate or use the submitted email, create a token, or send a message. The view’s form has no `method` and posts by default as GET to `Student/Dashboard`; the input has no `name`, so it does not bind an email to the reset action.
+1. **Location:** `Controllers/AuthController.cs:65-70` (POST); `Views/Auth/ResetPassword.cshtml:19-25`.
+2. **Evidence:** The POST `ResetPassword` action always returns a success message claiming a reset link was sent; it does not validate or use the submitted email, create a token, or send a message. The view’s form has no explicit `method`, but because it uses `asp-action`/`asp-controller` tag helpers it renders as a POST — to `Student/Dashboard`, a different controller/action than the reset endpoint; the input has no `name`, so no email binds to the action.
 3. **Impact:** Users cannot recover accounts through this feature and are told an action occurred when it did not. The visible UI also directs the form to a different controller/action. **Confidence: High.**
 4. **Recommendation:** Either implement a secure token-based reset flow with expiry and non-enumerating responses, or remove/disable the feature until it exists. Correct the form’s method, action, and bound field as part of implementation.
 5. **Learning opportunity:** Password recovery is a security protocol, not a confirmation message. Time-limited single-use tokens and generic account-existence responses avoid account enumeration while making the workflow verifiable.
 6. **Refactoring steps:** Specify token lifetime, delivery channel, rate limits, and invalidation behavior; test unknown and known addresses, expired/reused tokens, and successful reset; only then enable the form. Until then, ensure the UI does not imply recovery is functional.
 
-### F-13 — [Medium] No automated regression test suite was found
+### F-13 — [Medium] A test suite exists but covers none of the high-risk invariants
 
-1. **Location:** Project-wide path scan; the only file matching a broad `*Test*` name was `Controllers/TestController.cs`, which defined an HTTP `Ping` action (since removed — no test suite exists).
-2. **Evidence:** The project listing and path scan did not locate a test project or test source files. Critical behaviors identified above—role checks, course scoping, progress persistence, quiz scoring, and SQL integration—have no checked-in automated regression coverage visible in this repository.
-3. **Impact:** Security and data-integrity changes are difficult to make safely, and SQL-dependent behavior is not easily verified in CI. **Confidence: Medium-high**; this conclusion is based on repository path discovery, not a separate external test repository.
-4. **Recommendation:** Add a focused automated test project with controller/integration coverage for the authorization and grading invariants, plus an isolated SQL Server test database for views/procedures/triggers. Avoid trying to test every presentation detail before the high-risk invariants are covered.
+1. **Location:** `tests/Lms.Tests/`, `tests/Lms.IntegrationTests/`, `.github/workflows/verify.yml` (historical note: the original path scan found only `Controllers/TestController.cs`, an HTTP `Ping` action — since removed).
+2. **Evidence:** The repository now ships 3 test classes / 9 test methods (7 unit tests in `tests/Lms.Tests`: `SessionHelperTests`, `PasswordHashingTests`; 2 integration tests in `tests/Lms.IntegrationTests`: `SchemaExistenceTests`) plus a CI workflow with format, build, unit, integration, and smoke jobs. However, the critical behaviors identified above—role checks, course scoping, progress persistence, quiz scoring, and the stored-procedure scoring path—still have no automated regression coverage.
+3. **Impact:** Security and data-integrity changes remain difficult to make safely; the existing suite would not catch a regression in any F-02–F-12 behavior. **Confidence: High** (measured against the checked-in test sources, re-verified at documentation audit).
+4. **Recommendation:** Extend the existing projects with controller/integration coverage for the authorization and grading invariants, plus fixture coverage for views/procedures/triggers. Avoid trying to test every presentation detail before the high-risk invariants are covered.
 5. **Learning opportunity:** Regression tests make refactoring measurable: preserve observable behavior while safely changing boundaries and persistence. Integration tests are especially useful when correctness depends on database behavior not represented by in-memory EF providers.
-6. **Refactoring steps:** Start with test infrastructure and a clean database fixture; add characterization tests for current login, enrollment, announcement, and quiz flows; add negative security cases; then use those tests as prerequisites for the sessions in the README. Do not treat `TestController.Ping` as a test.
+6. **Refactoring steps:** Keep the existing fixture as the base; add characterization tests for current login, enrollment, announcement, and quiz flows; add negative security cases; then use those tests as prerequisites for the sessions in the README. Do not treat `TestController.Ping` as a test.
 
 ### F-14 — [Medium] Controllers combine authorization, business rules, persistence, and view composition
 
-1. **Location:** `Controllers/AdminController.cs` (through line 1154), `Controllers/InstructorController.cs` (through line 1171), and `Controllers/StudentController.cs` (through line 787).
+1. **Location:** `Controllers/AdminController.cs` (1155 lines), `Controllers/InstructorController.cs` (1171 lines), and `Controllers/StudentController.cs` (787 lines).
 2. **Evidence:** Each controller directly queries and mutates `LmsContext`, implements session/role checks, validates workflows, composes result data through `ViewBag`/`ViewData`, and returns views or JSON. Similar session helpers and password-change logic occur in more than one controller. The files contain many unrelated workflow actions; `InstructorController` alone covers dashboard/profile, courses, lectures/assets, quizzes, grading, and announcements.
 3. **Impact:** Authorization and business rules are duplicated and drift (as shown by the inconsistent active/enrollment checks); individual workflows are difficult to unit test without controller/database setup; changes carry broad regression risk. **Confidence: High** for the structural coupling; the degree of future maintenance cost is a judgment.
 4. **Recommendation:** After the security and behavior tests exist, extract cohesive application operations/query methods incrementally. Centralize identity/policy checks and use strongly typed response view models where they improve compile-time safety. Do not add a generic repository or pattern layer without a concrete need; keep controllers as thin HTTP adapters.
@@ -132,7 +132,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-15 — [Low] Admin list queries load complete collections without paging
 
-1. **Location:** `Controllers/AdminController.cs:117-131` (`Users`), `146-150` (`Students`), `164-168` (`Instructors`), and `856-861` (`Courses`).
+1. **Location:** `Controllers/AdminController.cs:117-131` (`Users`), `146-150` (`Students`), `164-168` (`Instructors`), and `857-862` (`Courses`).
 2. **Evidence:** Each action materializes the full matching collection with `ToListAsync()` and no paging limit. The user search narrows by text but still returns every match. Entities are loaded for read-only views without an explicit projection or no-tracking query.
 3. **Impact:** Response time, memory use, and rendered HTML grow with the number of users/courses. Current sample data is small, so this is a scaling concern rather than a demonstrated present outage. **Confidence: High** for unbounded queries; **Medium** for near-term impact.
 4. **Recommendation:** Add server-side paging and a stable sort; project only the fields rendered by each screen and use `AsNoTracking()` for read-only queries. Keep search filters in the database.
@@ -143,7 +143,7 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-16 — [Medium] SQL certificate validation is disabled in the checked-in connection string
 
-1. **Location:** `appsettings.json:9-10`.
+1. **Location:** `appsettings.json:9-11`.
 2. **Evidence:** The connection string sets `TrustServerCertificate=True`. This tells the SQL Server client to trust the server certificate without validating its normal trust chain. The connection string uses integrated security and contains no password, but no production override or environment-specific configuration was inspected. **Update (secrets cleanup):** the certificate bypass has been removed from the tracked `appsettings.json`; it now lives only in the gitignored `appsettings.Development.json`, so tracked configuration validates the server certificate by default.
 3. **Impact:** If this setting is carried into a deployment where SQL traffic crosses an untrusted network, it weakens server identity verification and increases man-in-the-middle exposure. **Confidence: High** that validation is disabled by this setting; **Low** that production uses this exact value because deployment overrides were not available.
 4. **Recommendation:** Keep any certificate bypass restricted to local development. Require a trusted SQL Server certificate in production and move environment-specific connection details to secure configuration rather than editing the checked-in default.
@@ -152,8 +152,8 @@ Findings are ordered by expected severity and value. The first section contains 
 
 ### F-17 — [Low] EF model metadata declares duplicate unique indexes not present as duplicates in the SQL export
 
-1. **Location:** `Models/LmsContext.cs:276-289` (`GradeBook.CourseId`), `303-315` (`InstructorProfile.UserId`), and `370-380` (`NotificationType.TypeName`); compare `LMS Schema.sql:786-804`.
-2. **Evidence:** The EF model configures two unique indexes on each of these same single columns with different names. The checked-in SQL export shows one unique index for each corresponding column. This may make generated migrations/model diffs create redundant physical indexes or may indicate that the export and model came from different schema versions.
+1. **Location:** `Models/LmsContext.cs:275-277` (`GradeBook.CourseId`), `302-304` (`InstructorProfile.UserId`), `369-371` (`NotificationType.TypeName`), `462/464` (`StudentProfile.UserId`), `466/468` (`StudentProfile.StudentIdNumber`), and `522/524` (`User.Email`); compare `LMS Schema.sql:791-817`.
+2. **Evidence:** The EF model configures two unique indexes on each of these same single columns with different names. The original review cited three pairs; the documentation audit re-count found **six** duplicated columns (the three above plus `StudentProfile.UserId`, `StudentProfile.StudentIdNumber`, and `User.Email`). The checked-in SQL export shows one unique index for each corresponding column. This may make generated migrations/model diffs create redundant physical indexes or may indicate that the export and model came from different schema versions.
 3. **Impact:** If both indexes exist, they consume storage and add write maintenance; if metadata and deployed schema disagree, migrations may generate unexpected operations. The actual deployed index inventory is unknown. **Confidence: High** that duplicate declarations exist in the model; **Low** that duplicate indexes currently exist in the deployed database.
 4. **Recommendation:** Inspect the actual SQL Server index inventory and compare it with the EF model and the desired schema. Remove a duplicate declaration only after confirming the intended uniqueness constraint and migration impact.
 5. **Learning opportunity:** Reverse-engineered EF models can preserve stale or duplicated database metadata. Schema cleanup should compare the model, migration history, and live database rather than relying on a single generated artifact.

@@ -32,7 +32,11 @@ flowchart TD
     E --> F[docs/open-decisions.md — gated decisions & defaults]
     F --> G[docs/schema/LMS Schema.sql — schema truth]
     G --> H[docs/refactoring-analysis — known findings]
+    H --> I[.scratch/ — active ticket & evidence]
 ```
+
+The diagram follows authority order; the `.scratch/` entry is current work rather than
+an authority document.
 
 Two special rules:
 
@@ -54,7 +58,8 @@ Two special rules:
 | `docs/open-decisions.md` | Gated decisions + engineering defaults | Prevents guessing |
 | `docs/schema/LMS Schema.sql` | Tables, views, triggers, procedures | Schema truth |
 | `docs/refactoring-analysis/` | Static review findings + refactoring sessions | Known defects |
-| `.scratch/issue-NN-*/` | Active epics, specs, task tickets, evidence | Current work |
+| `.scratch/issue-NN-*/` | Active epics, specs, task tickets | Current work |
+| `evidence/issue-NN/` (repo root) | Subtask evidence: test logs, exit codes, screenshots | Current work |
 
 ## How to update documentation
 
