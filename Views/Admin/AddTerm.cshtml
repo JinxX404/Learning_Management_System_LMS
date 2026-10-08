@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.CreateAcademicTermResponseViewModel
 @{
     ViewData["Title"] = "Add New Academic Term";
     Layout = "_AdminLayout";
@@ -32,6 +33,7 @@
             <h2 class="h5 fw-bold text-body-emphasis mb-0">Term Details</h2>
           </div>
           <form class="card-body p-4 vstack gap-4" asp-action="CreateAcademicTerm" method="post">
+                @Html.AntiForgeryToken()
             <div>
               <label class="form-label fs-sm fw-medium" for="termName">Term Name</label>
               <input class="form-control rounded-3" id="termName" name="termName" placeholder="e.g., Fall Semester 2024" type="text" required />

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
+using Learning_Management_System.ViewModels.Student.Request;
+using Learning_Management_System.ViewModels.Student.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learning_Management_System.Controllers
@@ -38,25 +40,25 @@ namespace Learning_Management_System.Controllers
 
             if (student == null) return RedirectToAction("Login", "Auth");
 
-            // Populate ViewBag for View
-            ViewBag.Enrollments = student.CourseEnrollments;
-            ViewBag.EnrollmentCount = student.CourseEnrollments.Count;
-            
-            // Fetch Notifications
             var notifications = await _context.Notifications
                 .Where(n => n.UserId == studentId)
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(5)
                 .ToListAsync();
-            ViewBag.RecentNotifications = notifications;
 
-            // Count Completed Assignments/Quizzes
             var assignmentCount = await _context.QuizAttempts
                 .CountAsync(qa => qa.UserId == studentId && qa.SubmittedAt != null);
-            ViewBag.AssignmentCount = assignmentCount;
+
+            var model = new DashboardResponseViewModel
+            {
+                Enrollments = student.CourseEnrollments.ToList(),
+                EnrollmentCount = student.CourseEnrollments.Count,
+                RecentNotifications = notifications,
+                AssignmentCount = assignmentCount
+            };
 
             ViewData["StudentActive"] = "dashboard";
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -71,9 +73,9 @@ namespace Learning_Management_System.Controllers
                 .Where(e => e.UserId == studentId)
                 .ToListAsync();
 
-            ViewBag.Enrollments = enrollments;
+            var model = new MyCoursesResponseViewModel { Enrollments = enrollments };
             ViewData["StudentActive"] = "courses";
-            return View();
+            return View(model);
         }
 
 
@@ -87,30 +89,29 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get course with lectures
             var course = await _context.Courses
                 .Include(c => c.Lectures)
                     .ThenInclude(l => l.LearningAssets)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
 
-            // Get current lecture
             var lecture = course.Lectures.FirstOrDefault(l => l.LectureId == lectureId) ?? course.Lectures.FirstOrDefault();
 
-            // Get assets for current lecture
             var assets = lecture?.LearningAssets ?? Enumerable.Empty<LearningAsset>();
 
-            // Calculate progress
             var totalLectures = course.Lectures.Count;
             var completedLectures = await _context.CourseEnrollments
                 .CountAsync(lp => lp.UserId == userId && lp.Status == "Completed");
             var progress = totalLectures > 0 ? (decimal)completedLectures / totalLectures * 100 : 0;
 
-            ViewBag.Course = course;
-            ViewBag.Lecture = lecture;
-            ViewBag.Assets = assets;
-            ViewBag.Progress = progress;
+            var model = new CourseContentResponseViewModel
+            {
+                Course = course,
+                Lecture = lecture,
+                Assets = assets,
+                Progress = progress
+            };
 
-            return View();
+            return View(model);
         }
         [HttpGet]
         public async Task<IActionResult> Assignments(int? courseId = null)
@@ -120,23 +121,22 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get enrolled courses
             var enrollments = await _context.CourseEnrollments
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Course)
                     .ThenInclude(c => c.Instructor)
                 .ToListAsync();
 
-            ViewBag.EnrolledCourses = enrollments;
-            ViewBag.SelectedCourseId = courseId;
-
-            // Future: Fetch actual assignments here
-            // For now, we return empty to separate from Quizzes
-            ViewBag.Assignments = new List<dynamic>(); 
+            var model = new AssignmentsResponseViewModel
+            {
+                EnrolledCourses = enrollments,
+                SelectedCourseId = courseId,
+                Assignments = new List<dynamic>()
+            };
 
             ViewData["Title"] = "Course Assignments";
 
-            return View();
+            return View(model);
         }     
         [HttpGet]
         public async Task<IActionResult> Grades()
@@ -147,16 +147,15 @@ namespace Learning_Management_System.Controllers
 
                 var userId = GetCurrentUserId() ?? 0;
 
-                // Get all grades for this student from the view
-                var grades = await _context.VwAllStudentGrades
+                var grades = await _context.AllStudentGrades
                     .Where(v => v.UserId == userId)
                     .OrderByDescending(v => v.GradedAt)
                     .ToListAsync();
 
-                ViewBag.Grades = grades;
+                var model = new GradesResponseViewModel { Grades = grades };
                 ViewData["Title"] = "My Grades";
 
-                return View();
+                return View(model);
             
         }
 
@@ -168,28 +167,31 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get notifications for this user
             var notifications = await _context.Notifications
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
-            ViewBag.Notifications = notifications;
-            ViewBag.UnreadCount = notifications.Count(n => !n.IsRead);
+            var model = new AnnouncementsResponseViewModel
+            {
+                Notifications = notifications,
+                UnreadCount = notifications.Count(n => !n.IsRead)
+            };
             ViewData["Title"] = "Announcements";
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkLessonComplete(int CourseId, int userId)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkLessonComplete(MarkLessonCompleteRequestViewModel model)
         {
             try
             {
-                if (!IsLoggedIn() || GetCurrentUserId() != userId)
-                    return Json(new { success = false, message = "Not authorized" });
+                if (!IsLoggedIn() || GetCurrentUserId() != model.UserId)
+                    return Json(new LessonCompleteResponseViewModel { Success = false, Message = "Not authorized" });
 
                 var existingProgress = await _context.CourseEnrollments
-                    .FirstOrDefaultAsync(lp => lp.UserId == userId && lp.CourseId == CourseId);
+                    .FirstOrDefaultAsync(lp => lp.UserId == model.UserId && lp.CourseId == model.CourseId);
 
                 if (existingProgress != null)
                 {
@@ -199,8 +201,8 @@ namespace Learning_Management_System.Controllers
                 {
                     var newProgress = new CourseEnrollment
                     {
-                        UserId = userId,
-                        CourseId = CourseId,
+                        UserId = model.UserId,
+                        CourseId = model.CourseId,
                         Status = "Completed"
                     };
                     _context.CourseEnrollments.Add(newProgress);
@@ -208,13 +210,13 @@ namespace Learning_Management_System.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Json(new { success = true, message = "Lesson marked as complete" });
+                return Json(new LessonCompleteResponseViewModel { Success = true, Message = "Lesson marked as complete" });
             }
             catch (Exception ex)
             {
                 // log the error for debugging
                 Console.WriteLine($"Error in MarkLessonComplete: {ex.Message}");
-                return Json(new { success = false, message = "An error occurred while marking lesson as complete." });
+                return Json(new LessonCompleteResponseViewModel { Success = false, Message = "An error occurred while marking lesson as complete." });
             }
         }
         [HttpGet]
@@ -225,7 +227,6 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get user with profile
             var user = await _context.Users
                 .Include(u => u.StudentProfile)
                 .Include(u => u.Institution)
@@ -239,15 +240,14 @@ namespace Learning_Management_System.Controllers
                 .Include(e => e.Course)
                 .ToListAsync();
 
-            var profileGrades = await _context.Grades
-                .Where(g => g.UserId == userId)
-                .ToListAsync();
-
-            ViewBag.Enrollments = enrollments;
-            ViewBag.User = user;
+            var model = new ProfileResponseViewModel
+            {
+                User = user,
+                Enrollments = enrollments
+            };
             ViewData["Title"] = "Profile";
 
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -264,14 +264,15 @@ namespace Learning_Management_System.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Auth");
 
-            ViewBag.User = user;
+            var model = new AccountSettingsResponseViewModel { User = user };
             ViewData["Title"] = "Account Settings";
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AccountSettings(string firstName, string lastName, string email)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AccountSettings(AccountSettingsRequestViewModel model)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
@@ -282,20 +283,22 @@ namespace Learning_Management_System.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Auth");
 
-            // Update user info
-            user.FirstName = firstName;
-            user.LastName = lastName;
-            user.Email = email;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
             user.UpdatedAt = DateTime.Now;
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            ViewBag.SuccessMessage = "Profile updated successfully.";
-            ViewBag.User = user;
+            var response = new AccountSettingsResponseViewModel
+            {
+                User = user,
+                SuccessMessage = "Profile updated successfully."
+            };
             ViewData["Title"] = "Account Settings";
 
-            return View();
+            return View(response);
         }
 
         
@@ -307,14 +310,12 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Verify student is enrolled
             var isEnrolled = await _context.CourseEnrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == id);
 
             if (!isEnrolled)
                 return RedirectToAction("MyCourses");
 
-            // Get course with details
             var course = await _context.Courses
                 .Include(c => c.Instructor)
                     .ThenInclude(i => i.InstructorProfile)
@@ -324,11 +325,10 @@ namespace Learning_Management_System.Controllers
             if (course == null)
                 return NotFound();
 
-            ViewBag.Course = course;
-            ViewBag.IsEnrolled = isEnrolled;
+            var model = new CourseDetailsResponseViewModel { Course = course, IsEnrolled = isEnrolled };
             ViewData["Title"] = course.Title;
 
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -339,14 +339,12 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Verify student is enrolled
             var isEnrolled = await _context.CourseEnrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == id);
 
             if (!isEnrolled)
                 return RedirectToAction("MyCourses");
 
-            // Get course details for header
             var course = await _context.Courses
                 .Include(c => c.Instructor)
                 .FirstOrDefaultAsync(c => c.CourseId == id);
@@ -354,7 +352,6 @@ namespace Learning_Management_System.Controllers
             if (course == null)
                 return NotFound();
 
-            // Get quizzes for this course
             var quizzes = await _context.Quizzes
                 .Where(q => q.CourseId == id)
                 .Select(q => new
@@ -366,7 +363,6 @@ namespace Learning_Management_System.Controllers
                     TimeLimitMinutes = q.TimeLimitMinutes,
                     QuestionCount = q.QuizQuestions.Count(),
                     IsDeleted = q.IsDeleted,
-                    // Get the LATEST attempt for this user and quiz
                     LatestAttempt = _context.QuizAttempts
                         .Where(a => a.UserId == userId && a.QuizId == q.QuizId)
                         .OrderByDescending(a => a.StartedAt)
@@ -375,62 +371,63 @@ namespace Learning_Management_System.Controllers
                 })
                 .ToListAsync();
 
-            // Process status in memory (easier than complex LINQ translation)
-            var quizViewModels = quizzes.Select(q => new
+            var quizViewModels = quizzes.Select(q => new QuizListItemViewModel
             {
-                q.QuizId,
-                q.Title,
-                q.Description,
-                q.DueDate,
-                q.TimeLimitMinutes,
-                q.QuestionCount,
-                q.IsDeleted,
-                // Determine Status based on Latest Attempt
+                QuizId = q.QuizId,
+                Title = q.Title,
+                Description = q.Description,
+                DueDate = q.DueDate,
+                TimeLimitMinutes = q.TimeLimitMinutes,
+                QuestionCount = q.QuestionCount,
+                IsDeleted = q.IsDeleted,
                 Status = q.LatestAttempt == null ? "Available" :
                          q.LatestAttempt.SubmittedAt == null ? "InProgress" : "Completed",
                 LastAttemptId = q.LatestAttempt?.AttemptId
             });
 
-            // Filter: Show quiz if NOT deleted OR student has already submitted/started
             var visibleQuizzes = quizViewModels
                 .Where(q => !q.IsDeleted || q.Status != "Available")
                 .ToList();
 
-            ViewBag.Course = course;
-            ViewBag.Quizzes = visibleQuizzes;
+            var model = new CourseQuizzesResponseViewModel
+            {
+                Course = course,
+                Quizzes = visibleQuizzes
+            };
             ViewData["Title"] = $"{course.Title} - Quizzes";
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveQuizProgress(int attemptId, int questionId, string answer)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveQuizProgress(SaveQuizProgressRequestViewModel model)
         {
             var userId = GetCurrentUserId();
             if (userId == null) return Unauthorized();
 
             var attempt = await _context.QuizAttempts
-                .FirstOrDefaultAsync(a => a.AttemptId == attemptId && a.UserId == userId);
+                .FirstOrDefaultAsync(a => a.AttemptId == model.AttemptId && a.UserId == userId);
 
             if (attempt == null || attempt.SubmittedAt != null)
                 return BadRequest("Invalid attempt or already submitted.");
 
             // Find existing response or create new
             var response = await _context.QuizResponses
-                .FirstOrDefaultAsync(r => r.AttemptId == attemptId && r.QuestionId == questionId);
+                .FirstOrDefaultAsync(r => r.AttemptId == model.AttemptId && r.QuestionId == model.QuestionId);
 
             if (response == null)
             {
                 response = new QuizResponse
                 {
-                    AttemptId = attemptId,
-                    QuestionId = questionId
+                    AttemptId = model.AttemptId,
+                    QuestionId = model.QuestionId
                 };
                 _context.QuizResponses.Add(response);
             }
 
             // Determine if it's an OptionID (int) or Text
-            if (int.TryParse(answer, out int optionId))
+            if (int.TryParse(model.Answer, out int optionId))
             {
                 response.SelectedOptionId = optionId;
                 response.ResponseText = null;
@@ -438,7 +435,7 @@ namespace Learning_Management_System.Controllers
             else
             {
                 response.SelectedOptionId = null;
-                response.ResponseText = answer;
+                response.ResponseText = model.Answer;
             }
 
             await _context.SaveChangesAsync();
@@ -452,7 +449,6 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get quiz with questions and options
             var quiz = await _context.Quizzes
                 .Include(q => q.Course)
                 .Include(q => q.QuizQuestions)
@@ -462,24 +458,20 @@ namespace Learning_Management_System.Controllers
             if (quiz == null)
                 return NotFound();
 
-            // Verify enrollment
             var isEnrolled = await _context.CourseEnrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == quiz.CourseId);
 
             if (!isEnrolled)
                 return RedirectToAction("MyCourses");
 
-            ViewBag.Quiz = quiz;
             ViewData["Title"] = quiz.Title;
 
-            // Check Due Date
             if (quiz.DueDate.HasValue && quiz.DueDate.Value < DateTime.Now)
             {
                 TempData["ErrorMessage"] = "This quiz is past its due date and can no longer be taken.";
                 return RedirectToAction("CourseQuizzes", new { id = quiz.CourseId });
             }
 
-            // 1. Check for ACTIVE (Incomplete) attempt first
             var activeAttempt = await _context.QuizAttempts
                 .Include(qa => qa.QuizResponses)
                 .Where(a => a.UserId == userId && a.QuizId == id && a.SubmittedAt == null)
@@ -488,11 +480,6 @@ namespace Learning_Management_System.Controllers
 
             if (activeAttempt != null)
             {
-                // RESUME active session
-                ViewBag.AttemptId = activeAttempt.AttemptId;
-                ViewBag.StartedAt = activeAttempt.StartedAt;
-                
-                // Prepare existing responses
                 var existingResponses = new Dictionary<int, string>();
                 foreach(var r in activeAttempt.QuizResponses)
                 {
@@ -501,11 +488,18 @@ namespace Learning_Management_System.Controllers
                     else if (!string.IsNullOrEmpty(r.ResponseText))
                         existingResponses[r.QuestionId] = r.ResponseText;
                 }
-                ViewBag.ExistingResponses = existingResponses;
+
+                var model = new QuizPageResponseViewModel
+                {
+                    Quiz = quiz,
+                    AttemptId = activeAttempt.AttemptId,
+                    StartedAt = activeAttempt.StartedAt,
+                    ExistingResponses = existingResponses
+                };
+                return View(model);
             }
             else
             {
-                // 2. Check for COMPLETED attempts
                 var completedAttempt = await _context.QuizAttempts
                     .Where(a => a.UserId == userId && a.QuizId == id && a.SubmittedAt != null)
                     .OrderByDescending(a => a.StartedAt)
@@ -513,12 +507,10 @@ namespace Learning_Management_System.Controllers
 
                 if (completedAttempt != null)
                 {
-                    // Already taken -> Show result
                     TempData["InfoMessage"] = "You have already submitted this quiz.";
                     return RedirectToAction("QuizResult", new { id = completedAttempt.AttemptId });
                 }
 
-                // 3. Create NEW attempt
                 var newAttempt = new QuizAttempt
                 {
                     UserId = userId,
@@ -527,13 +519,16 @@ namespace Learning_Management_System.Controllers
                 };
                 _context.QuizAttempts.Add(newAttempt);
                 await _context.SaveChangesAsync();
-                
-                ViewBag.AttemptId = newAttempt.AttemptId;
-                ViewBag.StartedAt = newAttempt.StartedAt;
-                ViewBag.ExistingResponses = new Dictionary<int, string>();
-            }
 
-            return View();
+                var model = new QuizPageResponseViewModel
+                {
+                    Quiz = quiz,
+                    AttemptId = newAttempt.AttemptId,
+                    StartedAt = newAttempt.StartedAt,
+                    ExistingResponses = new Dictionary<int, string>()
+                };
+                return View(model);
+            }
         }
         [HttpGet]
         public async Task<IActionResult> QuizResult(int id)
@@ -543,7 +538,6 @@ namespace Learning_Management_System.Controllers
 
             var userId = GetCurrentUserId() ?? 0;
 
-            // Get quiz attempt with questions and responses
             var quizAttempt = await _context.QuizAttempts
                 .Include(qa => qa.Quiz)
                     .ThenInclude(q => q.QuizQuestions)
@@ -555,7 +549,6 @@ namespace Learning_Management_System.Controllers
             if (quizAttempt == null)
                 return NotFound();
 
-            // Calculate correct answers
             decimal totalScore = 0;
             decimal maxScore = 0;
             
@@ -570,7 +563,6 @@ namespace Learning_Management_System.Controllers
                     
                     if (question.QuestionType == "ShortAnswer")
                     {
-                        // Compare text with the correct option text
                         var correctOption = question.QuestionOptions.FirstOrDefault(o => o.IsCorrect);
                         if (correctOption != null && string.Equals(response.ResponseText?.Trim(), correctOption.OptionText?.Trim(), StringComparison.OrdinalIgnoreCase))
                         {
@@ -579,7 +571,6 @@ namespace Learning_Management_System.Controllers
                     }
                     else
                     {
-                        // Check selected option
                         if (response.SelectedOption?.IsCorrect == true)
                         {
                             isCorrect = true;
@@ -593,20 +584,23 @@ namespace Learning_Management_System.Controllers
                 }
             }
             
-            // Update the attempt score in DB if needed (optional, but good practice)
             quizAttempt.Score = totalScore;
             await _context.SaveChangesAsync();
 
-            ViewBag.QuizAttempt = quizAttempt;
-            ViewBag.TotalScore = totalScore;
-            ViewBag.MaxScore = maxScore;
-            ViewBag.Percentage = maxScore > 0 ? Math.Round(totalScore / maxScore * 100, 2) : 0;
+            var model = new QuizResultResponseViewModel
+            {
+                QuizAttempt = quizAttempt,
+                TotalScore = totalScore,
+                MaxScore = maxScore,
+                Percentage = maxScore > 0 ? Math.Round(totalScore / maxScore * 100, 2) : 0
+            };
             ViewData["Title"] = "Quiz Results";
 
-            return View();
+            return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> SubmitQuiz(int quizId, int attemptId, Dictionary<int, string> answers)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitQuiz(SubmitQuizRequestViewModel model)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
@@ -616,9 +610,9 @@ namespace Learning_Management_System.Controllers
             // Get the existing attempt
             var attempt = await _context.QuizAttempts
                 .Include(a => a.QuizResponses)
-                .FirstOrDefaultAsync(a => a.AttemptId == attemptId);
+                .FirstOrDefaultAsync(a => a.AttemptId == model.AttemptId);
 
-            if (attempt == null || attempt.UserId != userId || attempt.QuizId != quizId)
+            if (attempt == null || attempt.UserId != userId || attempt.QuizId != model.QuizId)
                 return NotFound();
 
             if (attempt.SubmittedAt != null)
@@ -627,7 +621,7 @@ namespace Learning_Management_System.Controllers
             // Get quiz questions to calculate score
             var quiz = await _context.Quizzes
                 .Include(q => q.QuizQuestions)
-                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+                .FirstOrDefaultAsync(q => q.QuizId == model.QuizId);
 
             if (quiz == null) return NotFound();
 
@@ -635,7 +629,7 @@ namespace Learning_Management_System.Controllers
             _context.QuizResponses.RemoveRange(attempt.QuizResponses);
 
             // Save new responses
-            foreach (var answer in answers)
+            foreach (var answer in model.Answers)
             {
                 var questionId = answer.Key;
                 var answerValue = answer.Value;
@@ -680,12 +674,8 @@ namespace Learning_Management_System.Controllers
         }
     
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(
-    string firstName,
-    string lastName,
-    string currentPassword,
-    string newPassword,
-    string confirmPassword)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequestViewModel model)
         {
             if (!IsLoggedIn())
                 return RedirectToAction("Login", "Auth");
@@ -695,34 +685,40 @@ namespace Learning_Management_System.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Auth");
 
-            // تحقق من الباسورد القديم
-            if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.PasswordHash))
             {
-                ViewBag.ErrorMessage = "Current password is incorrect.";
-                ViewBag.User = user;
-                return View("AccountSettings");
+                var errorModel = new AccountSettingsResponseViewModel
+                {
+                    User = user,
+                    ErrorMessage = "Current password is incorrect."
+                };
+                return View("AccountSettings", errorModel);
             }
 
-            // تحقق من تطابق الباسورد الجديد
-            if (newPassword != confirmPassword)
+            if (model.NewPassword != model.ConfirmPassword)
             {
-                ViewBag.ErrorMessage = "New password and confirmation do not match.";
-                ViewBag.User = user;
-                return View("AccountSettings");
+                var errorModel = new AccountSettingsResponseViewModel
+                {
+                    User = user,
+                    ErrorMessage = "New password and confirmation do not match."
+                };
+                return View("AccountSettings", errorModel);
             }
 
-            // حدّث البيانات
-            user.FirstName = firstName;
-            user.LastName = lastName;
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
             user.UpdatedAt = DateTime.Now;
 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            ViewBag.SuccessMessage = "Profile updated successfully.";
-            ViewBag.User = user;
-            return View("AccountSettings");
+            var successModel = new AccountSettingsResponseViewModel
+            {
+                User = user,
+                SuccessMessage = "Profile updated successfully."
+            };
+            return View("AccountSettings", successModel);
         }
 
         [HttpGet]
@@ -750,7 +746,17 @@ namespace Learning_Management_System.Controllers
                 .OrderBy(q => q.dueDate)
                 .ToListAsync();
 
-            return Json(new { unreadCount, upcomingDeadlines });
+            return Json(new DashboardUpdatesResponseViewModel
+            {
+                UnreadCount = unreadCount,
+                UpcomingDeadlines = upcomingDeadlines.Select(q => new UpcomingDeadlineItem
+                {
+                    Title = q.title,
+                    CourseName = q.courseName,
+                    DueInMinutes = q.dueInMinutes,
+                    DueDate = q.dueDate
+                }).ToList()
+            });
         }
 
         [HttpGet]
@@ -771,7 +777,11 @@ namespace Learning_Management_System.Controllers
                 score = Math.Round((g.Points / g.MaxPoints) * 100, 1)
             });
 
-            return Json(new { labels = result.Select(r => r.label), data = result.Select(r => r.score) });
+            return Json(new GradeTrendResponseViewModel
+            {
+                Labels = result.Select(r => r.label).ToList(),
+                Data = result.Select(r => r.score).ToList()
+            });
         }
     }
 }

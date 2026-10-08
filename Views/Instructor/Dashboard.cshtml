@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.DashboardResponseViewModel
 @{
     ViewData["Title"] = "Instructor Dashboard";
     Layout = "_Layout";
@@ -29,7 +30,7 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="mb-1 opacity-90">My Courses</h6>
-                            <h3 class="mb-0 fw-bold">@ViewBag.CoursesCount</h3>
+                            <h3 class="mb-0 fw-bold">@Model.CoursesCount</h3>
                         </div>
                     </div>
                 </div>
@@ -50,7 +51,7 @@
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h6 class="mb-1 opacity-90">My Quizzes</h6>
-                            <h3 class="mb-0 fw-bold">@ViewBag.QuizzesCount</h3>
+                            <h3 class="mb-0 fw-bold">@Model.QuizzesCount</h3>
                         </div>
                     </div>
                 </div>
@@ -62,21 +63,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <div class="card-body text-white">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <span class="material-symbols-outlined fs-1 opacity-75">groups</span>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h6 class="mb-1 opacity-90">Total Students</h6>
-                            <h3 class="mb-0 fw-bold">@ViewBag.TotalStudents</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <div class="row g-4">
@@ -89,7 +76,7 @@
                     </a>
                 </div>
                 <div class="card-body">
-                    @if (ViewBag.CoursesCount > 0)
+                    @if (Model.CoursesCount > 0)
                     {
                         <p class="text-muted">Your recent courses will appear here.</p>
                         <a asp-controller="Instructor" asp-action="MyCourses" class="btn btn-primary">

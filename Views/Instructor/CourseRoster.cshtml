@@ -1,8 +1,10 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.CourseRosterResponseViewModel
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Course Roster";
     Layout = "_Layout";
-    var course = ViewBag.Course as Learning_Management_System.Models.Course;
-    var enrollments = ViewBag.Enrollments as List<Learning_Management_System.Models.CourseEnrollment>;
+    var course = Model.Course;
+    var enrollments = Model.Enrollments;
 }
 
 @section Styles {
@@ -133,6 +135,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form asp-controller="Instructor" asp-action="CreateAnnouncement" method="post">
+                @Html.AntiForgeryToken()
                 <div class="modal-header">
                     <h5 class="modal-title">Send Announcement</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

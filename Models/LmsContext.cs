@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Learning_Management_System.ViewModels.Admin.Response;
+using Learning_Management_System.ViewModels.Student.Response;
+using Learning_Management_System.ViewModels.Instructor.Response;
+using Learning_Management_System.ViewModels.Shared.Response;
+using Learning_Management_System.ViewModels.AI.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learning_Management_System.Models;
@@ -63,51 +68,51 @@ public partial class LmsContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<VwActiveTermsWithCourseCount> VwActiveTermsWithCourseCounts { get; set; }
+    public virtual DbSet<ActiveTermViewModel> ActiveTerms { get; set; }
 
-    public virtual DbSet<VwAigeneratedQuiz> VwAigeneratedQuizzes { get; set; }
+    public virtual DbSet<AigeneratedQuizViewModel> AigeneratedQuizzes { get; set; }
 
-    public virtual DbSet<VwAiinteractionsByUser> VwAiinteractionsByUsers { get; set; }
+    public virtual DbSet<AiInteractionByUserViewModel> AiinteractionsByUsers { get; set; }
 
-    public virtual DbSet<VwAimodelStatus> VwAimodelStatuses { get; set; }
+    public virtual DbSet<AiModelStatusViewModel> AimodelStatuses { get; set; }
 
-    public virtual DbSet<VwAllStudentGrade> VwAllStudentGrades { get; set; }
+    public virtual DbSet<AllStudentGradeViewModel> AllStudentGrades { get; set; }
 
-    public virtual DbSet<VwCourseDetail> VwCourseDetails { get; set; }
+    public virtual DbSet<CourseDetailViewModel> CourseDetails { get; set; }
 
-    public virtual DbSet<VwCoursePassFailRate> VwCoursePassFailRates { get; set; }
+    public virtual DbSet<CoursePassFailRateViewModel> CoursePassFailRates { get; set; }
 
-    public virtual DbSet<VwCoursesWithEnrollment> VwCoursesWithEnrollments { get; set; }
+    public virtual DbSet<CoursesWithEnrollmentViewModel> CoursesWithEnrollments { get; set; }
 
-    public virtual DbSet<VwCoursesWithInstructorAndTerm> VwCoursesWithInstructorAndTerms { get; set; }
+    public virtual DbSet<CoursesWithInstructorAndTermViewModel> CoursesWithInstructorAndTerms { get; set; }
 
-    public virtual DbSet<VwGradeBookDetail> VwGradeBookDetails { get; set; }
+    public virtual DbSet<GradeBookDetailViewModel> GradeBookDetails { get; set; }
 
-    public virtual DbSet<VwInstitutionSummary> VwInstitutionSummaries { get; set; }
+    public virtual DbSet<InstitutionSummaryViewModel> InstitutionSummaries { get; set; }
 
-    public virtual DbSet<VwInstructorsWithCourse> VwInstructorsWithCourses { get; set; }
+    public virtual DbSet<InstructorWithCourseViewModel> InstructorsWithCourses { get; set; }
 
-    public virtual DbSet<VwLessonsWithAssetCount> VwLessonsWithAssetCounts { get; set; }
+    public virtual DbSet<LessonWithAssetCountViewModel> LessonsWithAssetCounts { get; set; }
 
-    public virtual DbSet<VwNotificationTemplatesWithType> VwNotificationTemplatesWithTypes { get; set; }
+    public virtual DbSet<NotificationTemplateWithTypeViewModel> NotificationTemplatesWithTypes { get; set; }
 
-    public virtual DbSet<VwNotificationsWithUserDetail> VwNotificationsWithUserDetails { get; set; }
+    public virtual DbSet<NotificationWithUserDetailViewModel> NotificationsWithUserDetails { get; set; }
 
-    public virtual DbSet<VwQuizResponsesWithCorrectness> VwQuizResponsesWithCorrectnesses { get; set; }
+    public virtual DbSet<QuizResponseWithCorrectnessViewModel> QuizResponsesWithCorrectnesses { get; set; }
 
-    public virtual DbSet<VwQuizzesWithStat> VwQuizzesWithStats { get; set; }
+    public virtual DbSet<QuizWithStatViewModel> QuizzesWithStats { get; set; }
 
-    public virtual DbSet<VwStudentCourseGrade> VwStudentCourseGrades { get; set; }
+    public virtual DbSet<StudentCourseGradeViewModel> StudentCourseGrades { get; set; }
 
-    public virtual DbSet<VwStudentEnrollment> VwStudentEnrollments { get; set; }
+    public virtual DbSet<StudentEnrollmentViewModel> StudentEnrollments { get; set; }
 
-    public virtual DbSet<VwStudentQuizPerformance> VwStudentQuizPerformances { get; set; }
+    public virtual DbSet<StudentQuizPerformanceViewModel> StudentQuizPerformances { get; set; }
 
-    public virtual DbSet<VwStudentsWithGpaandCourse> VwStudentsWithGpaandCourses { get; set; }
+    public virtual DbSet<StudentGpaAndCourseViewModel> StudentsWithGpaandCourses { get; set; }
 
-    public virtual DbSet<VwTopPerformingStudent> VwTopPerformingStudents { get; set; }
+    public virtual DbSet<TopPerformingStudentViewModel> TopPerformingStudents { get; set; }
 
-    public virtual DbSet<VwUsersWithActivity> VwUsersWithActivities { get; set; }
+    public virtual DbSet<UserActivityViewModel> UsersWithActivities { get; set; }
 
     // Connection string is now configured in Program.cs via dependency injection
     // Commented out to use connection string from appsettings.json
@@ -536,7 +541,7 @@ public partial class LmsContext : DbContext
                 .HasConstraintName("FK_Users_InstitutionId");
         });
 
-        modelBuilder.Entity<VwActiveTermsWithCourseCount>(entity =>
+        modelBuilder.Entity<ActiveTermViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -545,7 +550,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.TermName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwAigeneratedQuiz>(entity =>
+        modelBuilder.Entity<AigeneratedQuizViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -554,7 +559,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.QuizTitle).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwAiinteractionsByUser>(entity =>
+        modelBuilder.Entity<AiInteractionByUserViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -566,7 +571,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.ModelName).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwAimodelStatus>(entity =>
+        modelBuilder.Entity<AiModelStatusViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -575,7 +580,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.ModelName).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwAllStudentGrade>(entity =>
+        modelBuilder.Entity<AllStudentGradeViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -591,7 +596,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Points).HasColumnType("decimal(5, 2)");
         });
 
-        modelBuilder.Entity<VwCourseDetail>(entity =>
+        modelBuilder.Entity<CourseDetailViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -605,7 +610,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.TermName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwCoursePassFailRate>(entity =>
+        modelBuilder.Entity<CoursePassFailRateViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -614,7 +619,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.PassRate).HasColumnType("numeric(38, 6)");
         });
 
-        modelBuilder.Entity<VwCoursesWithEnrollment>(entity =>
+        modelBuilder.Entity<CoursesWithEnrollmentViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -625,7 +630,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwCoursesWithInstructorAndTerm>(entity =>
+        modelBuilder.Entity<CoursesWithInstructorAndTermViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -637,7 +642,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.TermName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwGradeBookDetail>(entity =>
+        modelBuilder.Entity<GradeBookDetailViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -651,7 +656,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Points).HasColumnType("decimal(5, 2)");
         });
 
-        modelBuilder.Entity<VwInstitutionSummary>(entity =>
+        modelBuilder.Entity<InstitutionSummaryViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -661,7 +666,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwInstructorsWithCourse>(entity =>
+        modelBuilder.Entity<InstructorWithCourseViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -675,7 +680,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.LastName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwLessonsWithAssetCount>(entity =>
+        modelBuilder.Entity<LessonWithAssetCountViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -685,7 +690,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwNotificationTemplatesWithType>(entity =>
+        modelBuilder.Entity<NotificationTemplateWithTypeViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -695,7 +700,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.TemplateName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwNotificationsWithUserDetail>(entity =>
+        modelBuilder.Entity<NotificationWithUserDetailViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -706,7 +711,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.LastName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwQuizResponsesWithCorrectness>(entity =>
+        modelBuilder.Entity<QuizResponseWithCorrectnessViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -715,7 +720,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.PointsEarned).HasColumnType("decimal(5, 2)");
         });
 
-        modelBuilder.Entity<VwQuizzesWithStat>(entity =>
+        modelBuilder.Entity<QuizWithStatViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -725,7 +730,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(255);
         });
 
-        modelBuilder.Entity<VwStudentCourseGrade>(entity =>
+        modelBuilder.Entity<StudentCourseGradeViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -741,7 +746,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Points).HasColumnType("decimal(5, 2)");
         });
 
-        modelBuilder.Entity<VwStudentEnrollment>(entity =>
+        modelBuilder.Entity<StudentEnrollmentViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -755,7 +760,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.Status).HasMaxLength(50);
         });
 
-        modelBuilder.Entity<VwStudentQuizPerformance>(entity =>
+        modelBuilder.Entity<StudentQuizPerformanceViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -764,7 +769,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.AverageScore).HasColumnType("decimal(38, 6)");
         });
 
-        modelBuilder.Entity<VwStudentsWithGpaandCourse>(entity =>
+        modelBuilder.Entity<StudentGpaAndCourseViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -778,7 +783,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.LastName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwTopPerformingStudent>(entity =>
+        modelBuilder.Entity<TopPerformingStudentViewModel>(entity =>
         {
             entity
                 .HasNoKey()
@@ -791,7 +796,7 @@ public partial class LmsContext : DbContext
             entity.Property(e => e.LastName).HasMaxLength(100);
         });
 
-        modelBuilder.Entity<VwUsersWithActivity>(entity =>
+        modelBuilder.Entity<UserActivityViewModel>(entity =>
         {
             entity
                 .HasNoKey()

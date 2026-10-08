@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.EnrollmentsResponseViewModel
 @{
     ViewData["Title"] = "Manage Enrollments";
     Layout = "_AdminLayout";
@@ -18,9 +19,9 @@
                             <label for="courseId" class="form-label fw-medium">Select Course</label>
                             <select class="form-select" id="courseId" name="courseId" onchange="this.form.submit()">
                                 <option value="">-- Select a Course --</option>
-                                @foreach (var course in ViewBag.Courses)
+                                @foreach (var course in Model.Courses)
                                 {
-                                    if (ViewBag.SelectedCourseId == course.CourseId)
+                                    if (Model.SelectedCourseId == course.CourseId)
                                     {
                                         <option value="@course.CourseId" selected>@course.CourseCode - @course.Title</option>
                                     }
@@ -38,7 +39,7 @@
                 </div>
             </div>
 
-            @if (ViewBag.SelectedCourseId != null)
+            @if (Model.SelectedCourseId != null)
             {
                 <div class="row g-4">
                     <!-- Enroll New Student -->
@@ -49,15 +50,16 @@
                             </div>
                             <div class="card-body p-4">
                                 <form asp-action="EnrollStudent" method="post">
-                                    <input type="hidden" name="courseId" value="@ViewBag.SelectedCourseId" />
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="courseId" value="@Model.SelectedCourseId" />
                                     
                                     <div class="mb-3">
                                         <label for="studentId" class="form-label fw-medium">Select Student</label>
                                         <select class="form-select" id="studentId" name="studentId" required>
                                             <option value="">-- Select Student --</option>
-                                            @if (ViewBag.AvailableStudents != null)
+                                            @if (Model.AvailableStudents != null)
                                             {
-                                                foreach (var student in ViewBag.AvailableStudents)
+                                                foreach (var student in Model.AvailableStudents)
                                                 {
                                                     <option value="@student.UserId">@student.LastName, @student.FirstName (@student.Email)</option>
                                                 }
@@ -79,7 +81,7 @@
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0 fs-6 fw-bold">Current Enrollments</h5>
-                                <span class="badge bg-primary-subtle text-primary">Total: @(ViewBag.Enrollments?.Count ?? 0)</span>
+                                <span class="badge bg-primary-subtle text-primary">Total: @(Model.Enrollments?.Count ?? 0)</span>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -94,9 +96,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if (ViewBag.Enrollments != null)
+                                            @if (Model.Enrollments != null)
                                             {
-                                                foreach (var enrollment in ViewBag.Enrollments)
+                                                foreach (var enrollment in Model.Enrollments)
                                                 {
                                                     <tr>
                                                         <td class="ps-4 fw-medium">@enrollment.User.FirstName @enrollment.User.LastName</td>
@@ -107,6 +109,7 @@
                                                         </td>
                                                         <td class="text-end pe-4">
                                                             <form asp-action="DropStudent" method="post" onsubmit="return confirm('Are you sure you want to remove this student from the course?');">
+                                                                @Html.AntiForgeryToken()
                                                                 <input type="hidden" name="enrollmentId" value="@enrollment.EnrollmentId" />
                                                                 <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 ms-auto">
                                                                     <span class="material-symbols-outlined fs-6">person_remove</span>
@@ -119,7 +122,7 @@
                                             }
                                         </tbody>
                                     </table>
-                                    @if (ViewBag.Enrollments == null || ViewBag.Enrollments.Count == 0)
+                                    @if (Model.Enrollments == null || Model.Enrollments.Count == 0)
                                     {
                                         <div class="text-center py-5 text-body-secondary">
                                             <span class="material-symbols-outlined fs-1 mb-2">school</span>

@@ -1,10 +1,8 @@
+@model Learning_Management_System.ViewModels.Admin.Response.UsersResponseViewModel
 @{
     ViewData["Title"] = "User Management";
     Layout = "_AdminLayout";
     ViewData["AdminActive"] = "users";
-
-    var users = ViewBag.Users as IEnumerable<Learning_Management_System.Models.User>;
-    var searchString = ViewBag.SearchString as string;
 }
 
 @section Styles {
@@ -34,14 +32,14 @@
             <h6 class="m-0 font-weight-bold text-primary">All Users</h6>
             <form asp-action="Users" method="get" class="d-flex gap-2">
                 <div class="input-group">
-                    <input type="text" name="searchString" value="@searchString" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                    <input type="text" name="searchString" value="@Model.SearchString" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-primary" type="submit">
                             <span class="material-symbols-outlined fs-6">search</span>
                         </button>
                     </div>
                 </div>
-                @if (!string.IsNullOrEmpty(searchString))
+                @if (!string.IsNullOrEmpty(Model.SearchString))
                 {
                     <a asp-action="Users" class="btn btn-secondary">Clear</a>
                 }
@@ -61,9 +59,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (users != null && users.Any())
+                        @if (Model.Users != null && Model.Users.Any())
                         {
-                            foreach (var user in users)
+                            foreach (var user in Model.Users)
                             {
                                 <tr>
                                     <td>@user.FirstName @user.LastName</td>
@@ -120,6 +118,7 @@
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                         <form asp-action="DeleteUser" asp-route-id="@user.UserId" method="post">
+                                                            @Html.AntiForgeryToken()
                                                             <button type="submit" class="btn btn-danger">Delete</button>
                                                         </form>
                                                     </div>

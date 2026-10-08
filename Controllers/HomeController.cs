@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Learning_Management_System.Models;
+using Learning_Management_System.ViewModels.Shared.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Learning_Management_System.Controllers

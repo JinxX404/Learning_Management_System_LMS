@@ -1,5 +1,6 @@
 using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
+using Learning_Management_System.ViewModels.Admin.Response;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,15 +30,6 @@ namespace Learning_Management_System.Controllers
             if (!IsLoggedIn()) return false;
             var user = await _context.Users.FindAsync(GetCurrentUserId());
             return user?.Role == "Admin";
-        }
-
-        public class ActivityItem
-        {
-            public string? Type { get; set; }
-            public string? Message { get; set; }
-            public DateTime Date { get; set; }
-            public string? Icon { get; set; }
-            public string? ColorClass { get; set; }
         }
 
         [Route("Admin/Dashboard")]
@@ -70,7 +62,7 @@ namespace Learning_Management_System.Controllers
             var recentUsers = await _context.Users
                 .OrderByDescending(u => u.CreatedAt)
                 .Take(5)
-                .Select(u => new ActivityItem
+                .Select(u => new ActivityItemViewModel
                 {
                     Type = "User",
                     Message = $"New user registered: {u.FirstName} {u.LastName}",
@@ -83,7 +75,7 @@ namespace Learning_Management_System.Controllers
             var recentCourses = await _context.Courses
                 .OrderByDescending(c => c.CreatedAt)
                 .Take(5)
-                .Select(c => new ActivityItem
+                .Select(c => new ActivityItemViewModel
                 {
                     Type = "Course",
                     Message = $"New course published: {c.Title}",
@@ -770,14 +762,14 @@ namespace Learning_Management_System.Controllers
             ViewBag.ActiveTerms = activeTerms;
 
             // 1. Top Performing Students
-            var topStudents = await _context.VwTopPerformingStudents
+            var topStudents = await _context.TopPerformingStudents
                 .OrderByDescending(s => s.Gpa)
                 .Take(10)
                 .ToListAsync();
             ViewBag.TopStudents = topStudents;
 
             // 2. Course Pass/Fail Rates
-            var courseRates = await _context.VwCoursePassFailRates
+            var courseRates = await _context.CoursePassFailRates
                 .Join(_context.Courses,
                     rate => rate.CourseId,
                     course => course.CourseId,
@@ -794,7 +786,7 @@ namespace Learning_Management_System.Controllers
             ViewBag.CourseRates = courseRates;
 
             // 3. Institution Summary
-            var institutionSummary = await _context.VwInstitutionSummaries
+            var institutionSummary = await _context.InstitutionSummaries
                 .OrderByDescending(i => i.UserCount)
                 .ToListAsync();
             ViewBag.InstitutionSummary = institutionSummary;

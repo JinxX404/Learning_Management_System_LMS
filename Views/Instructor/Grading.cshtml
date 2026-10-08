@@ -1,10 +1,11 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.GradingResponseViewModel
 @using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Student Grades";
     Layout = "_Layout";
-    var grades = ViewBag.Grades as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
-    var courses = ViewBag.InstructorCourses as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
-    var selectedCourseId = ViewBag.SelectedCourseId as int?;
+    var grades = Model.Grades;
+    var courses = Model.InstructorCourses;
+    var selectedCourseId = Model.SelectedCourseId;
 }
 
 @section Styles {

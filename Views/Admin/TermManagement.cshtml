@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.AcademicTermsResponseViewModel
 @{
     ViewData["Title"] = "Manage Academic Terms";
     Layout = "_AdminLayout";
@@ -74,9 +75,9 @@
               </tr>
             </thead>
             <tbody>
-              @if (ViewBag.Terms != null)
+              @if (Model.Terms != null)
               {
-                  foreach (var term in ViewBag.Terms)
+                  foreach (var term in Model.Terms)
                   {
                       <tr>
                         <td class="px-4 py-3 text-nowrap fs-sm fw-medium">@term.TermName</td>
@@ -108,6 +109,7 @@
                               <span class="material-symbols-outlined fs-5">edit</span>
                             </a>
                             <form asp-action="DeleteAcademicTerm" method="post" onsubmit="return confirm('Are you sure you want to delete this term?');" style="display:inline;">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@term.AcademicTermId" />
                                 <button type="submit" class="btn btn-icon hover-danger">
                                   <span class="material-symbols-outlined fs-5">delete</span>

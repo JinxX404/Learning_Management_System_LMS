@@ -1,9 +1,10 @@
-﻿@using Learning_Management_System.Models
+﻿@model Learning_Management_System.ViewModels.Instructor.Response.AnnouncementsResponseViewModel
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Instructor - Announcements";
     Layout = "_Layout";
-    var courses = ViewBag.Courses as IEnumerable<Course> ?? Enumerable.Empty<Course>();
-    var recentNotifications = ViewBag.RecentNotifications as IEnumerable<Notification> ?? Enumerable.Empty<Notification>();
+    var courses = Model.Courses;
+    var recentNotifications = Model.RecentNotifications;
 }
 
 @section Styles {

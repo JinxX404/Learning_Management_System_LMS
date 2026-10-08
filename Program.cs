@@ -58,6 +58,7 @@ namespace Learning_Management_System
             using (var scope = app.Services.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<LmsContext>();
+                await context.Database.EnsureCreatedAsync();
                 await SeedData.SeedAdminUser(context);
             }
 

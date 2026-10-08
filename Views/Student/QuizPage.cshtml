@@ -1,11 +1,13 @@
 ﻿@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model QuizPageResponseViewModel
 @{
     ViewData["Title"] = "Take Quiz";
     Layout = "_Layout";
-    var quiz = ViewBag.Quiz as Quiz;
+    var quiz = Model.Quiz;
     var timeLimit = quiz?.TimeLimitMinutes ?? 0;
     var dueDate = quiz?.DueDate;
-    var existingResponses = ViewBag.ExistingResponses as Dictionary<int, string>;
+    var existingResponses = Model.ExistingResponses;
 }
 
 @section Styles {
@@ -71,8 +73,9 @@
 
                 <!-- Form -->
                 <form id="quizForm" asp-action="SubmitQuiz" asp-controller="Student" method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="quizId" value="@quiz?.QuizId" />
-                    <input type="hidden" name="attemptId" value="@ViewBag.AttemptId" />
+                    <input type="hidden" name="attemptId" value="@Model.AttemptId" />
 
                     @if (quiz?.QuizQuestions != null)
                     {
@@ -176,8 +179,12 @@
             }
 
             try {
+                const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
                 const response = await fetch('/Student/SaveQuizProgress', {
                     method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
                     body: formData
                 });
                 
@@ -199,7 +206,7 @@
             // Quiz Configuration
             const timeLimitMinutes = @timeLimit;
             const dueDateStr = '@(dueDate?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
-            const startedAtStr = '@(ViewBag.StartedAt?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
+            const startedAtStr = '@(Model.StartedAt?.ToString("yyyy-MM-ddTHH:mm:ss") ?? "")';
             
             // --- Timer Logic ---
             function startTimer() {

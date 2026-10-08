@@ -1,11 +1,13 @@
+@using Learning_Management_System.ViewModels.Admin.Response
+@model ReportsResponseViewModel
 @{
     ViewData["Title"] = "Reports";
     Layout = "_AdminLayout";
     ViewData["AdminActive"] = "reports";
 
-    var topStudents = ViewBag.TopStudents as IEnumerable<Learning_Management_System.Models.VwTopPerformingStudent>;
-    var courseRates = ViewBag.CourseRates as IEnumerable<dynamic>;
-    var institutionSummary = ViewBag.InstitutionSummary as IEnumerable<Learning_Management_System.Models.VwInstitutionSummary>;
+    var topStudents = Model.TopStudents;
+    var courseRates = Model.CourseRates;
+    var institutionSummary = Model.InstitutionSummary;
 }
 
 @section Styles {
@@ -40,7 +42,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalUsers</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalUsers</div>
                         </div>
                         <div class="col-auto">
                             <span class="material-symbols-outlined text-gray-300 fs-2">group</span>
@@ -56,7 +58,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Courses</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCourses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalCourses</div>
                         </div>
                         <div class="col-auto">
                             <span class="material-symbols-outlined text-gray-300 fs-2">school</span>
@@ -72,7 +74,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Enrollments</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalEnrollments</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalEnrollments</div>
                         </div>
                         <div class="col-auto">
                             <span class="material-symbols-outlined text-gray-300 fs-2">class</span>
@@ -88,7 +90,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Terms</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.ActiveTerms</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActiveTerms</div>
                         </div>
                         <div class="col-auto">
                             <span class="material-symbols-outlined text-gray-300 fs-2">calendar_month</span>

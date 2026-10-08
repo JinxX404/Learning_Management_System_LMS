@@ -1,9 +1,10 @@
 ﻿
-@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model GradesResponseViewModel
 @{
     ViewData["Title"] = "My Grades";
     Layout = "_Layout";
-    var grades = ViewBag.Grades as IEnumerable<VwAllStudentGrade> ?? Enumerable.Empty<VwAllStudentGrade>();
+    var grades = Model.Grades;
 }
 
 @section Styles {

@@ -1,8 +1,10 @@
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model AccountSettingsResponseViewModel
 @{
     ViewData["Title"] = "Account Settings";
     Layout = "_Layout";
-    var user = ViewBag.User as User;
+    var user = Model.User;
 }
 
 @section Styles {
@@ -20,15 +22,16 @@
         <section class="section-card card border-0 bg-tertiary shadow-sm rounded-3" aria-labelledby="profile-heading">
             <div class="card-body p-3">
                 <h2 id="profile-heading" class="section-title fs-4 fw-semibold p-3">Profile Information</h2>
-                @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage as string))
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
                 {
-                    <div class="alert alert-danger mx-3">@ViewBag.ErrorMessage</div>
+                    <div class="alert alert-danger mx-3">@Model.ErrorMessage</div>
                 }
-                @if (!string.IsNullOrWhiteSpace(ViewBag.SuccessMessage as string))
+                @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
                 {
-                    <div class="alert alert-success mx-3">@ViewBag.SuccessMessage</div>
+                    <div class="alert alert-success mx-3">@Model.SuccessMessage</div>
                 }
                 <form class="p-3" method="post" asp-action="ChangePassword" asp-controller="Student">
+                    @Html.AntiForgeryToken()
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small text-secondary">First Name</label>

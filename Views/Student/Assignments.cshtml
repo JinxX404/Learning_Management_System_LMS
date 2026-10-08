@@ -1,10 +1,12 @@
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model AssignmentsResponseViewModel
 @{
     ViewData["Title"] = "Assignments";
     Layout = "_Layout";
-    var assignments = ViewBag.Assignments as IEnumerable<dynamic>;
-    var selectedCourseId = ViewBag.SelectedCourseId as int?;
-    var enrolledCourses = ViewBag.EnrolledCourses as IEnumerable<CourseEnrollment>;
+    var assignments = Model.Assignments;
+    var selectedCourseId = Model.SelectedCourseId;
+    var enrolledCourses = Model.EnrolledCourses;
 }
 
 @section Styles {

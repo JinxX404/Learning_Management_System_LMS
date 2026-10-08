@@ -45,6 +45,7 @@
                                     <span>@course.CurrentEnrollment / @course.MaxEnrollment</span>
                                 </div>
                                 <form asp-action="EnrollInCourse" asp-controller="Student" method="post">
+                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="courseId" value="@course.CourseId" />
                                     <button type="submit" class="btn btn-primary w-100 fw-semibold mt-3">Enroll Now</button>
                                 </form>

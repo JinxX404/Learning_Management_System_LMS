@@ -1,7 +1,9 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.MyCoursesResponseViewModel
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "My Courses";
     Layout = "_Layout";
-    var courses = ViewBag.Courses as List<Learning_Management_System.Models.Course>;
+    var courses = Model.Courses;
 }
 
 @section Styles {
@@ -23,6 +25,24 @@
             </a>
         </div>
     </div>
+
+    @if (Model.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span class="material-symbols-outlined me-2" style="vertical-align: middle;">error</span>
+            <strong>Error!</strong> @Model.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <span class="material-symbols-outlined me-2" style="vertical-align: middle;">check_circle</span>
+            <strong>Success!</strong> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
     @if (courses != null && courses.Any())
     {

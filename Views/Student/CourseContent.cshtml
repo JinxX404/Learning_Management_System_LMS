@@ -1,11 +1,12 @@
 ﻿@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model CourseContentResponseViewModel
 @{
     ViewData["Title"] = "Module 1: Course Overview | ESU";
     Layout = "_Layout";
-    var course = ViewBag.Course as Course;
-    var lecture = ViewBag.Lecture as Lecture;
-    var assets = ViewBag.Assets as IEnumerable<LearningAsset> ?? Enumerable.Empty<LearningAsset>();
-    var progress = ViewBag.Progress as decimal? ?? 0m;
+    var course = Model.Course;
+    var lecture = Model.Lecture;
+    var assets = Model.Assets;
     var userId = Context.Session.GetInt32("UserId");
 }
 
@@ -104,10 +105,12 @@
             if (markCompleteBtn) {
                 markCompleteBtn.addEventListener('click', function() {
                     // Send AJAX request to mark as complete
+                            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
                             fetch('/Student/MarkLessonComplete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'RequestVerificationToken': token
             },
             body: JSON.stringify({
                 courseId: @course?.CourseId,

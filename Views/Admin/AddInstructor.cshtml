@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.CreateInstructorResponseViewModel
 @{
     ViewData["Title"] = "Add New Instructor";
     Layout = "_AdminLayout";
@@ -26,6 +27,7 @@
         
         <div class="card border rounded-4 shadow-sm">
           <form class="p-4 p-lg-5 vstack gap-4" asp-action="CreateInstructor" method="POST">
+                @Html.AntiForgeryToken()
             
             <div class="vstack gap-4">
               <div class="row g-4">

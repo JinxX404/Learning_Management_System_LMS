@@ -28,6 +28,7 @@
     <div class="row">
         <div class="col-lg-8">
             <form asp-controller="Instructor" asp-action="UploadMaterials" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header border-bottom">
                         <h5 class="mb-0">Material Information</h5>

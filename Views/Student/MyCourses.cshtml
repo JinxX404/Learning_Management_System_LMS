@@ -1,8 +1,9 @@
 ﻿@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model Learning_Management_System.ViewModels.Student.Response.MyCoursesResponseViewModel
 @{
     ViewData["Title"] = "My Courses";
     Layout = "_Layout";
-    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
 }
 
 @section Styles {
@@ -14,7 +15,7 @@
     <h2 class="fs-2 fw-bold mb-5">My Courses</h2>
 
     <div class="row g-4">
-        @if (!enrollments.Any())
+        @if (!Model.Enrollments.Any())
         {
             <div class="col-12">
                 <div class="card bg-tertiary h-100 border-0 shadow-sm rounded-3 d-flex flex-column p-4">
@@ -24,7 +25,7 @@
         }
         else
         {
-            @foreach (var enrollment in enrollments)
+            @foreach (var enrollment in Model.Enrollments)
             {
                 var course = enrollment.Course;
                 <div class="col-md-6 col-lg-4">

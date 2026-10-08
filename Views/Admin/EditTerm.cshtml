@@ -1,8 +1,9 @@
+@model Learning_Management_System.ViewModels.Admin.Response.EditAcademicTermResponseViewModel
 @{
     ViewData["Title"] = "Edit Academic Term";
     Layout = "_AdminLayout";
     ViewData["AdminActive"] = "terms";
-    var term = ViewBag.Term as Learning_Management_System.Models.AcademicTerm;
+    var term = Model.Term;
 }
 
 @section Styles {
@@ -37,9 +38,9 @@
             <input type="hidden" name="academicTermId" value="@(term?.AcademicTermId)" />
             <input type="hidden" name="institutionId" value="@(term?.InstitutionId)" />
             
-            @if (ViewBag.Error != null)
+            @if (Model.Error != null)
             {
-                <div class="alert alert-danger">@ViewBag.Error</div>
+                <div class="alert alert-danger">@Model.Error</div>
             }
 
             <div>

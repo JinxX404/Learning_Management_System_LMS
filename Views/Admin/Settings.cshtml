@@ -1,8 +1,9 @@
 @using Learning_Management_System.Models
+@model Learning_Management_System.ViewModels.Admin.Response.SettingsResponseViewModel
 @{
     ViewData["Title"] = "Admin Settings";
     Layout = "_AdminLayout";
-    var user = ViewBag.User as User;
+    var user = Model.User;
 }
 
 <div class="container-fluid p-4">
@@ -20,20 +21,21 @@
                     <h5 class="mb-0 fw-bold">Change Password</h5>
                 </div>
                 <div class="card-body p-4">
-                    @if (ViewBag.ErrorMessage != null)
+                    @if (Model.ErrorMessage != null)
                     {
                         <div class="alert alert-danger" role="alert">
-                            @ViewBag.ErrorMessage
+                            @Model.ErrorMessage
                         </div>
                     }
-                    @if (ViewBag.SuccessMessage != null)
+                    @if (Model.SuccessMessage != null)
                     {
                         <div class="alert alert-success" role="alert">
-                            @ViewBag.SuccessMessage
+                            @Model.SuccessMessage
                         </div>
                     }
 
                     <form asp-action="ChangePassword" method="post">
+                        @Html.AntiForgeryToken()
                         <div class="mb-3">
                             <label class="form-label text-secondary small text-uppercase fw-bold">Current Password</label>
                             <input type="password" name="currentPassword" class="form-control" required>

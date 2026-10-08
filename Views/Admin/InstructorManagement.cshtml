@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.InstructorsResponseViewModel
 @{
     ViewData["Title"] = "Instructor Management";
     Layout = "_AdminLayout";
@@ -76,9 +77,9 @@
               </tr>
             </thead>
             <tbody>
-              @if (ViewBag.Instructors != null)
+              @if (Model.Instructors != null)
               {
-                  foreach (var instructor in ViewBag.Instructors)
+                  foreach (var instructor in Model.Instructors)
                   {
                       <tr class="border-top">
                         <td class="px-4 py-3 text-nowrap">
@@ -131,7 +132,7 @@
           </table>
         </div>
         <div class="p-4 border-top">
-          <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@((ViewBag.Instructors as IEnumerable<dynamic>)?.Count() ?? 0)</span> results</span>
+          <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@(Model.Instructors?.Count() ?? 0)</span> results</span>
         </div>
       </div>
     </div>

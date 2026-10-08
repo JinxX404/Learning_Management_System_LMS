@@ -1,6 +1,6 @@
 ﻿using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
-using Learning_Management_System.Models.ViewModels;
+using Learning_Management_System.ViewModels.Instructor.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

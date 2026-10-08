@@ -1,9 +1,11 @@
 @using Learning_Management_System.Helpers
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model Learning_Management_System.ViewModels.Student.Response.CourseDetailsResponseViewModel
 @{
-    ViewData["Title"] = $"Course Details | {ViewBag.Course?.Title}";
+    ViewData["Title"] = $"Course Details | {Model.Course.Title}";
     Layout = "_Layout";
-    var course = ViewBag.Course as Course;
+    var course = Model.Course;
     if (course == null)
     {
         <div class="container py-5">
@@ -15,9 +17,8 @@
     var instructorName = course.Instructor != null ? $"{course.Instructor.FirstName} {course.Instructor.LastName}" : "Instructor unavailable";
     var courseId = course.CourseId;
 
-    // Check if student is enrolled
     var userId = SessionHelper.GetUserId(Context.Session);
-    var isEnrolled = ViewBag.IsEnrolled as bool? ?? false;
+    var isEnrolled = Model.IsEnrolled;
 }
 
 @section Styles {
@@ -120,6 +121,7 @@
                 {
                     <div class="mt-4">
                         <form asp-action="EnrollInCourse" asp-controller="Student" method="post">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="courseId" value="@courseId" />
                             <button type="submit" class="btn btn-primary fw-semibold">Enroll in this Course</button>
                         </form>

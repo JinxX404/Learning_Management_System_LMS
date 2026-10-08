@@ -1,11 +1,9 @@
 ﻿@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model Learning_Management_System.ViewModels.Student.Response.DashboardResponseViewModel
 @{
     ViewData["Title"] = "Student Dashboard";
     Layout = "_Layout";
-    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
-    var notifications = ViewBag.RecentNotifications as IEnumerable<Notification> ?? Enumerable.Empty<Notification>();
-    int enrollmentCount = ViewBag.EnrollmentCount ?? 0;
-    int assignmentCount = ViewBag.AssignmentCount ?? 0;
 }
 
 @section Styles {
@@ -18,10 +16,10 @@
     <section>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="section-title font-display fs-5 fw-semibold text-body-emphasis mb-0">Enrolled Courses</h2>
-            <span class="text-secondary small">Total: @enrollmentCount</span>
+            <span class="text-secondary small">Total: @Model.EnrollmentCount</span>
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mt-2">
-            @if (!enrollments.Any())
+            @if (!Model.Enrollments.Any())
             {
                 <div class="col">
                     <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
@@ -33,7 +31,7 @@
             }
             else
             {
-                foreach (var enrollment in enrollments)
+                foreach (var enrollment in Model.Enrollments)
                 {
                     <div class="col course-item">
                         <div class="card bg-tertiary border-custom shadow-sm rounded-4 h-100 overflow-hidden">
@@ -73,7 +71,7 @@
             <section>
                 <h2 class="section-title font-display fs-5 fw-semibold text-body-emphasis mb-4">Notifications <span id="notif-badge" class="badge bg-danger rounded-pill d-none">0</span></h2>
                 <div class="d-flex flex-column gap-3">
-                    @if (!notifications.Any())
+                    @if (!Model.RecentNotifications.Any())
                     {
                         <div class="card bg-tertiary shadow-sm border-0 p-3">
                             <p class="text-secondary mb-0">No notifications yet.</p>
@@ -81,7 +79,7 @@
                     }
                     else
                     {
-                        @foreach (var notification in notifications)
+                        @foreach (var notification in Model.RecentNotifications)
                         {
                             <div class="card bg-tertiary shadow-sm border-0 p-3">
                                 <div class="d-flex align-items-start gap-3">

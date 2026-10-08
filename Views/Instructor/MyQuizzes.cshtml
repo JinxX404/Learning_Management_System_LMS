@@ -1,4 +1,4 @@
-@model IEnumerable<Learning_Management_System.Models.Quiz>
+@model Learning_Management_System.ViewModels.Instructor.Response.MyQuizzesResponseViewModel
 @{
     ViewData["Title"] = ViewData["Title"] ?? "My Quizzes";
     Layout = "_Layout";
@@ -28,7 +28,7 @@
         </div>
     }
 
-    @if (!Model.Any())
+    @if (!Model.Quizzes.Any())
     {
         <div class="text-center py-5">
             <div class="mb-4">
@@ -44,7 +44,7 @@
     else
     {
         <div class="row g-4">
-            @foreach (var quiz in Model)
+            @foreach (var quiz in Model.Quizzes)
             {
                 
                 <div class="col-md-6 col-lg-4">

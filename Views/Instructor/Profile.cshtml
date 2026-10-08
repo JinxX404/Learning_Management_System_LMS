@@ -1,16 +1,10 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.ProfileResponseViewModel
 @using Learning_Management_System.Models
 @{
     ViewData["Title"] = "ESU - Profile";
     Layout = "_Layout";
-    var user = ViewBag.User as User;
-    var courses = ViewBag.Courses as IEnumerable<Course> ?? Enumerable.Empty<Course>();
-    if (user == null)
-    {
-        <div class="container py-5">
-            <div class="alert alert-warning">Unable to load profile information.</div>
-        </div>
-        return;
-    }
+    var user = Model.User;
+    var courses = Model.Courses;
     var instructorProfile = user.InstructorProfile;
 }
 

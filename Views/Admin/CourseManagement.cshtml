@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.CoursesResponseViewModel
 @{
     ViewData["Title"] = "Course Management";
     Layout = "_AdminLayout";
@@ -24,25 +25,25 @@
                                 <span class="input-group-text bg-body-secondary border-end-0">
                                     <span class="material-symbols-outlined fs-6 text-secondary">search</span>
                                 </span>
-                                <input type="text" name="searchString" class="form-control border-start-0 ps-0" placeholder="Search by title or code..." value="@ViewBag.SearchString">
+                                <input type="text" name="searchString" class="form-control border-start-0 ps-0" placeholder="Search by title or code..." value="@Model.SearchString">
                                 <button class="btn btn-outline-secondary border-start-0" type="submit">Search</button>
                             </div>
                         </div>
                         <div class="col-md-2">
                             <select name="status" class="form-select" onchange="this.form.submit()">
-                                <option value="All" selected="@(ViewBag.CurrentStatus == "All" || ViewBag.CurrentStatus == null)">All Statuses</option>
-                                <option value="Active" selected="@(ViewBag.CurrentStatus == "Active")">Active</option>
-                                <option value="Archived" selected="@(ViewBag.CurrentStatus == "Archived")">Archived</option>
+                                <option value="All" selected="@(Model.CurrentStatus == "All" || Model.CurrentStatus == null)">All Statuses</option>
+                                <option value="Active" selected="@(Model.CurrentStatus == "Active")">Active</option>
+                                <option value="Archived" selected="@(Model.CurrentStatus == "Archived")">Archived</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <select name="instructorId" class="form-select" onchange="this.form.submit()">
                                 <option value="">All Instructors</option>
-                                @if (ViewBag.Instructors != null)
+                                @if (Model.Instructors != null)
                                 {
-                                    foreach (var instructor in ViewBag.Instructors)
+                                    foreach (var instructor in Model.Instructors)
                                     {
-                                        <option value="@instructor.UserId" selected="@(ViewBag.CurrentInstructor == instructor.UserId)">@instructor.FirstName @instructor.LastName</option>
+                                        <option value="@instructor.UserId" selected="@(Model.CurrentInstructor == instructor.UserId)">@instructor.FirstName @instructor.LastName</option>
                                     }
                                 }
                             </select>
@@ -50,11 +51,11 @@
                         <div class="col-md-3">
                             <select name="termId" class="form-select" onchange="this.form.submit()">
                                 <option value="">All Terms</option>
-                                @if (ViewBag.Terms != null)
+                                @if (Model.Terms != null)
                                 {
-                                    foreach (var term in ViewBag.Terms)
+                                    foreach (var term in Model.Terms)
                                     {
-                                        <option value="@term.AcademicTermId" selected="@(ViewBag.CurrentTerm == term.AcademicTermId)">@term.TermName</option>
+                                        <option value="@term.AcademicTermId" selected="@(Model.CurrentTerm == term.AcademicTermId)">@term.TermName</option>
                                     }
                                 }
                             </select>
@@ -79,7 +80,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var course in ViewBag.Courses)
+                                @foreach (var course in Model.Courses)
                                 {
                                     <tr>
                                         <td class="ps-4 fw-medium">@course.CourseCode</td>
@@ -148,6 +149,7 @@
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                                             <form asp-action="DeleteCourse" asp-route-id="@course.CourseId" method="post">
+                                                                @Html.AntiForgeryToken()
                                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                                             </form>
                                                         </div>
@@ -161,7 +163,7 @@
                         </table>
                     </div>
                     <div class="p-3 border-top bg-light">
-                        <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@((ViewBag.Courses as IEnumerable<dynamic>)?.Count() ?? 0)</span> results</span>
+                        <span class="fs-sm fw-normal text-secondary">Showing <span class="fw-semibold text-body">@(Model.Courses?.Count ?? 0)</span> results</span>
                     </div>
                 </div>
             </div>

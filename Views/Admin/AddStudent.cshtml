@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.CreateStudentResponseViewModel
 @{
     ViewData["Title"] = "Add New Student";
     Layout = "_AdminLayout";
@@ -23,6 +24,7 @@
         <div class="card bg-body-tertiary border shadow-sm rounded-4">
           <div class="card-body p-4 p-sm-5">
             <form asp-action="CreateStudent" method="POST">
+                @Html.AntiForgeryToken()
               <div class="row g-4 gx-md-5">
                 <div class="col-12">
                   <h3 class="h5 fw-bold pb-3 border-bottom mb-4">Personal Information</h3>

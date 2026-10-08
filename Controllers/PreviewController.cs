@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Learning_Management_System.ViewModels.Preview.Request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,13 +14,13 @@ namespace Learning_Management_System.Controllers
     {
 
     [HttpGet("view")]
-        public IActionResult ViewPage(string name)
+        public IActionResult ViewPage([FromQuery] ViewPageRequestViewModel model)
         {
-if (string.IsNullOrWhiteSpace(name))
+if (string.IsNullOrWhiteSpace(model.Name))
             return BadRequest("name query required, e.g. ?name=AddCourse");
 
         // return the exact cshtml file from Views/Admin
-        var viewPath = $"~/Views/Admin/{name}.cshtml";
+        var viewPath = $"~/Views/Admin/{model.Name}.cshtml";
             return View(viewPath);
                 }
 

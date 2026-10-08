@@ -1,15 +1,8 @@
+@model Learning_Management_System.ViewModels.Admin.Response.DashboardResponseViewModel
 @{
-    ViewData["Title"] = "Admin Dashboard";
     Layout = "_AdminLayout";
-    ViewData["AdminActive"] = "dashboard";
 
-    var recentActivity = ViewBag.RecentActivity as IEnumerable<dynamic>;
-    var aiUsage = ViewBag.AiUsage as IEnumerable<dynamic>;
-    var maxAiCount = aiUsage != null && aiUsage.Any() ? aiUsage.Max(x => (int)x.Count) : 1;
-    
-    // Calculate percentages/trends if possible, else show raw numbers
-    var newUsers = ViewBag.NewUsersLastMonth ?? 0;
-    var newEnrollments = ViewBag.NewEnrollmentsLastMonth ?? 0;
+    var maxAiCount = Model.AiUsage.Any() ? Model.AiUsage.Max(x => x.Count) : 1;
 }
 
 @section Styles {
@@ -30,27 +23,27 @@
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Total Users</p>
-                        <p class="h3 fw-bold mb-0">@ViewBag.TotalUsers</p>
+                        <p class="h3 fw-bold mb-0">@Model.TotalUsers</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">trending_up</span>
-                            <span>+@newUsers this month</span>
+                            <span>+@Model.NewUsersLastMonth this month</span>
                         </p>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Course Enrollments</p>
-                        <p class="h3 fw-bold mb-0">@ViewBag.CourseEnrollments</p>
+                        <p class="h3 fw-bold mb-0">@Model.CourseEnrollments</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">trending_up</span>
-                            <span>+@newEnrollments this month</span>
+                            <span>+@Model.NewEnrollmentsLastMonth this month</span>
                         </p>
                     </div>
                 </div>
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">Active Courses</p>
-                        <p class="h3 fw-bold mb-0">@ViewBag.ActiveCourses</p>
+                        <p class="h3 fw-bold mb-0">@Model.ActiveCourses</p>
                         <p class="text-body-secondary fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">book</span>
                             <span>Total courses</span>
@@ -60,7 +53,7 @@
                 <div class="col">
                     <div class="card card-body d-flex flex-column gap-2 rounded-3 p-4 border stat-card bg-body-component">
                         <p class="fs-6 fw-medium mb-0">AI Content Generations</p>
-                        <p class="h3 fw-bold mb-0">@ViewBag.AiGenerations</p>
+                        <p class="h3 fw-bold mb-0">@Model.AiGenerations</p>
                         <p class="text-success fs-sm fw-medium d-flex align-items-center gap-1 mb-0">
                             <span class="material-symbols-outlined fs-6">smart_toy</span>
                             <span>Lifetime</span>
@@ -94,12 +87,11 @@
                         <p class="fs-6 fw-medium mb-0">AI Tool Usage Breakdown</p>
                         <p class="text-body-secondary fs-sm mb-0">Lifetime</p>
                         <div class="d-flex flex-grow-1 align-items-end justify-content-around gap-3 px-3 pt-4" style="min-height: 300px;">
-                            @if (aiUsage != null && aiUsage.Any())
+                            @if (Model.AiUsage.Any())
                             {
-                                foreach (var item in aiUsage)
+                                foreach (var item in Model.AiUsage)
                                 {
                                     var height = (int)((double)item.Count / maxAiCount * 100);
-                                    // Ensure at least some height
                                     height = Math.Max(height, 5); 
                                     
                                     <div class="d-flex flex-column align-items-center gap-2 w-100">
@@ -121,9 +113,9 @@
                 <h2 class="h5 fw-bold px-3 pb-3 pt-4 mb-0">Recent Activity</h2>
                 <div class="card rounded-3 border overflow-hidden bg-body-component">
                     <ul class="list-group list-group-flush">
-                        @if (recentActivity != null && recentActivity.Any())
+                        @if (Model.RecentActivity.Any())
                         {
-                            foreach (var activity in recentActivity)
+                            foreach (var activity in Model.RecentActivity)
                             {
                                 <li class="list-group-item d-flex align-items-center gap-4 p-4">
                                     <div class="d-flex align-items-center justify-content-center rounded-circle bg-@activity.ColorClass-subtle text-@activity.ColorClass" style="width: 40px; height: 40px;">

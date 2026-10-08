@@ -1,8 +1,9 @@
+@model Learning_Management_System.ViewModels.Admin.Response.EditCourseResponseViewModel
 @{
     ViewData["Title"] = "Edit Course";
     Layout = "_AdminLayout";
     ViewData["AdminActive"] = "courses";
-    var course = ViewBag.Course;
+    var course = Model.Course;
 }
 
     <main class="flex-grow-1">
@@ -21,6 +22,7 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
                             <form asp-action="EditCourse" method="post">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="courseId" value="@course.CourseId" />
                                 
                                 <div class="row g-4">
@@ -41,7 +43,7 @@
                                     <div class="col-md-6">
                                         <label for="instructorId" class="form-label fw-medium">Instructor</label>
                                         <select class="form-select" id="instructorId" name="instructorId" required>
-                                            @foreach (var instructor in ViewBag.Instructors)
+                                            @foreach (var instructor in Model.Instructors)
                                             {
                                                 if (instructor.UserId == course.InstructorId)
                                                 {
@@ -57,7 +59,7 @@
                                     <div class="col-md-6">
                                         <label for="academicTermId" class="form-label fw-medium">Academic Term</label>
                                         <select class="form-select" id="academicTermId" name="academicTermId" required>
-                                            @foreach (var term in ViewBag.Terms)
+                                            @foreach (var term in Model.Terms)
                                             {
                                                 if (term.AcademicTermId == course.AcademicTermId)
                                                 {

@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Admin.Response.CreateCourseResponseViewModel
 @{
     ViewData["Title"] = "Create Course";
     Layout = "_AdminLayout";
@@ -19,14 +20,15 @@
                 <div class="col-lg-8">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4">
-                            @if (ViewBag.Error != null)
+                            @if (Model.Error != null)
                             {
                                 <div class="alert alert-danger mb-4">
-                                    @ViewBag.Error
+                                    @Model.Error
                                 </div>
                             }
 
                             <form asp-action="CreateCourse" method="post">
+                                @Html.AntiForgeryToken()
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <label for="courseCode" class="form-label fw-medium">Course Code</label>
@@ -46,7 +48,7 @@
                                         <label for="instructorId" class="form-label fw-medium">Instructor</label>
                                         <select class="form-select" id="instructorId" name="instructorId" required>
                                             <option value="">Select Instructor...</option>
-                                            @foreach (var instructor in ViewBag.Instructors)
+                                            @foreach (var instructor in Model.Instructors)
                                             {
                                                 <option value="@instructor.UserId">@instructor.FirstName @instructor.LastName</option>
                                             }
@@ -56,7 +58,7 @@
                                         <label for="academicTermId" class="form-label fw-medium">Academic Term</label>
                                         <select class="form-select" id="academicTermId" name="academicTermId" required>
                                             <option value="">Select Term...</option>
-                                            @foreach (var term in ViewBag.Terms)
+                                            @foreach (var term in Model.Terms)
                                             {
                                                 <option value="@term.AcademicTermId">@term.TermName</option>
                                             }

@@ -1,12 +1,14 @@
 ﻿@using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model QuizResultResponseViewModel
 @{
     ViewData["Title"] = "Quiz Results";
     Layout = "_Layout";
-    var attempt = ViewBag.QuizAttempt as QuizAttempt;
+    var attempt = Model.QuizAttempt;
     var quiz = attempt?.Quiz;
-    var totalScore = ViewBag.TotalScore ?? 0m;
-    var maxScore = ViewBag.MaxScore ?? 0m;
-    var percentage = ViewBag.Percentage ?? 0;
+    var totalScore = Model.TotalScore;
+    var maxScore = Model.MaxScore;
+    var percentage = Model.Percentage;
     var grade = percentage >= 90 ? "A" : percentage >= 80 ? "B" : percentage >= 70 ? "C" : percentage >= 60 ? "D" : "F";
 }
 

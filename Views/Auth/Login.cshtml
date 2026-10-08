@@ -1,3 +1,4 @@
+@model Learning_Management_System.ViewModels.Auth.Response.LoginResponseViewModel
 @{
     Layout = "_LoginLayout";
 }
@@ -18,14 +19,15 @@
         <p class="subtitle text-secondary mt-2">Sign in to access your student dashboard.</p>
       </div>
 
-      @if (ViewBag.ErrorMessage != null)
+      @if (Model.ErrorMessage != null)
       {
         <div class="alert alert-danger" role="alert">
-          @ViewBag.ErrorMessage
+          @Model.ErrorMessage
         </div>
       }
 
       <form id="loginForm" asp-action="Login" asp-controller="Auth" method="post">
+        @Html.AntiForgeryToken()
         <div class="mb-3">
           <label for="email" class="visually-hidden">Email address</label>
           <input type="email" class="form-control input-field p-3" id="email" name="email" placeholder="student@esu.edu" required>

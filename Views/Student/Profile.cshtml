@@ -1,10 +1,11 @@
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model Learning_Management_System.ViewModels.Student.Response.ProfileResponseViewModel
 @{
     ViewData["Title"] = "ESU - Profile";
     Layout = "_Layout";
-    var user = ViewBag.User as User;
-    var enrollments = ViewBag.Enrollments as IEnumerable<CourseEnrollment> ?? Enumerable.Empty<CourseEnrollment>();
-    decimal gpa = ViewBag.Gpa is decimal ? ViewBag.Gpa : 0m;
+    var user = Model.User;
+    var enrollments = Model.Enrollments;
     if (user == null)
     {
         <div class="container py-5">

@@ -1,10 +1,10 @@
-﻿@model Learning_Management_System.Models.LearningAsset
+﻿@model Learning_Management_System.ViewModels.Instructor.Response.AddLearningAssetResponseViewModel
 
 @{
     ViewData["Title"] = "Add Learning Asset";
-    var lectureId = ViewBag.LectureId as int?;
-    var lectureTitle = ViewBag.LectureTitle as string;
-    var courseId = ViewBag.CourseId as int? ?? 0;
+    var lectureId = Model.LectureId;
+    var lectureTitle = Model.LectureTitle;
+    var courseId = Model.CourseId;
 }
 
 <div class="container mt-4">
@@ -26,14 +26,14 @@
                 <input type="hidden" name="courseId" value="@courseId" />
 
                 <div class="mb-3">
-                    <label asp-for="Title" class="form-label"></label>
-                    <input asp-for="Title" class="form-control" placeholder="e.g., Lecture Slides, Demo Video" />
-                    <span asp-validation-for="Title" class="text-danger"></span>
+                    <label for="Title" class="form-label">Title</label>
+                    <input id="Title" name="Title" class="form-control" placeholder="e.g., Lecture Slides, Demo Video" />
+                    <span class="text-danger" data-valmsg-for="Title"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="AssetType" class="form-label"></label>
-                    <select asp-for="AssetType" class="form-select">
+                    <label for="AssetType" class="form-label">Asset Type</label>
+                    <select id="AssetType" name="AssetType" class="form-select">
                         <option value="">-- Select Type --</option>
                         <option value="Video">Video</option>
                         <option value="PDF">Document(PDF | DOCX | PowerPoint)</option>
@@ -41,17 +41,17 @@
                         <option value="Link">Link</option>
                         @* <option value="Code">Code File</option> *@
                     </select>
-                    <span asp-validation-for="AssetType" class="text-danger"></span>
+                    <span class="text-danger" data-valmsg-for="AssetType"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="FileUrl" class="form-label"></label>
-                    <input asp-for="FileUrl" type="url" class="form-control"
+                    <label for="FileUrl" class="form-label">File URL</label>
+                    <input id="FileUrl" name="FileUrl" type="url" class="form-control"
                            placeholder="https://example.com/asset.pdf" />
                     <div class="form-text">
                         Must be a direct, public URL (e.g., Google Drive share link with access=anyone).
                     </div>
-                    <span asp-validation-for="FileUrl" class="text-danger"></span>
+                    <span class="text-danger" data-valmsg-for="FileUrl"></span>
                 </div>
 
                 <div class="d-flex justify-content-between">

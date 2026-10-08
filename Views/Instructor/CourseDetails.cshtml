@@ -1,8 +1,10 @@
+@model Learning_Management_System.ViewModels.Instructor.Response.CourseDetailsResponseViewModel
+@using Learning_Management_System.Models
 @{
     ViewData["Title"] = "Course Details";
     Layout = "_Layout";
-    var course = ViewBag.Course as Learning_Management_System.Models.Course;
-    var lectures = course?.Lectures;
+    var course = Model.Course;
+    var lectures = course.Lectures;
 }
 
 @section Styles {

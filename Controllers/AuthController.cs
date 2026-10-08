@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Learning_Management_System.Models;
 using Learning_Management_System.Helpers;
+using Learning_Management_System.ViewModels.Auth.Request;
+using Learning_Management_System.ViewModels.Auth.Response;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learning_Management_System.Controllers
@@ -16,31 +18,25 @@ namespace Learning_Management_System.Controllers
 
         public IActionResult Login()
         {
-            ViewData["Title"] = "Login";
-            return View();
+            return View(new LoginResponseViewModel());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string password, bool rememberMe = false)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginRequestViewModel model)
         {
-            // Find user by email
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
 
-            // Check if user exists and password is correct
-            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                ViewBag.ErrorMessage = "Invalid email or password.";
-                ViewData["Title"] = "Login";
-                return View();
+                return View(new LoginResponseViewModel { ErrorMessage = "Invalid email or password." });
             }
 
             // Check if user is active
             if (!user.IsActive)
             {
-                ViewBag.ErrorMessage = "Your account is inactive.";
-                ViewData["Title"] = "Login";
-                return View();
+                return View(new LoginResponseViewModel { ErrorMessage = "Your account is inactive." });
             }
 
             // Store user ID in session
@@ -63,17 +59,14 @@ namespace Learning_Management_System.Controllers
 
         public IActionResult ResetPassword()
         {
-            ViewData["Title"] = "Reset Password";
-            return View();
+            return View(new ResetPasswordResponseViewModel());
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(string email)
+        [ValidateAntiForgeryToken]
+        public IActionResult ResetPassword(ResetPasswordRequestViewModel model)
         {
-            // TODO: Implement password reset logic
-            ViewBag.SuccessMessage = "If an account with that email exists, we've sent you a password reset link.";
-            ViewData["Title"] = "Reset Password";
-            return View();
+            return View(new ResetPasswordResponseViewModel { SuccessMessage = "If an account with that email exists, we've sent you a password reset link." });
         }
 
         public IActionResult Logout()

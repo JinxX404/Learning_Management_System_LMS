@@ -1,9 +1,11 @@
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model CourseQuizzesResponseViewModel
 @{
-    ViewData["Title"] = $"{ViewBag.Course?.Title} - Quizzes";
+    ViewData["Title"] = $"{Model.Course.Title} - Quizzes";
     Layout = "_Layout";
-    var course = ViewBag.Course as Course;
-    var quizzes = ViewBag.Quizzes as IEnumerable<dynamic>;
+    var course = Model.Course;
+    var quizzes = Model.Quizzes;
     var instructorName = course?.Instructor != null ? $"{course.Instructor.FirstName} {course.Instructor.LastName}" : "Instructor unavailable";
 }
 
@@ -73,7 +75,7 @@
                                         <div>
                                             <h3 class="h5 fw-bold mb-1">@quiz.Title</h3>
                                             <p class="text-secondary small mb-0">
-                                                Due: @(quiz.DueDate != null ? quiz.DueDate.ToString("MMM dd, yyyy h:mm tt") : "No due date")
+                                                 Due: @(quiz.DueDate.HasValue ? quiz.DueDate.Value.ToString("MMM dd, yyyy h:mm tt") : "No due date")
                                                 @if (quiz.TimeLimitMinutes != null)
                                                 {
                                                     <span class="mx-2">•</span>

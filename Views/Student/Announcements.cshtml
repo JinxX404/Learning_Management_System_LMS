@@ -1,9 +1,11 @@
 @using Learning_Management_System.Models
+@using Learning_Management_System.ViewModels.Student.Response
+@model Learning_Management_System.ViewModels.Student.Response.AnnouncementsResponseViewModel
 @{
     ViewData["Title"] = "ESU - Announcements";
     Layout = "_Layout";
-    var notifications = ViewBag.Notifications as IEnumerable<Notification> ?? Enumerable.Empty<Notification>();
-    int unread = ViewBag.UnreadCount ?? 0;
+    var notifications = Model.Notifications;
+    int unread = Model.UnreadCount;
 }
 
 @section Styles {
