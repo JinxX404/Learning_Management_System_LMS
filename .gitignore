@@ -1,27 +1,173 @@
-# Ignore Visual Studio files
+# ====================================================================
+# Build Results & Artifacts (.NET / C#)
+# ====================================================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Bb]uild/
+[Aa]rtifacts/
+x64/
+x86/
+ARM/
+ARM64/
+bld/
+[Tt]emp/
+[Tt]mp/
+*.msi
+*.msix
+*.msm
+*.msp
+*.nupkg
+*.snupkg
+
+# ====================================================================
+# Visual Studio & IDE Files
+# ====================================================================
 .vs/
 *.user
+*.userosscache
 *.suo
+*.userprefs
+*.sln.docstates
+*.pidb
+*.booproj.user
+visualstudio.cache/
+*.opensdf
+*.sdf
+*.cache
+*.sln.cache
 
-# Ignore build results
-bin/
-obj/
-
-# Ignore publish profiles
+# Publish Profiles
 *.pubxml
 *.publishproj
+*.azurePubxml
+PublishProfiles/
+*.publish.xml
 
-# Sensitive / local-only data (never commit)
+# VS Code & Other Editors
+.vscode/
+.history/
+.idea/
+*.DotSettings.user
+_ReSharper*/
+*.resharper
+*.swp
+*.*~
+*~
+.#*
+
+# ====================================================================
+# Sensitive / Credentials / Environment Files (Never Commit)
+# ====================================================================
+# Local environment configuration overrides
+appsettings.Development.json
+appsettings.*.local.json
+appsettings.local.json
+appsettings.Production.json
+appsettings.Staging.json
+*.local.json
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Secrets & Credentials
+secrets.json
+*.secrets.json
+.secrets/
+credentials.json
+*.credentials
+
+# Certificates & Private Keys
+*.pfx
+*.p12
+*.key
+*.pem
+*.cer
+*.crt
+*.asc
+
+# ====================================================================
+# Database Files, Backups & Local Data
+# ====================================================================
 /private/
 *.mdf
 *.ldf
+*.ndf
+*.bak
+*.dmp
+*.dump
+*.sqlproj.user
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
 
-# Local environment overrides (may contain credentials)
-appsettings.Development.json
+# ====================================================================
+# Logs & Diagnostics
+# ====================================================================
+*.log
+logs/
+*.crash
+*.stackdump
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# IDE
-.idea/
+# ====================================================================
+# Test Results & Code Coverage
+# ====================================================================
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+.playwright/
+playwright-report/
+test-results/
 
-# Static prototypes and screen designs (local only)
+# ====================================================================
+# AI Agent Workflows, Scratch & Local Artifacts
+# ====================================================================
+.scratch/
+scratch/
+evidence/
+.unlazy/
+GATES.md
+.gemini/
+.claude/
+
+# ====================================================================
+# OS-Generated Files
+# ====================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ====================================================================
+# Node & Web Dependencies
+# ====================================================================
+node_modules/
+.npm/
+.yarn/
+.pnpm-store/
+
+# ====================================================================
+# Static Prototypes & Screen Designs (Local Only)
+# ====================================================================
 /Front/
 /design/prototype/

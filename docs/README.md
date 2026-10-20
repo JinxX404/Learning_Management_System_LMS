@@ -17,7 +17,8 @@ reading order for agents and humans, and the rule for resolving conflicts.
 7. [`schema/LMS Schema.sql`](schema/LMS%20Schema.sql) — schema source of truth.
 8. [`refactoring-analysis/`](refactoring-analysis/README.md) — known findings (F-01…F-18)
    and the proposed refactoring sessions; read before touching those areas.
-9. The active ticket under [`.scratch/`](../.scratch/).
+9. [`system-design/`](system-design/README.md) — hands-on system design curriculum & progressive refactoring tracks.
+10. The active ticket under [`.scratch/`](../.scratch/).
 
 ## Conflict resolution rule
 
@@ -58,6 +59,7 @@ Two special rules:
 | `docs/open-decisions.md` | Gated decisions + engineering defaults | Prevents guessing |
 | `docs/schema/LMS Schema.sql` | Tables, views, triggers, procedures | Schema truth |
 | `docs/refactoring-analysis/` | Static review findings + refactoring sessions | Known defects |
+| `docs/system-design/` | Ranked evolutionary system design curriculum (Tracks 01–08) | Architecture practice |
 | `.scratch/issue-NN-*/` | Active epics, specs, task tickets | Current work |
 | `evidence/issue-NN/` (repo root) | Subtask evidence: test logs, exit codes, screenshots | Current work |
 

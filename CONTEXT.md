@@ -11,7 +11,7 @@ this file in the same change that introduces the symbol.
 | :--- | :--- | :--- |
 | Admin / Instructor / Student | `User.Role` string literal `"Admin"`, `"Instructor"`, `"Student"` | Exact casing; compared with `==` in `AuthController` and role gates. There is no roles table. |
 | Portal | Controller + `Views/<Portal>/` folder | `AdminController`, `InstructorController`, `StudentController`. |
-| Non-portal controllers | `AuthController`, `HomeController`, `PreviewController` | `PreviewController` exposes unauthenticated `GET /preview/view?name=<X>` rendering `Views/Admin/<X>.cshtml` — a design-time surface with no session/role gate (audit recommendation: gate or remove it). |
+| Non-portal controllers | `AuthController`, `HomeController` | Shared login and landing surfaces; every other controller is a portal. |
 | Active account | `User.IsActive` (`bool`) | Login rejects inactive users. Soft delete = `IsActive = false`; rows are not removed. |
 | Current user | `SessionHelper.GetUserId(session)` → session key `"UserId"` (`int`) | The only session-held identity. No claims principal. |
 | Bootstrap admin | `BootstrapAdmin` config section (`Email`, `Password`) | Provisioned only in Development when the password is non-empty; see finding F-01. |

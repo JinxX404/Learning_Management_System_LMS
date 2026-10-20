@@ -9,9 +9,7 @@ One deployable: an ASP.NET Core 8 MVC application (`Program.cs`) hosting Kestrel
 Razor HTML, static assets, and a Development-only Swagger endpoint. There are **no**
 background workers, message brokers, microservices, or IPC channels. All portals (Admin,
 Instructor, Student) execute inside this single process. Two non-portal controllers also
-run here: `AuthController`/`HomeController`, and `PreviewController` — an **unauthenticated**
-design-time surface (`GET /preview/view?name=<X>` renders `Views/Admin/<X>.cshtml` with no
-session or role gate; audit recommendation: gate or remove it).
+run here: `AuthController` and `HomeController` (login and landing surface).
 
 ```mermaid
 flowchart LR

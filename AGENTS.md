@@ -30,7 +30,7 @@ with Admin, Instructor, and Student portals.
 | Format / lint | `.editorconfig` + `dotnet format` (whitespace, style, analyzers) |
 | Dependency determinism | `packages.lock.json` per project; restore with `--locked-mode` |
 | CI | GitHub Actions — `.github/workflows/verify.yml` |
-| Local issue tracking | `.scratch/` (tracked in git) |
+| Local issue tracking | `.scratch/` (local-only, gitignored) |
 
 Solution layout: the web project sits at the repository root
 (`Learning Management System.csproj`) and explicitly excludes `tests/**` from its compile
@@ -147,8 +147,8 @@ All exit-gate commands must be green before a PR is opened.
 
 ## 3. Local tracking via `.scratch/`
 
-Every epic and feature is tracked in `.scratch/issue-NN-<feature-slug>/` (tracked in git,
-never ignored):
+Every epic and feature is tracked in `.scratch/issue-NN-<feature-slug>/` (local-only,
+gitignored):
 
 ```text
 .scratch/issue-NN-<feature-slug>/

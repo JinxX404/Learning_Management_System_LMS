@@ -117,7 +117,7 @@ push/PR (format → lint → build → unit → integration → smoke → verify
 ├── wwwroot/              # static assets (Bootstrap, jQuery, JS, CSS)
 ├── tests/                # xUnit projects: Lms.Tests (unit), Lms.IntegrationTests (real SQL Server)
 ├── .github/workflows/    # verify.yml — format, lint, build, unit, integration, smoke
-├── .scratch/             # local issue tracker: specs, maps, 8-task tickets, templates (tracked in git)
+├── .scratch/             # local issue tracker: specs, maps, 8-task tickets, templates (local-only, gitignored)
 ├── docs/
 │   ├── README.md         # source authority + reading order
 │   ├── schema/           # LMS Schema.sql — schema source of truth
